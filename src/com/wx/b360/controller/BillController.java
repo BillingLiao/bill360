@@ -150,7 +150,7 @@ public class BillController extends BaseController {
 		ArrayList<Company> companies = new ArrayList<>();
 		if(count > 0) {
 			for(Bill bill : billsList) {
-				//companies.add(new Company(bill.getCore(), bill.getId()));
+				// companies.add(new Company(bill.getCore(), bill.getId()));
 			}
 		}
 		Map<String, Object> result = new HashMap<>();

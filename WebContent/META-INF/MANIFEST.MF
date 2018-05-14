@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: bill360
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: slience
+Implementation-Vendor-Id: com.wx
+Build-Jdk: 1.8.0_141
+Implementation-URL: http://projects.spring.io/spring-boot/bill360/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+

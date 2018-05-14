@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<title>查票360后台管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+		<script type="application/x-javascript">
+			addEventListener("load", function() {
+				setTimeout(hideURLbar, 0);
+			}, false);
+
+			function hideURLbar() {
+				window.scrollTo(0, 1);
+			}
+			var source = getQueryString("source");
+		</script>
+		<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+		<!-- Custom Theme files -->
+		<link href="css/style.css" rel='stylesheet' type='text/css' />
+		<link href="css/font-awesome.css" rel="stylesheet">
+		<script src="js/jquery.min.js">
+		</script>
+		<script src="js/bootstrap.min.js">
+		</script>
+		
+	</head>
+
+	<body onkeydown="keyLogin();">
+		<div class="login">
+			<h1><a href="index.html">查票360 </a></h1>
+			<div class="login-bottom">
+				<h2>用户登录</h2>
+					<div class="col-md-6">
+						<div class="login-mail">
+							<input id="username" type="text" placeholder="用户名" required="true">
+							<i class="fa fa-user"></i>
+						</div>
+						<div class="login-mail">
+							<input id="password" type="password" placeholder="密码" required="true">
+							<i class="fa fa-lock"></i>
+						</div>
+					</div>
+					<div class="col-md-6 login-do">
+						<label class="hvr-shutter-in-horizontal login-sub">
+					<input id="input" type="submit" onclick="login()" value="登录">
+					</label>
+						<p>&nbsp;</p>
+						<a href="" class="hvr-shutter-in-horizontal">重置</a>
+					</div>
+
+					<div class="clearfix"> </div>
+			</div>
+		</div>
+		<!---->
+		<div class="copy-right">
+			<p> &copy; 2018 查票360. All Rights Reserved | Power by
+				<a href="http://wenxikeji.com/" target="_blank">wenxikeji.com</a>
+			</p>
+		</div>
+		<!---->
+		<!--scrolling js-->
+		<script src="js/jquery.nicescroll.js"></script>
+		<script src="js/scripts.js"></script>
+		<script src="http://cdn.bootcss.com/blueimp-md5/2.1.0/js/md5.js" type="text/javascript" charset="utf-8"></script>
+		<!--//scrolling js-->
+	</body>
+	<script type="text/javascript">
+		function login() {
+			var name = $("#username").val();
+			var pwd = $("#password").val();
+			
+			if(AntiSqlValid(name) && AntiSqlValid(pwd)) {
+
+				pwd = md5("cm"+pwd);
+				$.ajax({
+					type: "POST",
+					data: {
+						name: name,
+						pwd: pwd,
+					},
+					dataType: "json",
+					url: api + "admin/login",
+					success: function(data) {
+						var code = data.code;
+						if(code == 0) {
+							sessionStorage.setItem("atoken", data.data);
+							sessionStorage.setItem("name", name);
+							if(isString(source)) {
+								window.location.href = source;
+							} else {
+								window.location.href = "index.html";
+							}
+						} else {
+							alert(data.message);
+							console.log(data);
+						}
+					},
+					error: function(data) {
+						//alert("系统出错");
+						console.log(data);
+					},
+				});
+
+			} else {
+				alert("请输入合法数据")
+			}
+		}
+		
+		function keyLogin(){
+			if(window.event.keyCode == 13){
+				  if (document.all('input')!=null){
+				   document.all('input').click();
+				   }
+			}
+		}
+	</script>
+
+</html>

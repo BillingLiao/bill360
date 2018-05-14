@@ -1,0 +1,358 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<title>查票360后台管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="application/x-javascript">
+			addEventListener("load", function() {
+				setTimeout(hideURLbar, 0);
+			}, false);
+
+			function hideURLbar() {
+				window.scrollTo(0, 1);
+			}
+		</script>
+		<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+		<!-- Custom Theme files -->
+		<link href="css/style.css" rel='stylesheet' type='text/css' />
+		<link href="css/font-awesome.css" rel="stylesheet">
+		<script src="js/jquery.min.js">
+		</script>
+		<!-- Mainly scripts -->
+		<script src="js/jquery.metisMenu.js"></script>
+		<script src="js/jquery.slimscroll.min.js"></script>
+		<!-- Custom and plugin javascript -->
+		<link href="css/custom.css" rel="stylesheet">
+		<script src="js/custom.js"></script>
+		<script src="js/screenfull.js"></script>
+		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			$(function() {
+				$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+
+				if(!screenfull.enabled) {
+					return false;
+				}
+
+				$('#toggle').click(function() {
+					screenfull.toggle($('#container')[0]);
+				});
+
+			});
+			var atoken = sessionStorage.getItem("atoken");
+			var invoice;
+			var id;
+			var index = 0;
+			var size = 10;
+			var count;
+			var status;
+			//判断atoken是否存在
+			$(document).ready(function() {
+
+				if(atoken == null || atoken.length == 0) {
+					alert("请先登录");
+					window.location.href = "signin.html?source=" + location.href.substr(location.href.lastIndexOf('/')+1);
+				}
+				$("#username").text(sessionStorage.getItem("name"));
+
+			});
+			
+			window.onload = function(){
+				index = 0;
+				show_detail(index, size, invoice, id, status);
+			};
+			function show_detail(index, size, invoice, id, status) {
+				$.ajax({
+					type:"post",
+					url:api + "order/find",
+					async:true,
+					dataType: 'json',
+					data: {
+						atoken: atoken,
+						index: index, 
+						size: size,
+						invoice: invoice,
+						id: id,
+						status: status,
+					},
+					success: function(data) {
+						if(data.code == 0) {
+							console.log(data);
+							count = data.data.count;
+							var orders = data.data.content;
+							var list = $("#order_list");
+							list.html("");
+							for(var i = 0; i < orders.length; i++) {
+								var order = orders[i];
+								var core = isString(order.core) ? order.core : "-";
+								var invoice = isString(order.invoice) ? order.invoice : "-";
+								var time = isString(order.time) ? order.time : "-";
+								var money = isDouble(order.money) ? order.money : "-";	//金额
+								var subsidy = isDouble(order.subsidy) ? order.subsidy : "-";//保理金额
+								var interest = isDouble(order.interest) ? order.interest : "-";//利息
+								var day = isNum(order.day) ? order.day : "-";
+								var img = isString(order.img) ? '<a href="'+api + "upload/"+order.img+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>' : "无图片";
+								var user = '<a href="user_detail.html?id='+order.user.id+'"><button type="button" class="btn btn-default">查看</button></a>';
+								var status = "-";
+								if(order.status == 0) {
+									status = '<div class="col-sm-12"><div class="radio-inline"><label><input type="radio"name="status_'+order.id+'" value="0" checked="">未处理</label></div><div class="radio-inline"><label><input type="radio"name="status_'+order.id+'" value="1">处理中</label></div><div class="radio-inline"><label><input type="radio"name="status_'+order.id+'" value="2">已完成</label></div></div>';
+								} else if(order.status == 1) {
+									status = '<div class="col-sm-12"><div class="radio-inline"><label><input type="radio"name="status_'+order.id+'" value="0">未处理</label></div><div class="radio-inline"><label><input checked=""type="radio"name="status_'+order.id+'" value="1">处理中</label></div><div class="radio-inline"><label><input type="radio"name="status_'+order.id+'" value="2">已完成</label></div></div>';
+								} else if(order.status == 2) {
+									status = '<div class="col-sm-12"><div class="radio-inline"><label><input type="radio"name="status_'+order.id+'" value="0">未处理</label></div><div class="radio-inline"><label><input type="radio"name="status_'+order.id+'" value="1">处理中</label></div><div class="radio-inline"><label><input type="radio"name="status_'+order.id+'" value="2" checked="">已完成</label></div></div>';
+								}
+								var set_button = '<button type="button" class="btn btn-danger" onclick=save('+order.id+')>修改</button>';
+								
+								var temp = '<tr><td>'+order.id+'</td><td>'+core+'</td><td>'+invoice+'</td><td>'+time+'</td><td>'+money+'</td><td>'+subsidy+'</td><td>'+interest+'</td><td>'+day+'</td><td>'+img+'</td><td><a href="user_detail.html?id='+order.user.id+'" target="_blank"><button type="button" class="btn btn-link">查看</button></a></td><td>'+status+'</td><td>'+set_button+'</td></tr>';
+								list.append(temp);
+							}
+						} else {
+							alert(data.message);
+						}
+					},
+					error: function(data) {
+						console.log("系统错误");
+						console.log(data);
+					}
+				});
+			}
+			
+			function save(id) {
+				if(confirm("确认要修改这条记录吗？")){
+				var status = $("input[name='status_"+id+"']:checked").val();
+				if(isNum(id)) {
+					$.ajax({
+						type:"post",
+						url:api + "order/set",
+						async:true,
+						dataType: 'json',
+						data: {
+							atoken: atoken,
+							id: id,
+							status: status,
+						},
+						success: function(data) {
+							if(data.code == 0) {
+								alert("修改成功");
+							} else {
+								alert(data.message);
+							}
+						},
+						error: function(data) {
+							console.log("系统错误");
+							console.log(data);
+						}
+					});
+				} else {
+					alert("参数有误");
+				}
+			}
+			}
+			
+			//下一页
+			function next() {
+				index++;
+				if(count / size <= index) {
+					alert("到头啦");
+					index--;
+					return;
+				}
+				show_detail(index, size, invoice, id, status);
+			}
+			//上一页
+			function previous() {
+				index--;
+				if(index < 0) {
+					index = 0;
+					alert("到头啦");
+					return;
+				}
+				show_detail(index, size, invoice, id, status);
+			}
+			
+			function search() {
+				invoice = $("#invoice_name").val();
+				if(!isString(invoice)) invoice = "";
+				id = $("#order_id").val();
+				if(!isString(id)) id = "";
+				status = $("#selector_status").val();
+				if(!isString(status)) status = "";
+				index = 0;
+				size: 10;
+				show_detail(index, size, invoice, id, status);
+			}
+		</script>
+
+	</head>
+
+	<body>
+		<div id="wrapper">
+
+			<!----->
+			<nav class="navbar-default navbar-static-top" role="navigation">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+					<h1> <a class="navbar-brand" href="index.html">查票360</a></h1>
+				</div>
+				<div class=" border-bottom">
+
+					<!-- Brand and toggle get grouped for better mobile display -->
+
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="drop-men">
+						<ul class=" nav_1">
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
+							</li>
+						</ul>
+					</div>
+					<!-- /.navbar-collapse -->
+					<div class="clearfix">
+
+					</div>
+
+					<div class="navbar-default sidebar" role="navigation">
+						<div class="sidebar-nav navbar-collapse">
+							<ul class="nav" id="side-menu">
+								<li>
+									<a href="index.html" class=" hvr-bounce-to-right"><i class="fa fa-dashboard nav_icon "></i><span class="nav-label">数据字典</span> </a>
+								</li>
+
+								 <li>
+			                        <a href="#" class=" hvr-bounce-to-right"><i class="fa fa-sitemap nav_icon"></i>收票清单管理<span class="fa arrow"></span></a>
+			                        <ul class="nav nav-second-level">
+			                            <li>
+			                                <a href="staff.html" class=" hvr-bounce-to-right"><i class="fa fa-user nav_icon"></i>对接人信息</a>
+			                            </li>
+			                            <li>
+			                                <a href="bill.html" class=" hvr-bounce-to-right"><i class="fa fa-table nav_icon"></i>对接人收票清单</a>
+			                            </li>
+			                            <li>
+			                                <a href="acceptance.html" class=" hvr-bounce-to-right"><i class="fa fa-qrcode nav_icon"></i>承兑企业信息</a>
+			                                	
+			                            </li>
+			                        </ul>
+			                    </li>
+			                    
+								<li>
+									<a href="#" class=" hvr-bounce-to-right"><i class="fa fa-sitemap nav_icon"></i>持票库存管理<span class="fa arrow"></span></a>
+										<ul class="nav nav-second-level">
+			                            <li>
+			                                <a href="userByAdmin.html" class=" hvr-bounce-to-right"><i class="fa fa-user nav_icon"></i>用户信息</a>
+			                            </li>
+			                            <li>
+			                                <a href="inventory.html" class=" hvr-bounce-to-right"><i class="fa fa-dashboard nav_icon"></i>持票清单</a>
+			                            </li>
+			                        </ul>
+								</li>
+								<li>
+									<a href="order.html" class=" hvr-bounce-to-right"><i class="fa fa-television nav_icon"></i> <span class="nav-label">业务订单管理</span> </a>
+								</li>
+
+								<li>
+									<a href="os.html" class=" hvr-bounce-to-right"><i class="fa fa-table nav_icon"></i> <span class="nav-label">系统管理</span> </a>
+								</li>
+							</ul>
+						</div>
+					</div>
+			</nav>
+			<div id="page-wrapper" class="gray-bg dashbard-1">
+				<div class="content-main">
+
+					<!--banner-->
+					<div class="banner">
+
+						<h2>
+				<a href="index.html">Home</a>
+				<i class="fa fa-angle-right"></i>
+				<span>业务订单管理</span>
+				</h2>
+					<div class=" profile">
+						<div class="profile-bottom" style="width: 100%; min-height: 800px;">
+							<div class="col-md-10 compose" style="margin-bottom: 20px;">
+								<form class="form-inline">
+									<div class="form-group">
+										<label for="order_invoice_name">开票企业</label>
+										<input class="form-control" id="invoice_name" placeholder="" type="text">
+									</div>
+									<div class="form-group">
+										<label for="order_id">业务编号</label>
+										<input class="form-control" id="order_id" placeholder="" type="text">
+									</div>
+									<div class="form-group">
+										<label for="selector_status" >状态</label>
+										<select name="selector_status" id="selector_status" class="form-control">
+											<option value="">不限</option>
+											<option value="0">未处理</option>
+											<option value="1">处理中</option>
+											<option value="2">已完成</option>
+										</select>
+									</div>
+									<button type="button" class="btn btn-primary" onclick="search()">查询</button>
+								</form>
+							</div>
+							<div class="col-md-2 compose">
+								<div class="mail-toolbar clearfix">
+									<div class="float-right">
+										<div class="btn-group">
+											<a class="btn btn-default" onclick="previous()"><i class="fa fa-angle-left">&nbsp;上一页</i></a>
+											<a class="btn btn-default" onclick="next()">下一页&nbsp;<i class="fa fa-angle-right"></i></a>
+										</div>
+
+									</div>
+
+								</div>
+							</div>
+
+							<div class="col-md-12 compose">
+								<table class="table table-bordered">
+									<thead>
+										<tr>
+											<th>业务编号</th>
+											<th>核心企业名称</th>
+											<th>开票企业</th>
+											<th>到期时间</th>
+											<th>金额</th>
+											<th>保理金额</th>
+											<th>利息</th>
+											<th>计息天数</th>
+											<th>票据照片</th>
+											<th>用户信息</th>
+											<th>状态</th>
+											<th>操作</th>
+										</tr>
+									</thead>
+									<tbody id="order_list">
+									</tbody>
+								</table>
+							</div>
+
+						</div>
+					</div>
+
+					<div class="copy">
+						<p> &copy; 2018 查票360. All Rights Reserved | Power by
+							<a href="http://wenxikeji.com/" target="_blank">wenxikeji.com</a>
+						</p>
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			</div>
+			<!---->
+			<!--scrolling js-->
+			<script src="js/jquery.nicescroll.js"></script>
+			<script src="js/scripts.js"></script>
+			<!--//scrolling js-->
+			<script src="js/bootstrap.min.js">
+			</script>
+	</body>
+
+</html>

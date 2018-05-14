@@ -10,6 +10,6 @@ import com.wx.b360.entity.Bill;
 
 public interface BillRepository extends PagingAndSortingRepository<Bill, Integer>, JpaSpecificationExecutor<Bill> {
 
-	List<Bill> findByCore(String core);
+	//List<Bill> findByCore(String core);
 
 }

@@ -83,17 +83,17 @@
 				show_source(index, size);
 			});
 
-			function show_source(index, size ,company) {
-				
+			function show_source(index, size, name, company) {
 				
 				$.ajax({
 					type: "post",
-					url: api + "/inventory/find",
+					url: api + "/userByAdmin/find",
 					dataType: 'json',
 					data: {
 						atoken: atoken,
 						index: index,
 						size: size,
+						name: name,
 						company: company,
 					},
 					success: function(data) {
@@ -101,33 +101,23 @@
 						if(data.code == 0) {
 							count = data.data.count;
 
-							var list = $("#inventory_list");
+							var list = $("#userByAdmin_list");
 							list.html("");
 							var temp = "";
 							for(var i = 0; i < data.data.content.length; i++) {
 								debugger;
-								var inventory = data.data.content[i];
-								var userName = isString(inventory.user.name) == true ? inventory.user.name : "-"; //持票人姓名
-								var inventoryid = inventory.id;
-								var imgurl = api + "upload/"+inventory.img_front;
-								var imgurl2 = api + "upload/"+inventory.img_back;
-								var img_front = '<div class="pic"><img src ="'+imgurl+'"  alt="商票正面" 	width="250" height="200px";></div>'
-								var img_back = '<div class="pic"><img src ="'+imgurl2+'"  alt="背书面" 	width="250px" height="200px"></div>'
-								var company = isString(inventory.company) == true ? inventory.company : "-"; //持票企业名称
-								//var img_front = isString(inventory.img_front) ? '<a href="'+api + "upload/"+inventory.img_front+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>' : "无图片";
-								//var img_back = isString(inventory.img_back) ? '<a href="'+api + "upload/"+inventory.img_back+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>' : "无图片";
-								var money = isDouble(inventory.money) ? inventory.money : "-";//金额(万)
-								var ctime = isString(inventory.ctime) == true ? inventory.ctime : "-"; //出票日期
-								var dtime = isString(inventory.dtime) == true ? inventory.dtime : "-"; //到期日期
-								var ttime = isString(inventory.ttime) == true ? inventory.ttime: "-"; //贴现日
-								var offer = isString(inventory.offer) == true ? inventory.offer : "-"; //接受价额
-								temp = '<tr id="inventroy_tr_'+inventoryid+'"><td>' + inventoryid + '</td><td>' + userName + '</td><td>' + company + '</td><td>' + img_front +
-									'</td><td>' + img_back + '</td><td>' + money + '</td><td>' + ctime +
-									'</td><td>' + dtime + '</td><td>' + ttime + '</td><td>' + offer +
-									'</td><td><a href="inventory_detail.html?id=' +
-									inventory.id + '" target="_blank"><button type="button" class="btn btn-sm btn-default">编辑</button></a><span onclick="select_inventory(' + inventory.id + ')"><button type="button"class="btn btn-sm btn-danger" onclick="del('+inventory.id+')">删除</button></td></tr>';
+								var userByAdmin = data.data.content[i];
+								var userName = isString(userByAdmin.name) == true ? userByAdmin.name : "-"; //用户姓名
+								var userByAdminId = userByAdmin.id;
+								var company = isString(userByAdmin.company) == true ? userByAdmin.company : "-"; //公司名称
+								var phone = isString(userByAdmin.phone) == true ? userByAdmin.phone : "-"; //电话
+								var wechat = isString(userByAdmin.wechat) == true ? userByAdmin.wechat : "-"; //微信号
+								var addr = isString(userByAdmin.addr) == true ? userByAdmin.addr : "-"; //地址
+								temp = '<tr id="userByAdmin_tr_'+userByAdminId+'"><td>' + userByAdminId + '</td><td>' + userName + '</td><td>' + company + '</td><td>' + phone +
+									'</td><td>' + wechat + '</td><td>' + addr + '</td><td><a href="userByAdmin_detail.html?id=' +
+									userByAdmin.id + '" target="_blank"><button type="button" class="btn btn-sm btn-default">编辑</button></a><button type="button"class="btn btn-sm btn-danger" onclick="del('+userByAdmin.id+')">删除</button></td></tr>';
 								list.append(temp);
-								document.getElementById('imgInit').setAttribute("src",imgurl);
+								//document.getElementById('imgInit').setAttribute("src",imgurl);
 							}
 						} else {
 							alert(data.message);
@@ -155,7 +145,7 @@
 							success: function(data) {
 								if(data.code == 0) {
 									alert("删除成功");
-									$("#inventroy_tr_"+id).hide();
+									$("#userByAdmin_tr_"+id).hide();
 								} else {
 									alert(data.message);
 								}
@@ -497,14 +487,14 @@
 						<div class="profile-bottom" style="width: 100%; min-height: 1000px; ">
 							<div class="col-md-4 compose">
 								<div class="input-group input-group-in">
-									<input name="search" id="search_name" class="form-control2 input-search" placeholder="请输入持票企业名称" type="text">
+									<input name="search" id="search_name" class="form-control2 input-search" placeholder="请输入姓名" type="text">
 									<span class="input-group-btn">
 						                <button class="btn btn-success" onclick="search_inventory()" type="button"><i class="fa fa-search"></i></button>
 						            </span>
 								</div>
 							</div>
 							<div class="col-md-4 compose">
-								<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">添加收票企业</button>
+								<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">添加用户</button>
 							</div>
 							<div class="col-md-4 compose">
 								<div class="mail-toolbar clearfix">
@@ -525,18 +515,14 @@
 											<tr>
 												<th>编号</th>
 												<th>姓名</th>
-												<th>持票企业名称</th>
-												<th>商票正面</th>
-												<th>背书面</th>
-												<th>金额（万）</th>
-												<th>出票日期</th>
-												<th>到期日期</th>
-												<th>贴现日</th>
-												<th>接受价额</th>
+												<th>公司名称</th>
+												<th>电话</th>
+												<th>微信号</th>
+												<th>地址</th>
 												<th>操作</th>
 											</tr>
 										</thead>
-										<tbody id="inventory_list">
+										<tbody id="userByAdmin_list">
 	
 										</tbody>
 	                                </table>

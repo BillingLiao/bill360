@@ -28,7 +28,7 @@ import com.wx.b360.tool.CodeConstant;
 @RequestMapping("/userByAdmin")
 public class UserByAdminController extends BaseController {
 	
-/*			//删除持票信息
+			//删除持票信息
 			@PostMapping("/del")
 			public Msg del( @RequestParam int id) {
 				Inventory inventory = inventoryRepository.findOne(id);
@@ -114,11 +114,12 @@ public class UserByAdminController extends BaseController {
 			//获取持票信息列表
 			@PostMapping("/find")
 			public Msg find(@RequestParam int index, @RequestParam int size, 
+					@RequestParam(required=false) String name,
 					@RequestParam(required=false) String company) {
-				Page<Inventory> page = inventoryService.find(index, size, null, null, company);
+				Page<UserByAdmin> page = userByAdminService.find(index, size, name, company);
 				msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 				return msg;
-			}*/
+			}
 			
 			/**
 			 * 管理员查询所有用户姓名

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import com.wx.b360.entity.Acceptance;
 import com.wx.b360.model.Msg;
 import com.wx.b360.repository.AcceptanceRepository;
 import com.wx.b360.repository.AdminRepository;
@@ -29,6 +28,7 @@ import com.wx.b360.service.InventoryService;
 import com.wx.b360.service.OrderService;
 import com.wx.b360.service.RecordService;
 import com.wx.b360.service.SourceService;
+import com.wx.b360.service.UserByAdminService;
 import com.wx.b360.service.UserService;
 
 
@@ -63,5 +63,6 @@ public class BaseController {
 	@Autowired protected OrderService orderService;
 	@Autowired protected AcceptanceService acceptanceService;
 	@Autowired protected InventoryService inventoryService;
+	@Autowired protected UserByAdminService userByAdminService;
 	@Autowired protected DataDicService dataDicService;
 }

@@ -12,5 +12,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Integer
 	
 	@Query(value="select * from b_user ORDER BY _id", nativeQuery=true)
 	public List<User> findUserName();
+
 	
 }

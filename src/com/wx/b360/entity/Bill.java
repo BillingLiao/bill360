@@ -29,7 +29,7 @@ public class Bill {
 	@JoinColumn(name="_acceptance_id", nullable=false, columnDefinition="int comment '承兑企业id'")
 	private Acceptance acceptance;
 	
-	@ManyToOne(targetEntity=Acceptance.class)
+	@ManyToOne(targetEntity=Staff.class)
 	@JoinColumn(name="_staff_id", nullable=false, columnDefinition="int comment '对接人id'")
 	private Staff staff;
 	
@@ -42,7 +42,7 @@ public class Bill {
 	@Column(name="_adjuest", nullable=false, columnDefinition="int comment '调整天数'")
 	private int adjuest;
 	
-	@Column(name="_initiate", nullable=false,columnDefinition="DECIMAL(14,2) default '0.00' comment '起步金额'")
+	@Column(name="_initiate", nullable=true,columnDefinition="DECIMAL(14,2) default '0.00' comment '起步金额'")
 	private BigDecimal initiate;
 	
 	@Column(name="_max", nullable=false, columnDefinition="DECIMAL(14,2) default '0.00' comment '最大金额'")
@@ -51,12 +51,11 @@ public class Bill {
 	@Column(name="_min", nullable=false, columnDefinition="DECIMAL(14,2) default '0.00' comment '最小金额'")
 	private BigDecimal min;
 	
-	@Column(name="_total", nullable=false, columnDefinition="DECIMAL(14,2) default '0.00' comment '总额度'")
+	@Column(name="_total", nullable=true, columnDefinition="DECIMAL(14,2) default '0.00' comment '总额度'")
 	private BigDecimal total;
 	
-	@Column(name="_usable", nullable=false, columnDefinition="DECIMAL(14,2) default '0.00' comment '可用额度'")
+	@Column(name="_usable", nullable=true, columnDefinition="DECIMAL(14,2) default '0.00' comment '可用额度'")
 	private BigDecimal usable;
-	
 	
 	@Column(name="_remark", nullable=true, columnDefinition="varchar(255) comment '保理备注'")
 	private String remark;
@@ -64,28 +63,36 @@ public class Bill {
 	@Column(name="_status", nullable=false, columnDefinition="int default 0 comment '状态0-正常（默认）、1-已关闭'")
 	private int status;
 	
-	@Column(name="_level", nullable=false, columnDefinition="int default 0 comment '优先级0-默认'")
+	@Column(name="_level", nullable=true, columnDefinition="int default 0 comment '优先级0-默认'")
 	private int level;
-	
-	@Column(name="_type", nullable=false, columnDefinition="int default 0 comment '类型0-母公司、1-子公司、2-孙公司'")
-	private int type;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="_ctime", nullable=false, columnDefinition="timestamp default current_timestamp comment '添加时间'")
 	private Date ctime;
 	
-	public Bill(BigDecimal rate, BigDecimal initiate, BigDecimal max,
-			BigDecimal min, BigDecimal total, BigDecimal usable, int shortest,int adjuest ,
-			String remark, int level,int type) {
-		this.rate = rate;	this.initiate = initiate;
-		this.max = max;	this.min = min; this.total = total;	this.usable = usable;
-		this.shortest = shortest; this.adjuest = adjuest; this.remark = remark; this.level = level; this.type = type;
-	}
+	@Column(name="_is_bargain", nullable=true, columnDefinition="int comment '合同0-不是、1-是'")
+	private int isBargain;
+	
+	@Column(name="_is_invoice", nullable=true, columnDefinition="int comment '发票0-不是（默认）、1-是'")
+	private int isInvoice;
+	
+	@Column(name="_is_moneyorback", nullable=true, columnDefinition="int comment '先款先背0-先款（默认）、1-先背'")
+	private int isMoneyOrBack;
+	
+	@Column(name="_is_financing", nullable=true, columnDefinition="int comment '融资票0-不是（默认）、1-是'")
+	private int isFinancing;
+	
+	@Column(name="_is_clean", nullable=true, columnDefinition="int comment '融资票0-不是（默认）、1-是'")
+	private int isClean;
+	
+	@Column(name="_endorse_time", nullable=true, columnDefinition="int comment '背书次数限制'")
+	private int etime;
+	
 	
 	public Bill(BigDecimal rate, BigDecimal initiate, BigDecimal max, BigDecimal total, BigDecimal usable,
-			int shortest,String remark, int type, BigDecimal min) {
+			int shortest,String remark, BigDecimal min) {
 			this.rate = rate;	this.initiate = initiate;
 		this.max = max;	this.total = total;	this.usable = usable;	this.shortest = shortest;
-		this.remark = remark;	this.type = type;	this.min = min;
+		this.remark = remark;	this.min = min;
 	}
 }

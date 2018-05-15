@@ -45,6 +45,6 @@ public class UserByAdmin {
 		if(CheckTool.isString(addr)) this.addr = addr;
 		if(CheckTool.isString(company)) this.company = company;
 		if(CheckTool.isPhone(phone)) this.phone = phone;
-		if(CheckTool.isString(wechat)) this.company = wechat;
+		if(CheckTool.isString(wechat)) this.wechat = wechat;
 	}
 }

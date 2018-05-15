@@ -222,8 +222,6 @@
 				formData.append('atoken', atoken);
 				formData.append('userByAdminId', $('#user').val());
 				formData.append('company', $('#inventory_company').val());
-				formData.append('file_img_front', $('#uploadFile_img_front')[0].files[0]);
-				//formData.append('file_img_back', $('#uploadFile_img_back')[0].files[0]);
 				formData.append('ctime', $('#inventory_ctime').val());
 				formData.append('dtime', $('#inventory_dtime').val());
 				formData.append('money', $('#inventory_money').val());
@@ -232,19 +230,23 @@
 
 				var uploadfile = $('#uploadFile_img_front')[0].files[0];
 				var uploadfile3 = $('#uploadFile_img_back')[0].files[0];
-				debugger;
 				
 				if(uploadfile == null){
-					
+					alert("请选择商票上传");
+					return;
 				}
+				formData.append('file_img_front', $('#uploadFile_img_front')[0].files[0]);
+				
 				if(uploadfile3 != null){
 					console.log("uploadfile2=" + uploadfile);
+					formData.append('file_img_back', $('#uploadFile_img_back')[0].files[0]);
 				}
 				
 				if(!isString($('#inventory_company').val())) {
 					alert("请输入开票企业名称");
 					return;
 				}
+				
 				if(!isString($('#inventory_ctime').val())) {
 					alert("请选择出票日期");
 					return;
@@ -312,8 +314,6 @@
                 </button>
 					<h1> <a class="navbar-brand" href="index.html">查票360</a></h1>
 				</div>
-				<div class=" border-bottom">
-
 					<!-- Brand and toggle get grouped for better mobile display -->
 
 					<!-- Collect the nav links, forms, and other content for toggling -->
@@ -323,7 +323,7 @@
 								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
 							</li>
 							<li class="dropdown">
-								<a href="javascript:logout()">安全退出</span></a>
+								<a href="javascript:logout()">安全退出</a>
 							</li>
 						</ul>
 					</div>
@@ -397,7 +397,7 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-									<h3 class="modal-title">添加持票信息</h2>
+									<h3 class="modal-title">添加持票信息</h3>
 								</div>
 								<div class="modal-body">
 									<!--这里是弹窗内容-->
@@ -414,37 +414,35 @@
 											<tr>
 												<td width="15%">开票企业名称</td>
 												<td  colspan="3" >
-													<input class="form-control" id="inventory_company" placeholder="请输入开票企业名称" type="text">
+													<input class="form-control" id="inventory_company" placeholder="请输入开票企业名称" type="text" required="required">
 												</td>
 											</tr>
 											<tr>
 												<td width="15%">商票正面</td>
 												<td width="35%">
 													<input class="form-control" id="uploadFile_img_front" type="file"></td>
-												</td>
 												<td width="15%">背书面</td>
 												<td width="35%">
 													<input class="form-control" id="uploadFile_img_back" type="file"></td>
-									 			</td>
 											</tr>
 											<tr>
 												<td width="15%">出票日期</td>
 												<td width="35%">
-													<input class="form-control" type="date" placeholder="" id="inventory_ctime" required="">
+													<input class="form-control" type="date" placeholder="" id="inventory_ctime">
 												</td>
 												<td width="15%">到期日期</td>
 												<td width="35%">
-													<input class="form-control" type="date" placeholder="" id="inventory_dtime" required="">
+													<input class="form-control" type="date" placeholder="" id="inventory_dtime">
 									 			</td>
 											</tr>
 											<tr>
 												<td width="15%">金额（万）</td>
 												<td width="35%">
-													<input class="form-control" type="number" placeholder="精确到小数点后6位" id="inventory_money" required="">
+													<input class="form-control" type="number" placeholder="精确到小数点后6位" id="inventory_money">
 												</td>
 												<td width="15%">贴现日</td>
 												<td width="35%">
-													<input class="form-control" type="date" placeholder="" id="inventory_ttime" required="">
+													<input class="form-control" type="date" placeholder="" id="inventory_ttime">
 									 			</td>
 											</tr>
 											<tr>

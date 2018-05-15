@@ -183,7 +183,7 @@ public class SourceController extends BaseController {
 			if(CheckTool.isString(staffName) && CheckTool.isString(staffDuty) && CheckTool.isPhone(staffPhone)) {
 				Staff staff = new Staff(staffName, staffPhone);
 				staff = staffRepository.save(staff);
-				source.getStaffs().add(staff);
+				//source.getStaffs().add(staff);
 			}
 			source = sourceRepository.save(source);
 			msg.set("添加成功", CodeConstant.SUCCESS, source);

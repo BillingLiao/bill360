@@ -93,7 +93,7 @@ public class AcceptanceController extends BaseController{
 			return msg;
 		}
 		
-		//获取指定收票渠道详情
+		//获取指定的承兑企业详情
 		@PostMapping("/id")
 		public Msg findById(@SessionAttribute Admin admin, @RequestParam int id) {
 			Acceptance acceptance = acceptanceRepository.findOne(id);
@@ -105,7 +105,7 @@ public class AcceptanceController extends BaseController{
 			return msg;
 		}
 		
-		//获取收票渠道列表
+		//获取承兑企业列表
 		@PostMapping("/find")
 		public Msg find(@RequestParam int index, @RequestParam int size, 
 				@RequestParam(required=false) String invoice, @RequestParam(required=false) String core,
@@ -115,7 +115,7 @@ public class AcceptanceController extends BaseController{
 			return msg;
 		}
 		
-		//添加收票渠道
+		//添加承兑企业名
 		@PostMapping("/add")
 		public Msg add(@SessionAttribute Admin admin, @RequestParam String invoice, @RequestParam(required=false) String core, 
 				@RequestParam(required=false) String category, @RequestParam(required=false) String nature,

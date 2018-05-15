@@ -1,0 +1,291 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<title>查票360后台管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="application/x-javascript">
+			addEventListener("load", function() {
+				setTimeout(hideURLbar, 0);
+			}, false);
+
+			function hideURLbar() {
+				window.scrollTo(0, 1);
+			}
+		</script>
+		<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+		<!-- Custom Theme files -->
+		<link href="css/style.css" rel='stylesheet' type='text/css' />
+		<link href="css/font-awesome.css" rel="stylesheet">
+		<script src="js/jquery.min.js">
+		</script>
+		<!-- Mainly scripts -->
+		<script src="js/jquery.metisMenu.js"></script>
+		<script src="js/jquery.slimscroll.min.js"></script>
+		<!-- Custom and plugin javascript -->
+		<link href="css/custom.css" rel="stylesheet">
+		<script src="js/custom.js"></script>
+		<script src="js/screenfull.js"></script>
+		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			var userlist;
+			$(function() {
+				$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+
+				if(!screenfull.enabled) {
+					return false;
+				}
+
+				$('#toggle').click(function() {
+					screenfull.toggle($('#container')[0]);
+				});
+				
+			});
+			var atoken = sessionStorage.getItem("atoken");
+			var id = getQueryString("id");
+			//判断atoken是否存在
+			$(document).ready(function() {
+
+				if(atoken == null || atoken.length == 0) {
+					alert("请先登录");
+					window.location.href = "signin.html?source=" + location.href.substr(location.href.lastIndexOf('/') + 1);
+				}
+				$("#username").text(sessionStorage.getItem("name"));
+			});
+		
+			show_detail(id);
+			function show_detail(id) {
+				if(isNum(id)) {
+					$.ajax({
+						type: "post",
+						url: api + "userByAdmin/id",
+						async: true,
+						dataType: 'json',
+						data: {
+							id: id,
+							atoken: atoken,
+						},
+						success: function(data) {
+							if(data.code == 0) {
+								var userByAdmin = data.data;
+								var userName = isString(userByAdmin.name) == true ? userByAdmin.name : "-"; //用户姓名
+								var userByAdminId = userByAdmin.id;
+								var company = isString(userByAdmin.company) == true ? userByAdmin.company : "-"; //公司名称
+								var phone = isString(userByAdmin.phone) == true ? userByAdmin.phone : "-"; //电话
+								var wechat = isString(userByAdmin.wechat) == true ? userByAdmin.wechat : "-"; //微信号
+								var addr = isString(userByAdmin.addr) == true ? userByAdmin.addr : "-"; //地址
+								
+								$("#userByAdmin_id").html("<font style='color: black;'>"+userByAdminId + "</font>");
+								$("#userByAdmin_name").val(userName);
+								$("#userByAdmin_company").val(company);
+								$("#userByAdmin_phone").val(phone);
+								$("#userByAdmin_wechat").val(wechat);
+								$("#userByAdmin_addr").val(addr);
+
+							} else {
+								alert(data.message);
+							}
+						},
+						error: function(data) {
+							console.log("系统错误");
+							console.log(data);
+						}
+					});
+				} else {
+					alert("网络错误");
+					window.location.href = "index.html";
+				}
+
+			}
+			function save() {
+				if(isNum(id)) {
+					$.ajax({
+						type:"post",
+						url:api + "userByAdmin/set",
+						async:true,
+						dataType: 'json',
+						data: {
+							atoken: atoken,
+							id: id,
+							name: $("#userByAdmin_name").val(),
+							company: $("#userByAdmin_company").val(),
+							phone: $("#userByAdmin_phone").val(),
+							wechat: $("#userByAdmin_wechat").val(),
+							addr: $("#userByAdmin_addr").val(),
+						},
+						success: function(data) {
+							if(data.code == 0) {
+								alert("修改成功");
+								window.opener.location.reload();
+								//location.reload();
+								window.close();
+								//location.reload();
+							} else {
+								alert(data.message);
+							}
+						},
+						error: function(data) {
+							console.log("系统错误");
+							console.log(data);
+						}
+					});
+				} else {
+					alert("网络错误");
+					window.location.href = "index.html";
+				}
+			}
+		</script>
+	</head>
+
+	<body>
+		<div id="wrapper">
+
+			<!----->
+			<nav class="navbar-default navbar-static-top" role="navigation">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+					<h1> <a class="navbar-brand" href="index.html">查票360</a></h1>
+				</div>
+				<div class=" border-bottom">
+
+					<!-- Brand and toggle get grouped for better mobile display -->
+
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="drop-men">
+						<ul class=" nav_1">
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
+							</li>
+						</ul>
+					</div>
+					<!-- /.navbar-collapse -->
+					<div class="clearfix">
+
+					</div>
+
+					<div class="navbar-default sidebar" role="navigation">
+						<div class="sidebar-nav navbar-collapse">
+							<ul class="nav" id="side-menu">
+								<li>
+									<a href="index.html" class=" hvr-bounce-to-right"><i class="fa fa-dashboard nav_icon "></i><span class="nav-label">数据字典</span> </a>
+								</li>
+
+								 <li>
+			                        <a href="#" class=" hvr-bounce-to-right"><i class="fa fa-sitemap nav_icon"></i>收票清单管理<span class="fa arrow"></span></a>
+			                        <ul class="nav nav-second-level">
+			                            <li>
+			                                <a href="staff.html" class=" hvr-bounce-to-right"><i class="fa fa-user nav_icon"></i>对接人信息</a>
+			                            </li>
+			                            <li>
+			                                <a href="bill.html" class=" hvr-bounce-to-right"><i class="fa fa-table nav_icon"></i>对接人收票清单</a>
+			                            </li>
+			                            <li>
+			                                <a href="acceptance.html" class=" hvr-bounce-to-right"><i class="fa fa-qrcode nav_icon"></i>承兑企业信息</a>
+			                                	
+			                            </li>
+			                        </ul>
+			                    </li>
+			                    
+								<li>
+									<a href="#" class=" hvr-bounce-to-right"><i class="fa fa-sitemap nav_icon"></i>持票库存管理<span class="fa arrow"></span></a>
+										<ul class="nav nav-second-level">
+			                            <li>
+			                                <a href="userByAdmin.html" class=" hvr-bounce-to-right"><i class="fa fa-user nav_icon"></i>用户信息</a>
+			                            </li>
+			                            <li>
+			                                <a href="inventory.html" class=" hvr-bounce-to-right"><i class="fa fa-dashboard nav_icon"></i>持票清单</a>
+			                            </li>
+			                        </ul>
+								</li>
+								<li>
+									<a href="order.html" class=" hvr-bounce-to-right"><i class="fa fa-television nav_icon"></i> <span class="nav-label">业务订单管理</span> </a>
+								</li>
+
+								<li>
+									<a href="os.html" class=" hvr-bounce-to-right"><i class="fa fa-table nav_icon"></i> <span class="nav-label">系统管理</span> </a>
+								</li>
+							</ul>
+						</div>
+					</div>
+			</nav>
+			<div id="page-wrapper" class="gray-bg dashbard-1">
+				<div class="content-main">
+
+					<!--banner-->
+					<div class="banner">
+						<h2>
+							<a href="index.html">Home</a>
+							<i class="fa fa-angle-right"></i>
+							<span>收票企业详情</span>
+						</h2>
+					</div>
+
+					<div class=" profile">
+
+							<table class="table table-bordered">
+								<tbody>
+
+									<tr>
+										<td width="15%">编号</td>
+										<td width="35%"><span id="userByAdmin_id"></span></td>
+										<td width="15%">用户名</td>
+										<td width="35%">
+											<input class="form-control" id="userByAdmin_name" placeholder="请输入姓名" type="text">
+							 			</td>
+									</tr>
+									<tr>
+										<td width="15%">公司名称</td>
+										<td  colspan="3" >
+											<input class="form-control" id="userByAdmin_company" placeholder="请输入持票企业名称" type="text">
+										</td>
+									</tr>
+									<tr>
+										<td width="15%">电话</td>
+										<td width="35%">
+											<input class="form-control" id="userByAdmin_phone" placeholder="请输入手机号码" type="text">
+										</td>
+										<td width="15%">微信</td>
+										<td width="35%">
+											<input class="form-control" id="userByAdmin_wechat" placeholder="请输入微信号" type="text">
+							 			</td>
+									</tr>
+									<tr>
+										<td width="15%">地址</td>
+										<td  colspan="3" >
+											<input class="form-control" id="userByAdmin_addr" placeholder="请输入地址" type="text">
+										</td>
+									</tr>
+									<tr class="traa">
+										<td colspan="4" style="text-align: right;">
+											<button type="button" class="btn btn-primary" onclick="save()">保存</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+					</div>
+
+					<div class="copy">
+						<p> &copy; 2018 查票360. All Rights Reserved | Power by
+							<a href="http://wenxikeji.com/" target="_blank">wenxikeji.com</a>
+						</p>
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			</div>
+			<!---->
+			<!--scrolling js-->
+			<script src="js/jquery.nicescroll.js"></script>
+			<script src="js/scripts.js"></script>
+			<!--//scrolling js-->
+			<script src="js/bootstrap.min.js">
+			</script>
+	</body>
+
+</html>

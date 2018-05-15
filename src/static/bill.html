@@ -68,10 +68,10 @@
 			var core;
 			
 			window.onload = function() {
-				show_bill(index, size, core);
+				show_bill(index, size);
 			};
 			
-			function show_bill(index, size, core) {
+			function show_bill(index, size) {
 				$.ajax({
 					type:"post",
 					url:api + "bill/find",
@@ -81,7 +81,7 @@
 						atoken: atoken,
 						index: index, 
 						size: size,
-						core: core,
+						//core: core,
 					},
 					success: function(data) {
 						if(data.code == 0) {
@@ -92,9 +92,11 @@
 							var temp;
 							list.html("");
 							for(var i = 0; i < bills.length; i++) {
+								debugger;
 								var bill = bills[i];
-								var invoice = isString(bill.invoice) ? bill.invoice : "-";//收票企业
-								var core = isString(bill.core) ? bill.core : "-";	//核心企业
+								var acceptance = bill.acceptance;
+								var invoice = isString(acceptance.invoice) ? acceptance.invoice : "-";//开票企业
+								var core = isString(acceptance.core) ? acceptance.core : "-";	//核心企业
 								var rate = isDouble(bill.rate) ? bill.rate : "";	//利率
 								var initiate = isDouble(bill.initiate) ? bill.initiate : "";	//起步金额
 								var max = isDouble(bill.max) ? bill.max : "";	//最大金额
@@ -279,7 +281,7 @@
 						<h2>
 				<a href="index.html">Home</a>
 				<i class="fa fa-angle-right"></i>
-				<span>收票管理</span>
+				<span>对接人收票清单管理</span>
 				</h2>
 					</div>
 					<!--//banner-->
@@ -318,7 +320,7 @@
 								<table class="table table-bordered">
 									<thead>
 										<tr>
-											<th>收票企业</th>
+											<th>开票企业</th>
 											<th>核心企业名</th>
 											<th>利率(%)</th>
 											<th>起步金额</th>

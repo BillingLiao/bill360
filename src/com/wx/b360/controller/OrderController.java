@@ -168,7 +168,7 @@ public class OrderController extends BaseController {
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
 	}
-	
+	/*
 	//生成订单
 	@PostMapping("/add")
 	public Msg add(@SessionAttribute User user, @RequestParam int billId, @RequestParam BigDecimal money,
@@ -181,7 +181,8 @@ public class OrderController extends BaseController {
 				Date date = AppTool.changeDate(time);
 				//if(bill.getInvoice().equals(source.getInvoice())) {
 				if(true){
-					if(source.getStaffs() == null || source.getStaffs().size() == 0) {
+					//if(source.getStaffs() == null || source.getStaffs().size() == 0) {
+					if(true)
 						msg.set("此条收票渠道没有绑定员工联系方式，无法提交", CodeConstant.ERROR, null);
 					} else {
 						
@@ -224,6 +225,7 @@ public class OrderController extends BaseController {
 		}
 		return msg;
 	}
+	*/
 	
 	@RequestMapping("/test")
 	public Msg test() {

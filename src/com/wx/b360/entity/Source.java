@@ -68,10 +68,12 @@ public class Source {
 	@Column(name="_adjuest", nullable=false, columnDefinition="int comment '调整天数'")
 	private Integer adjuest;
 	
+	/*
 	@Cascade(value={org.hibernate.annotations.CascadeType.REMOVE})
 	@OneToMany(targetEntity=Staff.class, fetch=FetchType.EAGER)
 	@JoinColumn(name="_source_staff")
 	private List<Staff> staffs = new ArrayList<>();
+	*/
 	
 	public Source(String invoice, String rebate, String eaccount, String ename, Integer isBargain, Integer isInvoice, 
 			Integer etime, String remit, String nature, String flow, BigDecimal rate, Integer adjuest) {

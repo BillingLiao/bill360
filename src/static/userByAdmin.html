@@ -37,8 +37,6 @@
 			var index = 0;
 			var size = 8;
 			var count = 0;
-			var invoice;
-			var source_id;
 
 			//判断atoken是否存在
 			$(document).ready(function() {
@@ -60,22 +58,6 @@
 					screenfull.toggle($('#container')[0]);
 				});
 				
-				
-				$.ajax({
-					type: "post",
-					url: api + "userByAdmin/findUserName",
-					dataType: 'json',
-					data: {
-						atoken: atoken,
-					},
-					success:function(result){
-			        var html;
-					for(var i=0;i<result.length;i++){
-			        	html+="<option value="+result[i].id+">"+result[i].name+"</option>";
-			        }
-					$("#user").html(html);
-			    }});
-
 			});
 
 			//页面加载成功时访问
@@ -117,7 +99,6 @@
 									'</td><td>' + wechat + '</td><td>' + addr + '</td><td><a href="userByAdmin_detail.html?id=' +
 									userByAdmin.id + '" target="_blank"><button type="button" class="btn btn-sm btn-default">编辑</button></a><button type="button"class="btn btn-sm btn-danger" onclick="del('+userByAdmin.id+')">删除</button></td></tr>';
 								list.append(temp);
-								//document.getElementById('imgInit').setAttribute("src",imgurl);
 							}
 						} else {
 							alert(data.message);
@@ -186,95 +167,49 @@
 
 			//按照名字搜索来源
 			
-			function search_inventory() {
-				var search_name = $("#search_name").val();
-				company = search_name;
-				if(!isString(company)) invoice = "";
-				show_source(index, size, company);
+			function search_userByAdmin() {
+				var name = $("#search_userByAdmin_name").val();
+				var company = $("#search_userByAdmin_company").val();
+				if(!isString(name)) name = "";
+				if(!isString(company)) company = "";
+				show_source(index, size, name, company);
 			}
 			
 
 			//添加收票渠道
-			function add_source() {
+			function add_userByAdmin() {
 
-				var add_source_rebate = $("#inventory_company").val();
-				var add_source_ename = $("#add_source_ename").val();
-				var add_source_eaccount = $("#add_source_eaccount").val();
-				var add_source_bargain = $("#add_source_bargain").is(':checked') ? 1 : 0;
-				var add_source_invoice = $("#add_source_invoice").is(':checked') ? 1 : 0;
-				var add_source_etime = $("#add_source_etime").val();
-				var add_source_remit = $("#add_source_remit").val();
-				var add_source_nature = $("#add_source_nature").val();
-				var add_source_flow = $("#add_source_flow").val();
-				var add_source_rate = $("#add_source_rate").val();
-				var add_source_adjuest = $("#add_source_adjuest").val();
-				var add_source_staff_name = $("#add_source_staff_name").val();
-				var add_source_staff_duty = $("#add_source_staff_duty").val();
-				var add_source_staff_phone = $("#add_source_staff_phone").val();
+				var userByAdmin_name = $("#userByAdmin_name").val();
+				var userByAdmin_company = $("#userByAdmin_company").val();
+				var userByAdmin_phone = $("#userByAdmin_phone").val();
+				var userByAdmin_wechat = $("#userByAdmin_wechat").val();
+				var userByAdmin_addr = $("#userByAdmin_addr").val();
 
-				console.log("add_source_bargain=" + add_source_bargain);
-
-				if(!isString(add_source_name)) {
-					alert("请输入收票企业名");
+				if(!isString(userByAdmin_name)) {
+					alert("请输入姓名");
 					return;
 				}
-				if(!isString(add_source_remit)) {
-					alert("请输入打款时间");
+				if(!isString(userByAdmin_company)) {
+					alert("请输入公司名称");
 					return;
 				}
-				if(!isString(add_source_nature)) {
-					alert("请输入资金性质");
+				if(!isString(userByAdmin_phone)) {
+					alert("请输入电话号码");
 					return;
-				}
-				if(!isString(add_source_flow)) {
-					alert("请输入流程");
-					return;
-				}
-				if(!isDouble(add_source_rate)){
-					console.log(add_source_rate);
-					alert("请输入利率");
-					return;
-				}
-				if(!isNum(add_source_adjuest)) {
-					alert("请输入调整天数");
-					return ;
 				}
 				
-				if(isString(add_source_staff_name)) {
-					if(!isString(add_source_staff_duty)) {
-						alert("如需设置员工，请将员工职位填写完整");
-						return;
-					} else if(!isString(add_source_staff_phone)) {
-						alert("如需设置员工，请将员工电话填写完整");
-						return;
-					} else if(!isPhone(add_source_staff_phone)) {
-						alert("手机号格式有误");
-						return;
-					}
-				}
-
 				$.ajax({
 					type: "post",
-					url: api + "source/add",
+					url: api + "userByAdmin/add",
 					async: true,
 					dataType: 'json',
 					data: {
 						atoken: atoken,
-						invoice: add_source_name,
-						rebate: add_source_rebate,
-						ename: add_source_ename,
-						eaccount: add_source_eaccount,
-						isBargain: add_source_bargain,
-						isInvoice: add_source_invoice,
-						etime: add_source_etime,
-						remit: add_source_remit,
-						nature: add_source_nature,
-						flow: add_source_flow,
-						rate: add_source_rate,
-						adjuest: add_source_adjuest,
-						staffName: add_source_staff_name,
-						staffDuty: add_source_staff_duty,
-						staffPhone: add_source_staff_phone,
+						name: userByAdmin_name,
+						company: userByAdmin_company,
+						phone: userByAdmin_phone,
+						wechat: userByAdmin_wechat,
+						addr: userByAdmin_addr,
 					},
 					success: function(data) {
 						if(data.code == 0) {
@@ -412,61 +347,38 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-									<h3 class="modal-title">添加持票信息</h2>
+									<h3 class="modal-title">添加用户信息</h2>
 								</div>
 								<div class="modal-body">
 									<!--这里是弹窗内容-->
 									<table class="table table-bordered">
 										<tbody>
 											<tr>
-												<td width="15%">用户名</td>
-												<td colspan = "3">
-													<select id="user" class="form-control">
-													
-									 				</select>
-									 			</td>
-											</tr>
+												<td width="15%">姓名<code>*</code></td>
+												<td colspan="3" >
+													<input class="form-control" id="userByAdmin_name" placeholder="请输入姓名" type="text">
+												</td>
+											</tr>											
 											<tr>
-												<td width="15%">持票企业名称</td>
+												<td width="15%">公司名称</td>
 												<td  colspan="3" >
-													<input class="form-control" id="inventory_company" placeholder="请输入持票企业名称" type="text">
+													<input class="form-control" id="userByAdmin_company" placeholder="请输入公司名称" type="text">
 												</td>
 											</tr>
 											<tr>
-												<td colspan="2">
-													<figure style="width: 450px;height: 150px;"> 
-														<img id="imgInit" alt="商票正面" class="img-responsive ">
-													</figure>
-												</td>
-												<td width="15%">背书面</td>
+												<td width="15%">电话</td>
 												<td width="35%">
-													<img src="/upload/default.jpg"  alt="背书面" />
+													<input class="form-control" type="text" placeholder="请输入电话号码" id="userByAdmin_phone">
+												</td>
+												<td width="15%">微信</td>
+												<td width="35%">
+													<input class="form-control" type="text" placeholder="请输入微信号" id="userByAdmin_wechat">
 									 			</td>
 											</tr>
 											<tr>
-												<td width="15%">出票日期</td>
-												<td width="35%">
-													<input class="form-control" type="date" placeholder="" id="inventory_ctime" required="">
-												</td>
-												<td width="15%">到期日期</td>
-												<td width="35%">
-													<input class="form-control" type="date" placeholder="" id="inventory_dtime" required="">
-									 			</td>
-											</tr>
-											<tr>
-												<td width="15%">金额（万）</td>
-												<td width="35%">
-													<input class="form-control" type="number" placeholder="精确到小数点后2位" id="inventory_money" required="">
-												</td>
-												<td width="15%">贴现日</td>
-												<td width="35%">
-													<input class="form-control" type="date" placeholder="" id="inventory_ttime" required="">
-									 			</td>
-											</tr>
-											<tr>
-												<td width="15%">接受价额</td>
+												<td width="15%">地址</td>
 												<td  colspan="3" >
-													<input class="form-control" id="inventory_offer" placeholder="请输入接受价额" type="text">
+													<input class="form-control" id="userByAdmin_addr" placeholder="请输入地址" type="text">
 												</td>
 											</tr>
 
@@ -475,7 +387,7 @@
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-									<button type="button" class="btn btn-primary" onclick="add_source()">添加</button>
+									<button type="button" class="btn btn-primary" onclick="add_userByAdmin()">添加</button>
 								</div>
 							</div>
 							<!-- /.modal-content -->
@@ -485,18 +397,25 @@
 
 					<div class=" profile">
 						<div class="profile-bottom" style="width: 100%; min-height: 1000px; ">
-							<div class="col-md-4 compose">
-								<div class="input-group input-group-in">
-									<input name="search" id="search_name" class="form-control2 input-search" placeholder="请输入姓名" type="text">
-									<span class="input-group-btn">
-						                <button class="btn btn-success" onclick="search_inventory()" type="button"><i class="fa fa-search"></i></button>
-						            </span>
+						
+							<div class="col-md-5 compose"  style="margin-bottom: 20px;">
+								<form class="form-inline">
+								<div class="form-group">
+									<label for="search_userByAdmin_name">&nbsp; 姓名:</label>
+									<input class="form-control" id="search_userByAdmin_name" placeholder="请输入姓名" type="text" />
+									</div>
+								<div class="form-group">
+									<label for="search_userByAdmin_company">&nbsp;&nbsp;公司:</label>
+									<input class="form-control" id="search_userByAdmin_company" placeholder="请输入公司名称" type="text" />
 								</div>
+								<button type="button" class="btn btn-primary" onclick="search_userByAdmin()">查询</button>
+								</form>
 							</div>
+							
 							<div class="col-md-4 compose">
 								<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">添加用户</button>
 							</div>
-							<div class="col-md-4 compose">
+							<div class="col-md-3 compose">
 								<div class="mail-toolbar clearfix">
 									<div class="float-right">
 										<div class="btn-group">
@@ -508,6 +427,7 @@
 
 								</div>
 							</div>
+							
 								
 							<div class="col-md-12 compose">
 	                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">

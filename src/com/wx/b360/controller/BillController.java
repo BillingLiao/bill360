@@ -91,17 +91,17 @@ public class BillController extends BaseController {
 		return msg;
 	}
 	
-	//获取票据和与之关联的收票渠道
+	//获取票据和与之关联的对接人信息、承兑企业信息
 	@PostMapping("/id/source")
 	public Msg findByIdWithSource(@SessionAttribute Admin admin, @RequestParam int id) {
 		Bill bill = billRepository.findOne(id);
 		if(bill != null) {
-
+			/*
 			Map<String, Object> result = new HashMap<>();
 			result.put("bill", bill);
+			*/
 
-			
-			msg.set("查询成功", CodeConstant.SUCCESS, result);
+			msg.set("查询成功", CodeConstant.SUCCESS, bill);
 		} else {
 			msg.set("未找到此条信息", CodeConstant.FIND_ERR, null);
 		}
@@ -166,14 +166,8 @@ public class BillController extends BaseController {
 	public Msg id(@RequestParam int id, @SessionAttribute(required=false) Admin admin) {
 		Bill bill = billRepository.findOne(id);
 		if(bill != null && (bill.getStatus() == 0 || admin != null)) {
-			
-			//获取收票渠道
-			//Map<String , Object> source = AppTool.pageToMap(sourceService.find(0, 10, null, bill.getInvoice()));
-			Map<String, Object> result = new HashMap<>();
-			result.put("bill", bill);
-			//result.put("sources", source);
-			
-			msg.set("查询成功", CodeConstant.SUCCESS, result);
+						
+			msg.set("查询成功", CodeConstant.SUCCESS, bill);
 			
 		} else {
 			msg.set("未找到此条信息或此信息已关闭", CodeConstant.FIND_ERR, null);
@@ -256,10 +250,12 @@ public class BillController extends BaseController {
 				isChange = true;
 				bill.setStatus(status);
 			}
+			/*
 			if(type != null && bill.getType() != type.intValue()) {
 				isChange = true;
 				bill.setType(type);
 			}
+			*/
 			if(min != null && bill.getMin().compareTo(min) != 0) {
 				isChange = true;
 				bill.setMin(min);
@@ -281,11 +277,8 @@ public class BillController extends BaseController {
 	}
 	//获取票据列表
 	@PostMapping("/find")
-	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, 
-			@RequestParam(required=false) Integer status, @RequestParam(required=false) String core,
-			@RequestParam(required=false) BigDecimal money, @RequestParam(required=false) String invoice, 
-			@RequestParam(required=false) Integer type) {
-		Page<Bill> page = billService.find(index, size, status, core, money, type, invoice);
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size) {
+		Page<Bill> page = billService.find(index, size, null, null, null, null, null);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
 	}

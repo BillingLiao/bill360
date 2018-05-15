@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="application/x-javascript">
-	
+
 			addEventListener("load", function() {
 				setTimeout(hideURLbar, 0);
 			}, false);
@@ -15,6 +15,7 @@
 				window.scrollTo(0, 1);
 			}
 		
+
 </script>
 <link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
 <!-- Custom Theme files -->
@@ -150,13 +151,18 @@
 							if (data.code == 0) {
 								var acceptance = data.data;
 								var id = acceptance.id;
-								var invoice = isString(acceptance.invoice) ? acceptance.invoice : "";//承兑企业名称(开票企业)
-								var core = isString(acceptance.core) ? acceptance.core : "";//上市主体
-								var category = isString(acceptance.category) ? acceptance.category : ""; //企业类别
-								var nature = isString(acceptance.nature) ? acceptance.nature : "";//企业性质
-								var addr = isString(acceptance.addr) ? acceptance.addr : ""; //地区
+								var invoice = isString(acceptance.invoice) ? acceptance.invoice
+										: "";//承兑企业名称(开票企业)
+								var core = isString(acceptance.core) ? acceptance.core
+										: "";//上市主体
+								var category = isString(acceptance.category) ? acceptance.category
+										: ""; //企业类别
+								var nature = isString(acceptance.nature) ? acceptance.nature
+										: "";//企业性质
+								var addr = isString(acceptance.addr) ? acceptance.addr
+										: ""; //地区
 								//企业类型
-								if (acceptance.type == 0) {  
+								if (acceptance.type == 0) {
 									//母公司
 									$("#acceptance_type")
 											.html(
@@ -223,7 +229,7 @@
 					core : $("#acceptance_core").val(),
 					category : $("#acceptance_category").val(),
 					nature : $("#acceptance_nature").val(),
-					type: $("input[name='acceptance_type']:checked").val(),//获取选中项的值
+					type : $("input[name='acceptance_type']:checked").val(),//获取选中项的值
 					addr : $("#acceptance_addr").val(),
 				},
 				success : function(data) {

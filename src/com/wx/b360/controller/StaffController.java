@@ -30,7 +30,7 @@ public class StaffController extends BaseController {
 		if(source != null) {
 			Staff staff = new Staff(name, phone);
 			staff = staffRepository.save(staff);
-			source.getStaffs().add(staff);
+			//source.getStaffs().add(staff);
 			source = sourceRepository.save(source);
 			if(source != null) {
 				msg.set("添加成功", CodeConstant.SUCCESS, source);

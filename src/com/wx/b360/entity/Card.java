@@ -42,17 +42,13 @@ public class Card {
 	
 	@Column(name="_phone", nullable=true, columnDefinition="varchar(13) comment '手机'")
 	private String phone;
-	
-	@Column(name="_duty", nullable=true, columnDefinition="varchar(20) comment '职称'")
-	private String duty;
-	
-	public Card(User user, String name, String addr, String company, String tel, String phone, String duty) {
+
+	public Card(User user, String name, String addr, String company, String tel, String phone) {
 		this.user = user;
 		this.name = name;
 		if(CheckTool.isString(addr)) this.addr = addr;
 		if(CheckTool.isString(company)) this.company = company;
 		if(CheckTool.isString(tel)) this.tel = tel;
 		if(CheckTool.isPhone(phone)) this.phone = phone;
-		if(CheckTool.isString(duty)) this.duty = duty;
 	}
 }

@@ -123,16 +123,17 @@
 						success: function (data) {
 							if(data.code == 0) {
 								console.log(data);
+								debugger;
 								var cards = data.data;
 								if(cards != null && cards.length) {
 									var card = cards[0];
-									var duty = isString(card.duty) ? card.duty : "";
+									var name = isString(card.name) ? card.name : "";
 									var company = isString(card.company) ? card.company : "";
 									var addr = isString(card.addr) ? card.addr : "";
 									var phone = isPhone(card.phone) ? card.phone : "";
 									var tel = isString(card.tel) ? card.tel : "";
 									
-									$("#user_duty").text(duty);
+									$("#user_card_name").text(name);
 									$("#user_company").text(company);
 									$("#user_addr").text(addr);
 									$("#user_phone").text(phone);
@@ -150,6 +151,15 @@
 				} 
 			}
 			
+			function logout(){
+				if(confirm("您确定要退出系统吗？")){
+					atoken = null;
+					window.location.href = "signin.html";
+					//window.location.href='admin/logout';
+					//window.location.href='${pageContext.request.contextPath}/admin/logout';
+				}
+				return false;
+			}
 		</script>
 
 	</head>
@@ -177,6 +187,9 @@
 						<ul class=" nav_1">
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
+							</li>
+							<li class="dropdown">
+								<a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
 							</li>
 						</ul>
 					</div>
@@ -256,9 +269,9 @@
 									<table>
 										<tbody>
 											<tr>
-												<td>职称</td>
+												<td>姓名</td>
 												<td>:</td>
-												<td id="user_duty"></td>
+												<td id="user_card_name"></td>
 											</tr>
 
 											<tr>

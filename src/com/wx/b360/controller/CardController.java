@@ -116,7 +116,7 @@ public class CardController extends BaseController {
 			if(CheckTool.isString(phone) && !CheckTool.isPhone(phone)) {
 				msg.set("手机号格式有误", CodeConstant.ERR_PAR, null);
 			} else {
-				Card card = new Card(user, name, addr, company, tel, phone, duty);
+				Card card = new Card(user, name, addr, company, tel, phone);
 				card = cardRepository.save(card);
 				
 				user.setCard(1);

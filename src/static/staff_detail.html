@@ -41,22 +41,6 @@
 					screenfull.toggle($('#container')[0]);
 				});
 				
-				$.ajax({
-					type: "post",
-					url: api + "/user/findUserName",
-					dataType: 'json',
-					data: {
-						atoken: atoken,
-					},
-					success:function(result){
-			        var html;
-					for(var i=0;i<result.length;i++){
-			        	html+="<option value="+result[i].id+">"+result[i].name+"</option>";
-			        }
-					$("#user").html(html);
-			    }});
-
-
 			});
 			var atoken = sessionStorage.getItem("atoken");
 			var id = getQueryString("id");
@@ -75,7 +59,7 @@
 				if(isNum(id)) {
 					$.ajax({
 						type: "post",
-						url: api + "inventory/id",
+						url: api + "userByAdmin/id",
 						async: true,
 						dataType: 'json',
 						data: {
@@ -83,26 +67,21 @@
 							atoken: atoken,
 						},
 						success: function(data) {
-							debugger;
 							if(data.code == 0) {
-								var inventory = data.data;
-								var id = inventory.id;
-								var username = inventory.user.id;//用户微信名
-								var company = isString(inventory.company) ? inventory.company : "";//持票企业名称
-								var money = isDouble(inventory.money) ? inventory.money : ""; //金额
-								var ctime = isString(inventory.ctime) ? inventory.ctime : "";//出票日期
-								var dtime = isString(inventory.dtime) ? inventory.dtime : "";//到期日期
-								var ttime = isString(inventory.ttime) ? inventory.ttime : "";//贴现日
-								var offer = isString(inventory.offer) ? inventory.offer : "";//接受价额
+								var userByAdmin = data.data;
+								var userName = isString(userByAdmin.name) == true ? userByAdmin.name : "-"; //用户姓名
+								var userByAdminId = userByAdmin.id;
+								var company = isString(userByAdmin.company) == true ? userByAdmin.company : "-"; //公司名称
+								var phone = isString(userByAdmin.phone) == true ? userByAdmin.phone : "-"; //电话
+								var wechat = isString(userByAdmin.wechat) == true ? userByAdmin.wechat : "-"; //微信号
+								var addr = isString(userByAdmin.addr) == true ? userByAdmin.addr : "-"; //地址
 								
-								$("#inventory_id").html("<font style='color: black;'>"+id + "</font>");
-								$("#user").val(username);
-								$("#inventory_company").val(company);
-								$("#inventory_money").val(money);
-								$("#inventory_ctime").val(ctime);
-								$("#inventory_dtime").val(dtime);
-								$("#inventory_ttime").val(ttime);
-								$("#inventory_offer").val(offer);
+								$("#userByAdmin_id").html("<font style='color: black;'>"+userByAdminId + "</font>");
+								$("#userByAdmin_name").val(userName);
+								$("#userByAdmin_company").val(company);
+								$("#userByAdmin_phone").val(phone);
+								$("#userByAdmin_wechat").val(wechat);
+								$("#userByAdmin_addr").val(addr);
 
 							} else {
 								alert(data.message);
@@ -123,18 +102,17 @@
 				if(isNum(id)) {
 					$.ajax({
 						type:"post",
-						url:api + "/inventory/set",
+						url:api + "userByAdmin/set",
 						async:true,
 						dataType: 'json',
 						data: {
 							atoken: atoken,
 							id: id,
-							company: $("#inventory_company").val(),
-							money: $("#inventory_money").val(),
-							ctime: $("#inventory_ctime").val(),
-							dtime: $("#inventory_dtime").val(),
-							ttime: $("#inventory_ttime").val(),
-							offer: $("#inventory_offer").val(),
+							name: $("#userByAdmin_name").val(),
+							company: $("#userByAdmin_company").val(),
+							phone: $("#userByAdmin_phone").val(),
+							wechat: $("#userByAdmin_wechat").val(),
+							addr: $("#userByAdmin_addr").val(),
 						},
 						success: function(data) {
 							if(data.code == 0) {
@@ -244,8 +222,8 @@
 						<h2>
 							<a href="index.html">Home</a>
 							<i class="fa fa-angle-right"></i>
-							<span>持票库存管理</span>
-							<i class="fa fa-angle-right"></i> <span>持票库存修改</span>
+							<span>对接人信息管理</span>
+							<i class="fa fa-angle-right"></i> <span>对接人信息修改</span>
 						</h2>
 					</div>
 
@@ -256,54 +234,32 @@
 
 									<tr>
 										<td width="15%">编号</td>
-										<td width="35%"><span id="inventory_id"></span></td>
+										<td width="35%"><span id="userByAdmin_id"></span></td>
 										<td width="15%">用户名</td>
 										<td width="35%">
-											<select id="user" class="form-control">
-											
-							 				</select>
+											<input class="form-control" id="userByAdmin_name" placeholder="请输入姓名" type="text">
 							 			</td>
 									</tr>
 									<tr>
-										<td width="15%">持票企业名称</td>
+										<td width="15%">公司名称</td>
 										<td  colspan="3" >
-											<input class="form-control" id="inventory_company" placeholder="请输入持票企业名称" type="text">
+											<input class="form-control" id="userByAdmin_company" placeholder="请输入持票企业名称" type="text">
 										</td>
 									</tr>
 									<tr>
-										<td width="15%">商票正面</td>
+										<td width="15%">电话</td>
 										<td width="35%">
-											<img src="/upload/default.jpg"  alt="商票正面" />
+											<input class="form-control" id="userByAdmin_phone" placeholder="请输入手机号码" type="text">
 										</td>
-										<td width="15%">背书面</td>
+										<td width="15%">微信</td>
 										<td width="35%">
-											<img src="/upload/default.jpg"  alt="背书面" />
+											<input class="form-control" id="userByAdmin_wechat" placeholder="请输入微信号" type="text">
 							 			</td>
 									</tr>
 									<tr>
-										<td width="15%">出票日期</td>
-										<td width="35%">
-											<input class="form-control" type="date" placeholder="" id="inventory_ctime" required="">
-										</td>
-										<td width="15%">到期日期</td>
-										<td width="35%">
-											<input class="form-control" type="date" placeholder="" id="inventory_dtime" required="">
-							 			</td>
-									</tr>
-									<tr>
-										<td width="15%">金额（万）</td>
-										<td width="35%">
-											<input class="form-control" type="number" placeholder="精确到小数点后2位" id="inventory_money" required="">
-										</td>
-										<td width="15%">贴现日</td>
-										<td width="35%">
-											<input class="form-control" type="date" placeholder="" id="inventory_ttime" required="">
-							 			</td>
-									</tr>
-									<tr>
-										<td width="15%">接受价额</td>
+										<td width="15%">地址</td>
 										<td  colspan="3" >
-											<input class="form-control" id="inventory_offer" placeholder="请输入接受价额" type="text">
+											<input class="form-control" id="userByAdmin_addr" placeholder="请输入地址" type="text">
 										</td>
 									</tr>
 									<tr class="traa">

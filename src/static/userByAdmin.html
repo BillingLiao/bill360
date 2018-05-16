@@ -62,10 +62,10 @@
 
 			//页面加载成功时访问
 			$(window).load(function() {
-				show_source(index, size);
+				show_userByAdmin(index, size);
 			});
 
-			function show_source(index, size, name, company) {
+			function show_userByAdmin(index, size, name, company) {
 				
 				$.ajax({
 					type: "post",
@@ -152,7 +152,7 @@
 					index--;
 					return;
 				}
-				show_source(index, size);
+				show_userByAdmin(index, size);
 			}
 			//上一页
 			function previous() {
@@ -162,7 +162,7 @@
 					alert("到头啦");
 					return;
 				}
-				show_source(index, size);
+				show_userByAdmin(index, size);
 			}
 
 			//按照名字搜索来源
@@ -172,11 +172,11 @@
 				var company = $("#search_userByAdmin_company").val();
 				if(!isString(name)) name = "";
 				if(!isString(company)) company = "";
-				show_source(index, size, name, company);
+				show_userByAdmin(index, size, name, company);
 			}
 			
 
-			//添加收票渠道
+			//管理员添加用户信息
 			function add_userByAdmin() {
 
 				var userByAdmin_name = $("#userByAdmin_name").val();
@@ -335,8 +335,7 @@
 
 						<h2>
 				<a href="index.html">Home</a>
-				<i class="fa fa-angle-right"></i>
-				<span>持票库存管理</span>
+				<i class="fa fa-angle-right"></i> <span>用户信息管理</span>
 				</h2>
 					</div>
 					<!--//banner-->
@@ -347,7 +346,7 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-									<h3 class="modal-title">添加用户信息</h2>
+									<h3 class="modal-title">添加用户信息</h3>
 								</div>
 								<div class="modal-body">
 									<!--这里是弹窗内容-->
@@ -408,11 +407,12 @@
 									<label for="search_userByAdmin_company">&nbsp;公司:</label>
 									<input class="form-control" id="search_userByAdmin_company" placeholder="请输入公司名称" type="text" />
 								</div>
-								<button type="button" class="btn btn-primary" onclick="search_userByAdmin()">查询</button>
+								
 								</form>
 							</div>
 							
 							<div class="col-md-4 compose">
+								<button type="button" class="btn btn-primary" onclick="search_userByAdmin()">查询</button>
 								<button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">添加用户</button>
 							</div>
 							<div class="col-md-4 compose">

@@ -323,6 +323,16 @@
 			},
 		});
 	}
+	
+	function logout(){
+		if(confirm("您确定要退出系统吗？")){
+			atoken = null;
+			window.location.href = "signin.html";
+			//window.location.href='admin/logout';
+			//window.location.href='${pageContext.request.contextPath}/admin/logout';
+		}
+		return false;
+}
 </script>
 
 </head>
@@ -354,6 +364,9 @@
 							class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span
 								class=" name-caret"><span id="username"></span></span><img
 								src="images/wo.png"></a></li>
+						<li class="dropdown">
+								<a href="javascript:logout()">安全退出</a>
+						</li>
 					</ul>
 				</div>
 				<!-- /.navbar-collapse -->
@@ -409,8 +422,8 @@
 				<div class="banner">
 
 					<h2>
-						<a href="index.html">Home</a> <i class="fa fa-angle-right"></i> <span>对接人清单管理<i
-							class="fa fa-angle-right"></i>查看更多
+						<a href="index.html">Home</a> <i class="fa fa-angle-right"></i> <span>对接人清单管理</span>
+						<i class="fa fa-angle-right"></i>&nbsp;<span>对接人清单修改
 						</span>
 					</h2>
 				</div>

@@ -89,6 +89,17 @@
 					alert("请输入密码");
 				}
 			}
+			
+			function logout(){
+				if(confirm("您确定要退出系统吗？")){
+					atoken = null;
+					window.location.href = "signin.html";
+					//window.location.href='admin/logout';
+					//window.location.href='${pageContext.request.contextPath}/admin/logout';
+				}
+				return false;
+			}
+			
 		</script>
 
 	</head>
@@ -116,6 +127,9 @@
 						<ul class=" nav_1">
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
+							</li>
+							<li class="dropdown">
+								<a href="javascript:logout()">安全退出</span></a>&nbsp;&nbsp;&nbsp;&nbsp;
 							</li>
 						</ul>
 					</div>

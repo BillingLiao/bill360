@@ -111,6 +111,8 @@
 								var is_financing = isNum(bill.isFinancing) ? bill.isFinancing : "-";
 								var is_clean = isNum(bill.isClean) ? bill.isClean : "-";
 								var is_moneyorback = isNum(bill.isMoneyOrBack) ? bill.isMoneyOrBack : "-";
+								var status = isNum(bill.status) ? bill.status : "-";
+								var level = isNum(bill.level) ? bill.level : "-";
 								}
 								
 								$("#acceptance_invoice").text(acceptance_invoice);
@@ -136,6 +138,7 @@
 								$("#adjuest").text(adjuest);
 								$("#offer").text(offer);
 								$("#remark").text(remark);
+								$("#level").text(level);
 								if(is_bargain == 0) {
 									$("#is_bargain").text("╳");
 								} else if(is_bargain == 1) {
@@ -168,7 +171,11 @@
 								}else if(acceptance_type == 2){
 									$("#acceptance_type").text("孙公司");
 								}
-								
+								if(status == 0){
+									$("#status").text("正常");
+								}else if(status == 1){
+									$("#status").text("已关闭");
+								}
 								
 						},
 						error: function(data) {
@@ -345,6 +352,12 @@
 										<td><font id="initiate"></font></td>
 										<td class="color_td">报价方式</td>
 										<td><font id="offer"></font></td>
+									</tr>
+									<tr>
+										<td class="color_td">状态</td>
+										<td id="status"></td>
+										<td class="color_td">优先级(默认0)</td>
+										<td><font id="level"></font></td>
 									</tr>
 									<tr>
 										<td class="color_td">合同</td>

@@ -92,7 +92,6 @@
 							var temp;
 							list.html("");
 							for(var i = 0; i < bills.length; i++) {
-								debugger;
 								var bill = bills[i];
 								var acceptance = bill.acceptance;
 								var invoice = isString(acceptance.invoice) ? acceptance.invoice : "-";//开票企业
@@ -192,6 +191,16 @@
 				}
 			}
 			
+			function logout(){
+				if(confirm("您确定要退出系统吗？")){
+					atoken = null;
+					window.location.href = "signin.html";
+					//window.location.href='admin/logout';
+					//window.location.href='${pageContext.request.contextPath}/admin/logout';
+				}
+				return false;
+		}
+			
 		</script>
 
 	</head>
@@ -219,6 +228,9 @@
 						<ul class=" nav_1">
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
+							</li>
+							<li class="dropdown">
+								<a href="javascript:logout()">安全退出</a>
 							</li>
 						</ul>
 					</div>
@@ -298,8 +310,8 @@
 								<div>
 									<button type="button" class="btn btn-primary" onclick="search()">查询</button>
 									<a href="bill_add.html" target="_blank"><button type="button" class="btn btn-success warning_2">添加收票订单</button></a>
-									<!--<button type="button" class="btn btn-info" onclick="alert('开发中，敬请期待')">导入</button>
-									<button type="button" class="btn btn-warning warning_22" onclick="alert('开发中，敬请期待')">导出</button>-->
+									<button type="button" class="btn btn-info" onclick="alert('开发中，敬请期待')">导入</button>
+									<button type="button" class="btn btn-warning warning_22" onclick="alert('开发中，敬请期待')">导出</button>
 								</div>
 
 							</div>
@@ -317,7 +329,7 @@
 							</div>
 
 							<div class="col-md-12 compose">
-								<table class="table table-bordered">
+								<table class="table table-striped table-bordered table-hover">
 									<thead>
 										<tr>
 											<th>开票企业</th>

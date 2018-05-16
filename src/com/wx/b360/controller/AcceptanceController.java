@@ -1,5 +1,7 @@
 package com.wx.b360.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,14 +11,10 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.wx.b360.entity.Acceptance;
 import com.wx.b360.entity.Admin;
-import com.wx.b360.entity.Source;
-import com.wx.b360.entity.Staff;
 import com.wx.b360.model.Msg;
 import com.wx.b360.tool.AppTool;
 import com.wx.b360.tool.CheckTool;
 import com.wx.b360.tool.CodeConstant;
-
-import sun.nio.cs.ext.ISO2022_CN;
 
 /**
  * 承兑企业 controller
@@ -114,6 +112,17 @@ public class AcceptanceController extends BaseController{
 			msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 			return msg;
 		}
+		
+		/**
+		 * 通過上市主體查詢所有承兌企業
+		 * @return
+		 */
+		@PostMapping("/findByCore")
+		public List<Acceptance> findInvoiceByCore(@RequestParam String core) {
+			List<Acceptance> acceptancelist = acceptanceRepository.findInvoiceByCore(core);
+			return acceptancelist;
+		}
+
 		
 		//添加承兑企业名
 		@PostMapping("/add")

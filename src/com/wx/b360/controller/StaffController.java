@@ -1,5 +1,7 @@
 package com.wx.b360.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,16 +11,21 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Source;
 import com.wx.b360.entity.Staff;
+import com.wx.b360.entity.UserByAdmin;
 import com.wx.b360.model.Msg;
 import com.wx.b360.tool.CheckTool;
 import com.wx.b360.tool.CodeConstant;
 
-//员工
+/**
+ * 對接人 controller
+ * @author Billing
+ *
+ */
 @RestController
 @RequestMapping("/staff")
 public class StaffController extends BaseController {
 	
-	//添加员工
+	//添加對接人
 	@PostMapping("/add")
 	public Msg add(@SessionAttribute Admin admin, @RequestParam String name,
 			@RequestParam String duty, @RequestParam String phone, @RequestParam int sourceId) {
@@ -43,7 +50,18 @@ public class StaffController extends BaseController {
 		return msg;
 	}
 	
-	//修改员工
+	/**
+	 * 查詢所有對接人姓名
+	 * @return
+	 */
+	@PostMapping("/findStaffName")
+	public List<Staff> findStaffName() {
+		List<Staff> staffNamelist = staffRepository.findStaffName();
+		return staffNamelist;
+	}
+
+	
+	//修改對接人
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, 
 			@RequestParam(required=false) String name, @RequestParam(required=false) String duty,
@@ -71,7 +89,7 @@ public class StaffController extends BaseController {
 		return msg;
 	}
 	
-	//删除员工
+	//删除對接人
 	@PostMapping("/del")
 	public Msg del(@SessionAttribute Admin admin, @RequestParam int id) {
 		Staff staff = staffRepository.findOne(id);

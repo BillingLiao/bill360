@@ -1,11 +1,19 @@
 <!DOCTYPE HTML>
 <html>
 
-	<head>
-		<title>查票360后台管理系统</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script type="application/x-javascript">
+<head>
+<title>查票360后台管理系统</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+.color_td {
+	background-color: #FFF5EE;
+	color: black;
+}
+</style>
+<script type="application/x-javascript">
+	
+	
 			addEventListener("load", function() {
 				setTimeout(hideURLbar, 0);
 			}, false);
@@ -13,344 +21,473 @@
 			function hideURLbar() {
 				window.scrollTo(0, 1);
 			}
-		</script>
-		<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
-		<!-- Custom Theme files -->
-		<link href="css/style.css" rel='stylesheet' type='text/css' />
-		<link href="css/font-awesome.css" rel="stylesheet">
-		<script src="js/jquery.min.js">
-		</script>
-		<!-- Mainly scripts -->
-		<script src="js/jquery.metisMenu.js"></script>
-		<script src="js/jquery.slimscroll.min.js"></script>
-		<!-- Custom and plugin javascript -->
-		<link href="css/custom.css" rel="stylesheet">
-		<script src="js/custom.js"></script>
-		<script src="js/screenfull.js"></script>
-		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
-		<script>
-			$(function() {
-				$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+		
 
-				if(!screenfull.enabled) {
-					return false;
-				}
+</script>
+<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+<!-- Custom Theme files -->
+<link href="css/style.css" rel='stylesheet' type='text/css' />
+<link href="css/font-awesome.css" rel="stylesheet">
+<script src="js/jquery.min.js">
+	
+</script>
+<!-- Mainly scripts -->
+<script src="js/jquery.metisMenu.js"></script>
+<script src="js/jquery.slimscroll.min.js"></script>
+<!-- Custom and plugin javascript -->
+<link href="css/custom.css" rel="stylesheet">
+<script src="js/custom.js"></script>
+<script src="js/screenfull.js"></script>
+<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var core_select = "上市主体";
+	
+	$(function() {
+		$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
 
-				$('#toggle').click(function() {
-					screenfull.toggle($('#container')[0]);
-				});
+		if (!screenfull.enabled) {
+			return false;
+		}
 
-			});
-			var atoken = sessionStorage.getItem("atoken");
+		$('#toggle').click(function() {
+			screenfull.toggle($('#container')[0]);
+		});
 
-			//判断atoken是否存在
-			$(document).ready(function() {
-				if(atoken == null || atoken.length == 0) {
+	});
+	var atoken = sessionStorage.getItem("atoken");
+
+	//判断atoken是否存在
+	$(document).ready(
+			function() {
+				if (atoken == null || atoken.length == 0) {
 					alert("请先登录");
-					window.location.href = "signin.html?source=" + location.href.substr(location.href.lastIndexOf('/')+1);
+					window.location.href = "signin.html?source="
+							+ location.href.substr(location.href
+									.lastIndexOf('/') + 1);
 				}
 				$("#username").text(sessionStorage.getItem("name"));
+				show_core(core_select);
+				show_staff_name();
+				changeInvoice();
 			});
-			
-			function save() {
-				var invoice = $("#bill_invoice").val();
-				var core = $("#bill_core").val();
-				var rate = $("#bill_rate").val();
-				var initiate = $("#bill_initiate").val();
-				var max = $("#bill_max").val();
-				var min = $("#bill_min").val();
-				var total = $("#bill_total").val();
-				var usable = $("#bill_usable").val();
-				var shortest = $("#bill_shortest").val();
-				var adjuest = $("#bill_adjuest").val();
-				var remark = $("#bill_remark").val();
-				var level = $("#bill_level").val();
-				var type = $('input[name="bill_type"]:checked').val();
-				var sname = $("#bill_sname").val();
-				var sduty = $("#bill_sduty").val();
-				var sphone = $("#bill_sphone").val();
-				
-				
-				if(!isString(invoice)) {
-					alert("请输入开票企业");
-					return ;
+	
+	/*  
+	*初始化核心企业(上市主体)下拉框
+	*/
+	function show_core(data_Dic_Name) {
+		$.ajax({
+			type : "post",
+			url : api + "dataDic/findDataDicValue",
+			async : false,
+			dataType : 'json',
+			data : {
+				atoken : atoken,
+				data_Dic_Name : data_Dic_Name,
+			},
+			success : function(result) {
+				var html;
+				for (var i = 0; i < result.length; i++) {
+					html += "<option value="+result[i].dataDicValue+">"
+							+ result[i].dataDicValue + "</option>";
 				}
-				if(!isString(core)) {
-					alert("请输入核心企业");
-					return ;
-				}
-				if(!isDouble(rate)) {
-					alert("请输入利率");
-					return ;
-				}
-				if(!isDouble(initiate)) {
-					alert("请输入起步金额");
-					return ;
-				}
-				if(!isDouble(max)) {
-					alert("请输入最大金额");
-					return ;
-				}
-				if(!isDouble(min)) {
-					alert("请输入最小金额");
-					return ;
-				}
-
-				if(!isDouble(total)) {
-					alert("请输入总额度");
-					return ;
-				}
-				if(!isDouble(usable)) {
-					alert("请输入可用额度");
-					return ;
-				}
-				if(!isNum(shortest)) {
-					alert("请输入最短期限");
-					return ;
-				}
-				if(!isNum(adjuest)) {
-					alert("请输入调整天数");
-					return ;
-				}
-				console.log(sphone);
-				console.log(isString(sphone));
-				if(isString(sphone) && !isPhone(sphone)) {
-					alert("手机号格式有误");
-					return ;
-				}
-				$.ajax({
-					type:"post",
-					url:api + "bill/add",
-					async:true,
-					dataType: 'json',
-					data: {
-						atoken: atoken,
-						invoice: invoice,
-						core: core,
-						rate: rate,
-						initiate: initiate,
-						max: max,
-						min: min,
-						total: total,
-						usable: usable,
-						shortest: shortest,
-						adjuest: adjuest,
-						remark: remark,
-						level: level,
-						type: type,
-						sname: sname,
-						sduty: sduty,
-						sphone: sphone,
-					},
-					success: function(data) {
-						if(data.code == 0) {
-							alert("添加成功");
-							window.opener.location.reload();
-							//location.reload();
-							window.close();
-						} else {
-							alert(data.message);
-						}
-					},
-					error: function(data) {
-						console.log("系统错误");
-						console.log(data);
-					}
-				});
+				$("#acceptance_core").html(html);
 			}
-		</script>
+		});
+	}
 
-	</head>
+	/*  
+	*初始化对接人下拉框
+	*/
+	function show_staff_name() {
+		$.ajax({
+			type : "post",
+			url : api + "staff/findStaffName",
+			async : false,
+			dataType : 'json',
+			data : {
+				atoken : atoken,
+			},
+			success : function(result) {
+				var html;
+				for (var i = 0; i < result.length; i++) {
+					html += "<option value="+result[i].staff_id+">" + result[i].name
+							+ "</option>";
+				}
+				
+				$("#staff_name").html(html);
+			}
+		});
 
-	<body>
-		<div id="wrapper">
+	}
 
-			<!----->
-			<nav class="navbar-default navbar-static-top" role="navigation">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-					<h1> <a class="navbar-brand" href="index.html">查票360</a></h1>
+	/*  
+	*初始化开票企业下拉框/二级联动
+	*/
+	function changeInvoice() {
+		var core = $("#acceptance_core").val();
+		var html;
+		$.ajax({
+			type : "post",
+			url : api + "acceptance/findByCore",
+			async : false,
+			dataType : 'json',
+			data : {
+				atoken : atoken,
+				core : core,
+			},
+			success : function(result) {
+				for (var i = 0; i < result.length; i++) {
+					html += "<option value="+result[i].id+">"
+							+ result[i].invoice + "</option>";
+				}
+				$("#acceptance_invoice").html(html);
+			}
+		});
+	}
+	
+	<!--提交保存对接人收票清单 -->
+	function save() {
+		var staffId = $("#staff_name").val();
+		var acceptanceId = $("#acceptance_invoice").val();
+		var rate = $("#bill_rate").val();
+		var initiate = $("#bill_initiate").val();
+		var total = $("#bill_total").val();
+		var max = $("#bill_max").val();
+		var min = $("#bill_min").val();
+		var shortest = $("#bill_shortest").val();
+		var adjuest = $("#bill_adjuest").val();
+		var etime = $("#bill_etime").val();
+		var usable = $("#bill_usable").val();
+		var status =$('input[name="add_status"]:checked').val();
+		var level = $("#bill_level").val();
+		var is_bargain = $('input[name="add_bargain"]:checked').val();
+		var is_invoice = $('input[name="add_invoice"]:checked').val();
+		var is_financing = $('input[name="add_financing"]:checked').val();
+		var is_clean = $('input[name="add_clean"]:checked').val();
+		var is_moneyorback = $('input[name="add_moneyorback"]:checked').val();
+		var offer = $("#bill_offer").val();
+		var remark = $("#bill_remark").val();
+		if (!isNum(staffId)) {
+			alert("请选择对接人");
+			return;
+		}
+		if (!isNum(acceptanceId)) {
+			alert("请选择开票企业");
+			return;
+		}
+		if (!isDouble(rate)) {
+			alert("请输入利率");
+			return;
+		}
+		if (!isDouble(initiate)) {
+			alert("请输入起步金额");
+			return;
+		}
+		if (!isDouble(max)) {
+			alert("请输入最大金额");
+			return;
+		}
+		if (!isDouble(min)) {
+			alert("请输入最小金额");
+			return;
+		}
+
+		if (!isNum(shortest)) {
+			alert("最短期限应为正整数且非空");
+			return;
+		}
+		if (!isNum(adjuest)) {
+			alert("调整天数应为正整数且非空");
+			return;
+		}
+		if (isString(level) && !isNum(level)) {
+			alert("优先级应该是一个正整数");
+			return;
+		}
+		if (isString(etime) && !isNum(etime)) {
+			alert("背书次数限制应该是一个正整数");
+			return;
+		}
+		$.ajax({
+			type : "post",
+			url : api + "bill/add",
+			async : true,
+			dataType : 'json',
+			data : {
+				atoken : atoken,
+				staffId: staffId,
+				acceptanceId: acceptanceId,
+				rate : rate,
+				initiate : initiate,
+				total : total,
+				max : max,
+				min : min,
+				shortest : shortest,
+				adjuest : adjuest,
+				etime: etime,
+				usable : usable,
+				status: status,
+				level : level,
+				is_bargain: is_bargain,
+				is_invoice: is_invoice,
+				is_financing: is_financing,
+				is_clean : is_clean,
+				is_moneyorback: is_moneyorback,
+				offer: offer,
+				remark : remark,
+			},
+			success : function(data) {
+				if (data.code == 0) {
+					alert("添加成功");
+					window.opener.location.reload();
+					//location.reload();
+					window.close();
+				} else {
+					alert(data.message);
+				}
+			},
+			error : function(data) {
+				console.log("系统错误");
+				console.log(data);
+			}
+		});
+	}
+</script>
+
+</head>
+
+<body>
+	<div id="wrapper">
+
+		<!----->
+		<nav class="navbar-default navbar-static-top" role="navigation">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<h1>
+					<a class="navbar-brand" href="index.html">查票360</a>
+				</h1>
+			</div>
+			<div class=" border-bottom">
+
+				<!-- Brand and toggle get grouped for better mobile display -->
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="drop-men">
+					<ul class=" nav_1">
+						<li class="dropdown"><a href="#"
+							class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span
+								class=" name-caret"><span id="username"></span></span><img
+								src="images/wo.png"></a></li>
+					</ul>
 				</div>
-				<div class=" border-bottom">
+				<!-- /.navbar-collapse -->
+				<div class="clearfix"></div>
 
-					<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-default sidebar" role="navigation">
+					<div class="sidebar-nav navbar-collapse">
+						<ul class="nav" id="side-menu">
+							<li><a href="index.html" class=" hvr-bounce-to-right"><i
+									class="fa fa-dashboard nav_icon "></i><span class="nav-label">数据字典</span>
+							</a></li>
 
-					<!-- Collect the nav links, forms, and other content for toggling -->
-					<div class="drop-men">
-						<ul class=" nav_1">
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
-							</li>
+							<li><a href="#" class=" hvr-bounce-to-right"><i
+									class="fa fa-sitemap nav_icon"></i>收票清单管理<span class="fa arrow"></span></a>
+								<ul class="nav nav-second-level">
+									<li><a href="staff.html" class=" hvr-bounce-to-right"><i
+											class="fa fa-user nav_icon"></i>对接人信息</a></li>
+									<li><a href="bill.html" class=" hvr-bounce-to-right"><i
+											class="fa fa-table nav_icon"></i>对接人收票清单</a></li>
+									<li><a href="acceptance.html" class=" hvr-bounce-to-right"><i
+											class="fa fa-qrcode nav_icon"></i>承兑企业信息</a></li>
+								</ul></li>
+
+							<li><a href="#" class=" hvr-bounce-to-right"><i
+									class="fa fa-sitemap nav_icon"></i>持票库存管理<span class="fa arrow"></span></a>
+								<ul class="nav nav-second-level">
+									<li><a href="userByAdmin.html"
+										class=" hvr-bounce-to-right"><i
+											class="fa fa-user nav_icon"></i>用户信息</a></li>
+									<li><a href="inventory.html" class=" hvr-bounce-to-right"><i
+											class="fa fa-dashboard nav_icon"></i>持票清单</a></li>
+								</ul></li>
+							<li><a href="order.html" class=" hvr-bounce-to-right"><i
+									class="fa fa-television nav_icon"></i> <span class="nav-label">业务订单管理</span>
+							</a></li>
+
+							<li><a href="os.html" class=" hvr-bounce-to-right"><i
+									class="fa fa-table nav_icon"></i> <span class="nav-label">系统管理</span>
+							</a></li>
 						</ul>
 					</div>
-					<!-- /.navbar-collapse -->
-					<div class="clearfix">
+				</div>
+		</nav>
+		<div id="page-wrapper" class="gray-bg dashbard-1">
+			<div class="content-main">
 
-					</div>
+				<!--banner-->
+				<div class="banner">
 
-					<div class="navbar-default sidebar" role="navigation">
-						<div class="sidebar-nav navbar-collapse">
-							<ul class="nav" id="side-menu">
-								<li>
-									<a href="index.html" class=" hvr-bounce-to-right"><i class="fa fa-dashboard nav_icon "></i><span class="nav-label">数据字典</span> </a>
-								</li>
+					<h2>
+						<a href="index.html">Home</a> <i class="fa fa-angle-right"></i> <span>对接人清单管理<i
+							class="fa fa-angle-right"></i>添加对接清单
+						</span>
+					</h2>
+				</div>
 
-								 <li>
-			                        <a href="#" class=" hvr-bounce-to-right"><i class="fa fa-sitemap nav_icon"></i>收票清单管理<span class="fa arrow"></span></a>
-			                        <ul class="nav nav-second-level">
-			                            <li>
-			                                <a href="staff.html" class=" hvr-bounce-to-right"><i class="fa fa-user nav_icon"></i>对接人信息</a>
-			                            </li>
-			                            <li>
-			                                <a href="bill.html" class=" hvr-bounce-to-right"><i class="fa fa-table nav_icon"></i>对接人收票清单</a>
-			                            </li>
-			                            <li>
-			                                <a href="acceptance.html" class=" hvr-bounce-to-right"><i class="fa fa-qrcode nav_icon"></i>承兑企业信息</a>
-			                                	
-			                            </li>
-			                        </ul>
-			                    </li>
-			                    
-								<li>
-									<a href="#" class=" hvr-bounce-to-right"><i class="fa fa-sitemap nav_icon"></i>持票库存管理<span class="fa arrow"></span></a>
-										<ul class="nav nav-second-level">
-			                            <li>
-			                                <a href="userByAdmin.html" class=" hvr-bounce-to-right"><i class="fa fa-user nav_icon"></i>用户信息</a>
-			                            </li>
-			                            <li>
-			                                <a href="inventory.html" class=" hvr-bounce-to-right"><i class="fa fa-dashboard nav_icon"></i>持票清单</a>
-			                            </li>
-			                        </ul>
-								</li>
-								<li>
-									<a href="order.html" class=" hvr-bounce-to-right"><i class="fa fa-television nav_icon"></i> <span class="nav-label">业务订单管理</span> </a>
-								</li>
+				<div class=" profile">
+					<div class="profile-bottom"
+						style="min-height: 800px; padding: 20px; width: 100%;">
+						<form id="bill_save" method="post">
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<td width="10%" class="color_td">对接人姓名<code>*</code></td>
+									<td width="40%"><select id="staff_name"
+										class="form-control">
+									</select></td>
+									<td class="color_td">利率(%)<code>*</code></td>
+									<td><input class="form-control" id="bill_rate"
+										placeholder="请输入利率" type="number" required="required"></td>
+								</tr>
+								<tr>
+									<td class="color_td">核心企业名(上市主体)<code>*</code></td>
+									<td><select id="acceptance_core" class="form-control"
+										onchange="changeInvoice()">
+									</select></td>
+									<td class="color_td">开票企业(承兑企业)<code>*</code></td>
+									<td><select id="acceptance_invoice" class="form-control">
+									</select></td>
+								</tr>
+								<tr>
+									<td class="color_td">起步金额 <code>*</code></td>
+									<td><input class="form-control" id="bill_initiate"
+										placeholder="请输入起步金额" type="number" required="required"></td>
+									<td class="color_td">总额度</td>
+									<td><input class="form-control" id="bill_total"
+										placeholder="请输入总额度" type="number"></td>
+								</tr>
+								<tr>
+									<td class="color_td">最大金额 <code>*</code></td>
+									<td><input class="form-control" id="bill_max"
+										placeholder="请输入最大金额" type="number" required="required"></td>
+									<td class="color_td">最小金额 <code>*</code></td>
+									<td><input class="form-control" id="bill_min"
+										placeholder="请输入最小金额" type="number" required="required"></td>
+								</tr>
+								<tr>
+									<td class="color_td">最短期限（天）<code>*</code></td>
+									<td><input class="form-control" id="bill_shortest"
+										placeholder="请输入最短期限" type="number" required="required"></td>
+									<td class="color_td">调整天数 <code>*</code></td>
+									<td><input class="form-control" id="bill_adjuest"
+										placeholder="请输入调整天数" type="number" required="required"></td>
+								</tr>
+								<tr>
+									<td class="color_td">背书次数限制</td>
+									<td><input class="form-control" id="bill_etime"
+										placeholder="请输入背书次数限制" type="number"></td>
+									<td class="color_td">可用额度</td>
+									<td><input class="form-control" id="bill_usable"
+										placeholder="请输入可用额度" type="number"></td>
+								</tr>
+								<tr>
+									<td class="color_td">状态</td>
+									<td id="bill_status"><label> <input type="radio"
+											name="add_status" id="bill_status_yes" value="0"
+											checked="checked"> 正常
+									</label> <label> <input type="radio" name="add_status"
+											id="bill_status_no" value="1"> 已关闭
+									</label></td>
+									<td class="color_td">优先级(默认0)</td>
+									<td><input class="form-control" id="bill_level"
+										placeholder="请输入0~10" type="number"></td>
+								</tr>
+								<tr>
+									<td class="color_td">合同</td>
+									<td id="bill_is_bargain"><label> <input
+											type="radio" name="add_bargain" id="bill_is_bargain_no"
+											value="0"> 不是
+									</label> <label> <input type="radio" name="add_bargain"
+											id="bill_is_bargain_yes" value="1" checked="checked">
+											是
+									</label></td>
+									<td class="color_td">发票</td>
+									<td id="bill_is_invoice"><label> <input
+											type="radio" name="add_invoice" id="bill_is_invoice_no"
+											value="0" checked="checked"> 不是
+									</label> <label> <input type="radio" name="add_invoice"
+											id="bill_is_invoice_yes" value="1"> 是
+									</label></td>
+								</tr>
+								<tr>
+									<td class="color_td">融资票</td>
+									<td id="bill_is_financing"><label> <input
+											type="radio" name="add_financing" id="bill_is_financing_no"
+											value="0" checked="checked"> 不是
+									</label> <label> <input type="radio" name="add_financing"
+											id="bill_is_financing_yes" value="1"> 是
+									</label></td>
+									<td class="color_td">光票</td>
+									<td id="bill_is_clean"><label> <input type="radio"
+											name="add_clean" id="bill_is_clean_no" value="0"
+											checked="checked"> 不是
+									</label> <label> <input type="radio" name="add_clean"
+											id="bill_is_clean_yes" value="1"> 是
+									</label></td>
+								</tr>
+								<tr>
+									<td class="color_td">先款先背</td>
+									<td id="bill_is_moneyorback"><label> <input
+											type="radio" name="add_moneyorback" id="bill_is_money"
+											value="0" checked="checked"> 先款
+									</label> <label> <input type="radio" name="add_moneyorback"
+											id="bill_is_back" value="1"> 先背
+									</label></td>
+									<td class="color_td">报价方式</td>
+									<td><input class="form-control" id="bill_offer"
+										placeholder="请输入报价方式" type="text"></td>
+								</tr>
+								<tr>
+									<td class="color_td">备注</td>
+									<td colspan="3" id="remark"><input class="form-control"
+										id="bill_remark" name="remark" placeholder="请输入备注" type="text"></td>
+								</tr>
 
-								<li>
-									<a href="os.html" class=" hvr-bounce-to-right"><i class="fa fa-table nav_icon"></i> <span class="nav-label">系统管理</span> </a>
-								</li>
-							</ul>
-						</div>
-					</div>
-			</nav>
-			<div id="page-wrapper" class="gray-bg dashbard-1">
-				<div class="content-main">
+								<tr class="traa">
+									<td colspan="4" style="text-align: right;">
+										<input type="button" id = "submit" value="提交" class="btn btn-primary" onclick="save()" />
+									</td>
+								</tr>
 
-					<!--banner-->
-					<div class="banner">
-
-						<h2>
-				<a href="index.html">Home</a>
-				<i class="fa fa-angle-right"></i>
-				<span>收票管理<i class="fa fa-angle-right"></i>添加收票订单</span>
-				</h2>
-					</div>
-
-					<div class=" profile">
-						<div class="profile-bottom" style="min-height: 800px; padding: 10px;">
-							<table class="table table-bordered">
-								<tbody>
-									<tr>
-										<td width="15%">收票企业<code>*</code></td>
-										<td width="85%"><input class="form-control" id="bill_invoice" placeholder="请输入收票企业" type="text"></td>
-									</tr>
-									<tr>
-										<td>核心企业<code>*</code></td>
-										<td><input class="form-control" id="bill_core" placeholder="请输入核心企业" type="text"></td>
-									</tr>
-									<tr>
-										<td>利率<code>*</code></td>
-										<td><input class="form-control" id="bill_rate" placeholder="请输入利率" type="number"></td>
-									</tr>
-									<tr>
-										<td>起步金额<code>*</code></td>
-										<td><input class="form-control" id="bill_initiate" placeholder="请输入起步金额" type="number"></td>
-									</tr>
-									<tr>
-										<td>最大金额<code>*</code></td>
-										<td><input class="form-control" id="bill_max" placeholder="请输入最大金额" type="number"></td>
-									</tr>
-									<tr>
-										<td>最小金额<code>*</code></td>
-										<td><input class="form-control" id="bill_min" placeholder="请输入最小金额" type="number"></td>
-									</tr>
-									<tr>
-										<td>总额度<code>*</code></td>
-										<td><input class="form-control" id="bill_total" placeholder="请输入总额度" type="number"></td>
-									</tr>
-									<tr>
-										<td>可用额度<code>*</code></td>
-										<td><input class="form-control" id="bill_usable" placeholder="请输入可用额度" type="number"></td>
-									</tr>
-									<tr>
-										<td>最短期限<code>*</code></td>
-										<td><input class="form-control" id="bill_shortest" placeholder="请输入最短期限" type="number"></td>
-									</tr>
-									<tr>
-										<td>调整天数<code>*</code></td>
-										<td><input class="form-control" id="bill_adjuest" placeholder="请输入调整天数" type="number"></td>
-									</tr>
-									<tr>
-										<td>备注</td>
-										<td><input class="form-control" id="bill_remark" placeholder="请输入备注" type="text"></td>
-									</tr>
-									<tr>
-										<td>优先级<code>*</code></td>
-										<td><input class="form-control" id="bill_level" placeholder="优先级0~10" type="number" min="0" max="10"></td>
-									</tr>
-									<tr>
-										<td>类型</td>
-										<td>
-											<label><input type="radio" name="bill_type" checked="" id="bill_type" value="0"> 母公司</label>
-											<label><input type="radio" name="bill_type" id="bill_type" value="1"> 子公司</label>
-											<label><input type="radio" name="bill_type" id="bill_type" value="2"> 孙公司</label>
-										</td>
-									</tr>
-									<tr>
-										<td>员工姓名</td>
-										<td><input class="form-control" id="bill_sname" placeholder="请输入员工姓名" type="text"></td>
-									</tr>
-									<tr>
-										<td>员工岗位</td>
-										<td><input class="form-control" id="bill_sduty" placeholder="请输入员工岗位" type="text"></td>
-									</tr>
-									<tr>
-										<td>员工电话</td>
-										<td><input class="form-control" id="bill_sphone" placeholder="请输入员工电话" type="number"></td>
-									</tr>
-									
-									<tr class="traa">
-										<td colspan="2" style="text-align: right;">
-											<button type="button" class="btn btn-primary" onclick="save()">添加</button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-					<div class="copy">
-						<p> &copy; 2018 查票360. All Rights Reserved | Power by
-							<a href="http://wenxikeji.com/" target="_blank">wenxikeji.com</a>
-						</p>
+							</tbody>
+						</table>
+						</form>
 					</div>
 				</div>
-				<div class="clearfix"> </div>
+
+				<div class="copy">
+					<p>
+						&copy; 2018 查票360. All Rights Reserved | Power by <a
+							href="http://wenxikeji.com/" target="_blank">wenxikeji.com</a>
+					</p>
+				</div>
 			</div>
-			</div>
-			<!---->
-			<!--scrolling js-->
-			<script src="js/jquery.nicescroll.js"></script>
-			<script src="js/scripts.js"></script>
-			<!--//scrolling js-->
-			<script src="js/bootstrap.min.js">
-				
-			</script>
-	</body>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<!---->
+	<!--scrolling js-->
+	<script src="js/jquery.nicescroll.js"></script>
+	<script src="js/scripts.js"></script>
+	<!--//scrolling js-->
+	<script src="js/bootstrap.min.js">
+		
+	</script>
+</body>
 
 </html>

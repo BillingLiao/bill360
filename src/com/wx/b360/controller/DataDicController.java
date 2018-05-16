@@ -94,9 +94,8 @@ public class DataDicController extends BaseController {
 			 */
 			@PostMapping("/findDataDicName")
 			public Msg findDataDicName(){
-				List<String> userNamelist = dataDicRepository.findDataDicName();
-
-				msg.set("查询成功", CodeConstant.SUCCESS, userNamelist);
+				List<String> DataDicNamelist = dataDicRepository.findDataDicName();
+				msg.set("查询成功", CodeConstant.SUCCESS, DataDicNamelist);
 				return msg;
 			}
 			

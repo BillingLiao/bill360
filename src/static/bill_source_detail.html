@@ -189,14 +189,12 @@
 				}
 			}
 			
-			function logout(){
-				if(confirm("您确定要退出系统吗？")){
+			function logout() {
+				if (confirm("您确定要退出系统吗？")) {
 					atoken = null;
+					sessionStorage.clear();
 					window.location.href = "signin.html";
-					//window.location.href='admin/logout';
-					//window.location.href='${pageContext.request.contextPath}/admin/logout';
 				}
-				return false;
 			}
 		</script>
 

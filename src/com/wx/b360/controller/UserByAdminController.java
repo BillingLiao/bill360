@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.wx.b360.entity.Admin;
+import com.wx.b360.entity.Inventory;
 import com.wx.b360.entity.UserByAdmin;
 import com.wx.b360.model.Msg;
 import com.wx.b360.tool.AppTool;
@@ -30,6 +31,13 @@ public class UserByAdminController extends BaseController {
 	@PostMapping("/del")
 	public Msg del(@RequestParam int id) {
 		UserByAdmin userByAdmin = userByAdminRepository.findOne(id);
+		List<Inventory> inventoryList = inventoryRepository.findByUserByAdmin(userByAdmin);
+		for (Inventory inventory : inventoryList) {
+			if (inventory != null) {
+				msg.set("用户有票据库存，请先删除对应票据！", CodeConstant.SET_ERR, null);
+				return msg;
+			}
+		}
 		if (userByAdmin != null) {
 			userByAdminRepository.delete(userByAdmin);
 			msg.set("删除成功", CodeConstant.SUCCESS, null);
@@ -132,7 +140,7 @@ public class UserByAdminController extends BaseController {
 			@RequestParam(required = false) String wechat, @RequestParam(required = false) String addr) {
 
 		UserByAdmin userByAdmin = new UserByAdmin(addr, company, name, phone, wechat);
-		System.out.println(userByAdmin.getWechat());
+		//System.out.println(userByAdmin.getWechat());
 		userByAdminRepository.save(userByAdmin);
 		msg.set("添加成功", CodeConstant.SUCCESS, userByAdmin);
 		return msg;

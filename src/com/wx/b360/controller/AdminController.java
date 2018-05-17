@@ -49,17 +49,7 @@ public class AdminController extends BaseController {
 		return msg;
 	}
 	
-	/**
-	 * 登陆注销
-	 * @param session
-	 * @return
-	 * @throws Exception
-	 */
-	@PostMapping("/logout")
-	public String logout(HttpSession session)throws Exception{
-		session.invalidate();
-		return "redirect:/signin.html";
-	}
+
 	
 	@RequestMapping("/test")
 	public Msg test() {

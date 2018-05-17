@@ -59,7 +59,7 @@
 				if(isNum(id)) {
 					$.ajax({
 						type: "post",
-						url: api + "userByAdmin/id",
+						url: api + "staff/id",
 						async: true,
 						dataType: 'json',
 						data: {
@@ -68,20 +68,28 @@
 						},
 						success: function(data) {
 							if(data.code == 0) {
-								var userByAdmin = data.data;
-								var userName = isString(userByAdmin.name) == true ? userByAdmin.name : "-"; //用户姓名
-								var userByAdminId = userByAdmin.id;
-								var company = isString(userByAdmin.company) == true ? userByAdmin.company : "-"; //公司名称
-								var phone = isString(userByAdmin.phone) == true ? userByAdmin.phone : "-"; //电话
-								var wechat = isString(userByAdmin.wechat) == true ? userByAdmin.wechat : "-"; //微信号
-								var addr = isString(userByAdmin.addr) == true ? userByAdmin.addr : "-"; //地址
+								var staff = data.data;
+								var staffId = isString(staff.id) == true ? staff.id
+										: "-"; //用户姓名
+								var name = isString(staff.name) == true ? staff.name
+										: "-"; //用户姓名
+								var staffId = staff.id;
+								var company = isString(staff.company) == true ? staff.company
+										: "-"; //背书公司名
+								var eAccount = isString(staff.eaccount) == true ? staff.eaccount
+
+										: "-"; //背书账号
+								var phone = isString(staff.phone) == true ? staff.phone
+										: "-"; //电话
+								var addr = isString(staff.addr) == true ? staff.addr
+										: "-"; //地址
 								
-								$("#userByAdmin_id").html("<font style='color: black;'>"+userByAdminId + "</font>");
-								$("#userByAdmin_name").val(userName);
-								$("#userByAdmin_company").val(company);
-								$("#userByAdmin_phone").val(phone);
-								$("#userByAdmin_wechat").val(wechat);
-								$("#userByAdmin_addr").val(addr);
+								$("#staff_id").html("<font style='color: black;'>"+staffId + "</font>");
+								$("#staff_name").val(name);
+								$("#staff_company").val(company);
+								$("#staff_eAccount").val(eAccount);
+								$("#staff_phone").val(phone);
+								$("#staff_addr").val(addr);
 
 							} else {
 								alert(data.message);
@@ -100,19 +108,42 @@
 			}
 			function save() {
 				if(isNum(id)) {
+					
+					var staff_name = $("#staff_name").val();
+					var staff_company = $("#staff_company").val();
+					var staff_eAccount = $("#staff_eAccount").val();
+					var staff_phone = $("#staff_phone").val();
+					var staff_addr = $("#staff_addr").val();
+					
+					if (!isString(staff_name)) {
+						alert("姓名不能为空");
+						return;
+					}
+					if (!isString(staff_company)) {
+						alert("背书公司名不能为空");
+						return;
+					}
+					if (!isString(staff_eAccount)) {
+						alert("背书账号不能为空");
+						return;
+					}
+					if (!isString(staff_phone)) {
+						alert("电话号码不能为空");
+						return;
+					}
 					$.ajax({
 						type:"post",
-						url:api + "userByAdmin/set",
+						url:api + "staff/set",
 						async:true,
 						dataType: 'json',
 						data: {
 							atoken: atoken,
 							id: id,
-							name: $("#userByAdmin_name").val(),
-							company: $("#userByAdmin_company").val(),
-							phone: $("#userByAdmin_phone").val(),
-							wechat: $("#userByAdmin_wechat").val(),
-							addr: $("#userByAdmin_addr").val(),
+							name : staff_name,
+							company : staff_company,
+							eAccount : staff_eAccount,
+							phone : staff_phone,
+							addr : staff_addr,
 						},
 						success: function(data) {
 							if(data.code == 0) {
@@ -133,6 +164,14 @@
 				} else {
 					alert("网络错误");
 					window.location.href = "index.html";
+				}
+			}
+			
+			function logout() {
+				if (confirm("您确定要退出系统吗？")) {
+					atoken = null;
+					sessionStorage.clear();
+					window.location.href = "signin.html";
 				}
 			}
 		</script>
@@ -161,6 +200,9 @@
 						<ul class=" nav_1">
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
+							</li>
+							<li class="dropdown">
+								<a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
 							</li>
 						</ul>
 					</div>
@@ -234,32 +276,32 @@
 
 									<tr>
 										<td width="15%">编号</td>
-										<td width="35%"><span id="userByAdmin_id"></span></td>
-										<td width="15%">用户名</td>
+										<td width="35%"><span id="staff_id"></span></td>
+										<td width="15%">姓名</td>
 										<td width="35%">
-											<input class="form-control" id="userByAdmin_name" placeholder="请输入姓名" type="text">
+											<input class="form-control" id="staff_name" placeholder="请输入姓名" type="text">
 							 			</td>
 									</tr>
 									<tr>
-										<td width="15%">公司名称</td>
+										<td width="15%">背书公司名</td>
 										<td  colspan="3" >
-											<input class="form-control" id="userByAdmin_company" placeholder="请输入持票企业名称" type="text">
+											<input class="form-control" id="staff_company" placeholder="请输入背书公司名称" type="text">
 										</td>
 									</tr>
 									<tr>
-										<td width="15%">电话</td>
+										<td width="15%">背书账号</td>
 										<td width="35%">
-											<input class="form-control" id="userByAdmin_phone" placeholder="请输入手机号码" type="text">
+											<input class="form-control" id="staff_eAccount" placeholder="请输入背书账号" type="text">
 										</td>
-										<td width="15%">微信</td>
+										<td width="15%">联系方式</td>
 										<td width="35%">
-											<input class="form-control" id="userByAdmin_wechat" placeholder="请输入微信号" type="text">
+											<input class="form-control" id="staff_phone" placeholder="请输入手机号" type="text">
 							 			</td>
 									</tr>
 									<tr>
 										<td width="15%">地址</td>
 										<td  colspan="3" >
-											<input class="form-control" id="userByAdmin_addr" placeholder="请输入地址" type="text">
+											<input class="form-control" id="staff_addr" placeholder="请输入地址" type="text">
 										</td>
 									</tr>
 									<tr class="traa">

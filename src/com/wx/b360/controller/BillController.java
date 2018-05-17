@@ -23,6 +23,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.wx.b360.entity.Acceptance;
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Bill;
+import com.wx.b360.entity.Inventory;
+import com.wx.b360.entity.Order;
 import com.wx.b360.entity.Record;
 import com.wx.b360.entity.Source;
 import com.wx.b360.entity.Staff;
@@ -110,6 +112,13 @@ public class BillController extends BaseController {
 	@PostMapping("/del")
 	public Msg del(@SessionAttribute Admin admin, @RequestParam int id) {
 		Bill bill = billRepository.findOne(id);
+		List<Order> orderList = orderRepository.findByBill(bill);
+		for (Order order : orderList) {
+			if (order != null) {
+				msg.set("改项有订单生成，请先删除对应订单！", CodeConstant.SET_ERR, null);
+				return msg;
+			}
+		}
 		if (bill != null) {
 			billRepository.delete(bill);
 			msg.set("删除成功", CodeConstant.SUCCESS, null);
@@ -210,7 +219,7 @@ public class BillController extends BaseController {
 		Bill bill = billRepository.findOne(id);
 		if (bill != null) {
 			boolean isChange = false;
-			if (staffId != bill.getStaff().getStaff_id()) {
+			if (staffId != bill.getStaff().getId()) {
 				isChange = true;
 				bill.setRate(rate);
 			}

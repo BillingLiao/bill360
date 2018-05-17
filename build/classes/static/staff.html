@@ -67,15 +67,14 @@
 
 	//页面加载成功时访问
 	$(window).load(function() {
-		show_source(index, size);
+		show_staff(index, size);
 	});
 
-	function show_source(index, size, company) {
+	function show_staff(index, size, name, company) {
 
-		$
-				.ajax({
+		$.ajax({
 					type : "post",
-					url : api + "/userByAdmin/find",
+					url : api + "staff/find",
 					dataType : 'json',
 					data : {
 						atoken : atoken,
@@ -88,40 +87,41 @@
 						console.log(data);
 						if (data.code == 0) {
 							count = data.data.count;
-
-							var list = $("#userByAdmin_list");
+							$("#current_index").text(index+1);
+							$("#current_count").text(count);
+							var list = $("#staff_list");
 							list.html("");
 							var temp = "";
 							for (var i = 0; i < data.data.content.length; i++) {
-								debugger;
-								var userByAdmin = data.data.content[i];
-								var userName = isString(userByAdmin.name) == true ? userByAdmin.name
+								var staff = data.data.content[i];
+								var name = isString(staff.name) == true ? staff.name
 										: "-"; //用户姓名
-								var userByAdminId = userByAdmin.id;
-								var company = isString(userByAdmin.company) == true ? userByAdmin.company
-										: "-"; //公司名称
-								var phone = isString(userByAdmin.phone) == true ? userByAdmin.phone
+								var staffId = staff.id;
+								var company = isString(staff.company) == true ? staff.company
+										: "-"; //背书公司名
+								var eAccount = isString(staff.eaccount) == true ? staff.eaccount
+
+										: "-"; //背书账号
+								var phone = isString(staff.phone) == true ? staff.phone
 										: "-"; //电话
-								var wechat = isString(userByAdmin.wechat) == true ? userByAdmin.wechat
-										: "-"; //微信号
-								var addr = isString(userByAdmin.addr) == true ? userByAdmin.addr
+								var addr = isString(staff.addr) == true ? staff.addr
 										: "-"; //地址
-								temp = '<tr id="userByAdmin_tr_'+userByAdminId+'"><td>'
-										+ userByAdminId
+								temp = '<tr id="staff_tr_'+staffId+'"><td>'
+										+ staffId
 										+ '</td><td>'
-										+ userName
+										+ name
 										+ '</td><td>'
 										+ company
 										+ '</td><td>'
+										+ eAccount
+										+ '</td><td>'
 										+ phone
 										+ '</td><td>'
-										+ wechat
-										+ '</td><td>'
 										+ addr
-										+ '</td><td><a href="userByAdmin_detail.html?id='
-										+ userByAdmin.id
+										+ '</td><td><a href="staff_detail.html?id='
+										+ staff.id
 										+ '" target="_blank"><button type="button" class="btn btn-sm btn-default">编辑</button></a><button type="button"class="btn btn-sm btn-danger" onclick="del('
-										+ userByAdmin.id
+										+ staff.id
 										+ ')">删除</button></td></tr>';
 								list.append(temp);
 							}
@@ -141,7 +141,7 @@
 			if (isNum(id)) {
 				$.ajax({
 					type : "post",
-					url : api + "inventory/del",
+					url : api + "staff/del",
 					async : true,
 					dataType : "json",
 					data : {
@@ -151,7 +151,7 @@
 					success : function(data) {
 						if (data.code == 0) {
 							alert("删除成功");
-							$("#inventroy_tr_" + id).hide();
+							$("#staff_tr_" + id).hide();
 						} else {
 							alert(data.message);
 						}
@@ -176,7 +176,7 @@
 			index--;
 			return;
 		}
-		show_source(index, size);
+		search_staff();
 	}
 	//上一页
 	function previous() {
@@ -186,53 +186,59 @@
 			alert("到头啦");
 			return;
 		}
-		show_source(index, size);
+		search_staff();
 	}
 
-	//按照名字搜索来源
+	//按照姓名跟背书公司 搜索
 
-	function search_inventory() {
-		var search_name = $("#search_name").val();
-		company = search_name;
+	function search_staff() {
+		var name = $("#search_staff_name").val();
+		var company = $("#search_staff_company").val();
+		if (!isString(name))
+			name = "";
 		if (!isString(company))
-			invoice = "";
-		show_source(index, size, company);
+			company = "";
+		show_staff(index, size, name, company);
 	}
 
-	//添加收票渠道
-	function add_source() {
+	//添加对接人
+	function add_staff() {
 
-		var userByAdmin_name = $("#userByAdmin_name").val();
-		var userByAdmin_company = $("#userByAdmin_company").val();
-		var userByAdmin_phone = $("#userByAdmin_phone").val();
-		var userByAdmin_wechat = $("#userByAdmin_wechat").val();
-		var userByAdmin_addr = $("#userByAdmin_addr").val();
+		var staff_name = $("#staff_name").val();
+		var staff_company = $("#staff_company").val();
+		var staff_eAccount = $("#staff_eAccount").val();
+		var staff_phone = $("#staff_phone").val();
+		var staff_addr = $("#staff_addr").val();
 
-		if (!isString(userByAdmin_name)) {
+		if (!isString(staff_name)) {
 			alert("请输入姓名");
 			return;
 		}
-		if (!isString(userByAdmin_company)) {
-			alert("请输入公司名称");
+		if (!isString(staff_company)) {
+			alert("请输入背书公司名");
 			return;
 		}
-		if (!isString(userByAdmin_phone)) {
+		if (!isString(staff_eAccount)) {
+			alert("请输入背书账号");
+			return;
+		}
+		if (!isString(staff_phone)) {
 			alert("请输入电话号码");
 			return;
 		}
 
 		$.ajax({
 			type : "post",
-			url : api + "userByAdmin/add",
+			url : api + "staff/add",
 			async : true,
 			dataType : 'json',
 			data : {
 				atoken : atoken,
-				name : userByAdmin_name,
-				company : userByAdmin_company,
-				phone : userByAdmin_phone,
-				wechat : userByAdmin_wechat,
-				addr : userByAdmin_addr,
+				name : staff_name,
+				company : staff_company,
+				eAccount : staff_eAccount,
+				phone : staff_phone,
+				addr : staff_addr,
 			},
 			success : function(data) {
 				if (data.code == 0) {
@@ -255,11 +261,9 @@
 	function logout() {
 		if (confirm("您确定要退出系统吗？")) {
 			atoken = null;
+			sessionStorage.clear();
 			window.location.href = "signin.html";
-			//window.location.href='admin/logout';
-			//window.location.href='${pageContext.request.contextPath}/admin/logout';
 		}
-		return false;
 	}
 </script>
 
@@ -281,7 +285,6 @@
 					<a class="navbar-brand" href="index.html">查票360</a>
 				</h1>
 			</div>
-			<div class=" border-bottom">
 
 				<!-- Brand and toggle get grouped for better mobile display -->
 
@@ -290,9 +293,9 @@
 					<ul class=" nav_1">
 						<li class="dropdown"><a href="#"
 							class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span
-								class=" name-caret"><span id="username"></span></span><img
+								class="name-caret"><span id="username"></span></span><img
 								src="images/wo.png"></a></li>
-						<li class="dropdown"><a href="javascript:logout()">安全退出</span></a>&nbsp;&nbsp;&nbsp;&nbsp;
+						<li class="dropdown"><a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
 						</li>
 					</ul>
 				</div>
@@ -360,7 +363,7 @@
 									aria-hidden="true">×</button>
 								<h3 class="modal-title">
 									添加对接人
-									</h2>
+									</h3>
 							</div>
 							<div class="modal-body">
 								<!--这里是弹窗内容-->
@@ -369,29 +372,29 @@
 											<tr>
 												<td width="15%">姓名<code>*</code></td>
 												<td colspan="3" >
-													<input class="form-control" id="userByAdmin_name" placeholder="请输入姓名" type="text">
+													<input class="form-control" id="staff_name" placeholder="请输入姓名" type="text">
 												</td>
 											</tr>											
 											<tr>
-												<td width="15%">公司名称</td>
+												<td width="15%">背书公司名</td>
 												<td  colspan="3" >
-													<input class="form-control" id="userByAdmin_company" placeholder="请输入公司名称" type="text">
+													<input class="form-control" id="staff_company" placeholder="请输入背书公司名" type="text">
 												</td>
 											</tr>
 											<tr>
 												<td width="15%">背书帐号</td>
 												<td width="35%">
-													<input class="form-control" type="text" placeholder="请输入电话号码" id="userByAdmin_phone">
+													<input class="form-control" type="text" placeholder="请输入背书账号" id="staff_eAccount">
 												</td>
 												<td width="15%">联系电话</td>
 												<td width="35%">
-													<input class="form-control" type="text" placeholder="请输入微信号" id="userByAdmin_wechat">
+													<input class="form-control" type="text" placeholder="请输入联系电话" id="staff_phone">
 									 			</td>
 											</tr>
 											<tr>
 												<td width="15%">地址</td>
 												<td  colspan="3" >
-													<input class="form-control" id="userByAdmin_addr" placeholder="请输入地址" type="text">
+													<input class="form-control" id="staff_addr" placeholder="请输入地址" type="text">
 												</td>
 											</tr>
 
@@ -402,7 +405,7 @@
 								<button type="button" class="btn btn-default"
 									data-dismiss="modal">关闭</button>
 								<button type="button" class="btn btn-primary"
-									onclick="add_source()">添加</button>
+									onclick="add_staff()">添加</button>
 							</div>
 						</div>
 						<!-- /.modal-content -->
@@ -416,13 +419,13 @@
 						<div class="col-md-4 compose" style="margin-bottom: 20px;">
 							<form class="form-inline">
 								<div class="form-group">
-									<label for="search_userByAdmin_name">姓名:</label> <input
-										class="form-control" id="search_userByAdmin_name"
+									<label for="search_staff_name">姓名:</label> <input
+										class="form-control" id="search_staff_name"
 										placeholder="请输入姓名" type="text" />
 								</div>
 								<div class="form-group">
-									<label for="search_userByAdmin_company">&nbsp;背书公司:</label> <input
-										class="form-control" id="search_userByAdmin_company"
+									<label for="search_staff_company">&nbsp;背书公司:</label> <input
+										class="form-control" id="search_staff_company"
 										placeholder="请输入公司名称" type="text" />
 								</div>
 
@@ -431,14 +434,17 @@
 
 						<div class="col-md-4 compose">
 							<button type="button" class="btn btn-primary"
-								onclick="search_userByAdmin()">查询</button>
+								onclick="search_staff()">查询</button>
 							<button type="button" class="btn btn-success" data-toggle="modal"
 								data-target="#myModal">添加对接人</button>
 						</div>
 						<div class="col-md-4 compose">
 							<div class="mail-toolbar clearfix">
 								<div class="float-right">
+										<span class="name-caret">当前页：<span id="current_index"></span>&nbsp;&nbsp;</span>
+										<span class="name-caret">总数：<span id="current_count"></span>&nbsp;&nbsp;</span>
 									<div class="btn-group">
+										
 										<a class="btn btn-warning" onclick="previous()"><i
 											class="fa fa-angle-left">&nbsp;上一页</i></a> <a
 											class="btn btn-warning" onclick="next()">下一页&nbsp;<i
@@ -464,7 +470,7 @@
 										<th>操作</th>
 									</tr>
 								</thead>
-								<tbody id="inventory_list">
+								<tbody id="staff_list">
 
 								</tbody>
 							</table>

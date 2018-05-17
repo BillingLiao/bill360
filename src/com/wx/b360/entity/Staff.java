@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Staff {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="_id", nullable=false, columnDefinition="int comment 'id'")
-	private int staff_id;
+	private int id;
 	
 	@Column(name="_name", nullable=false, columnDefinition="varchar(255) comment '对接人姓名'")
 	private String name;
@@ -35,10 +35,14 @@ public class Staff {
 		
 	@Column(name="_addr", nullable=true, columnDefinition="varchar(255) comment '地址'")
 	private String addr;
-	
-	public Staff(String name, String phone) {
+
+	public Staff(String name, String company, String eAccount, String phone, String addr) {
+		super();
 		this.name = name;
+		this.company = company;
+		this.eAccount = eAccount;
 		this.phone = phone;
+		this.addr = addr;
 	}
 	
 }

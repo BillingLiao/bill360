@@ -181,8 +181,8 @@ public class SourceController extends BaseController {
 			source = new Source(invoice, rebate, eaccount, ename, isBargain, isInvoice, etime, remit, nature, flow,rate, adjuest);
 			source.setLevel(0);
 			if(CheckTool.isString(staffName) && CheckTool.isString(staffDuty) && CheckTool.isPhone(staffPhone)) {
-				Staff staff = new Staff(staffName, staffPhone);
-				staff = staffRepository.save(staff);
+				//Staff staff = new Staff(staffName, staffPhone);
+				//staff = staffRepository.save(staff);
 				//source.getStaffs().add(staff);
 			}
 			source = sourceRepository.save(source);

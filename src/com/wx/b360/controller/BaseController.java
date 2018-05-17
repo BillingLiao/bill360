@@ -28,6 +28,7 @@ import com.wx.b360.service.InventoryService;
 import com.wx.b360.service.OrderService;
 import com.wx.b360.service.RecordService;
 import com.wx.b360.service.SourceService;
+import com.wx.b360.service.StaffService;
 import com.wx.b360.service.UserByAdminService;
 import com.wx.b360.service.UserService;
 
@@ -61,6 +62,7 @@ public class BaseController {
 	@Autowired protected SourceService sourceService;
 	@Autowired protected UserService userService;
 	@Autowired protected OrderService orderService;
+	@Autowired protected StaffService staffService;
 	@Autowired protected AcceptanceService acceptanceService;
 	@Autowired protected InventoryService inventoryService;
 	@Autowired protected UserByAdminService userByAdminService;

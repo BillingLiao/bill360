@@ -253,14 +253,12 @@
 		});
 	}
 	
-	function logout(){
-		if(confirm("您确定要退出系统吗？")){
+	function logout() {
+		if (confirm("您确定要退出系统吗？")) {
 			atoken = null;
+			sessionStorage.clear();
 			window.location.href = "signin.html";
-			//window.location.href='admin/logout';
-			//window.location.href='${pageContext.request.contextPath}/admin/logout';
 		}
-		return false;
 	}
 </script>
 
@@ -295,7 +293,7 @@
 								src="images/wo.png"></a></li>
 						<li class="dropdown">
 								<a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
-							</li>
+						</li>
 					</ul>
 				</div>
 				<!-- /.navbar-collapse -->

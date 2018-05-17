@@ -82,12 +82,12 @@
 						console.log(data);
 						if(data.code == 0) {
 							count = data.data.count;
-
+							$("#current_index").text(index+1);
+							$("#current_count").text(count);
 							var list = $("#userByAdmin_list");
 							list.html("");
 							var temp = "";
 							for(var i = 0; i < data.data.content.length; i++) {
-								debugger;
 								var userByAdmin = data.data.content[i];
 								var userName = isString(userByAdmin.name) == true ? userByAdmin.name : "-"; //用户姓名
 								var userByAdminId = userByAdmin.id;
@@ -116,7 +116,7 @@
 					if(isNum(id)) {
 						$.ajax({
 							type:"post",
-							url:api + "inventory/del",
+							url:api + "userByAdmin/del",
 							async:true,
 							dataType: "json",
 							data: {
@@ -152,7 +152,7 @@
 					index--;
 					return;
 				}
-				show_userByAdmin(index, size);
+				search_userByAdmin();
 			}
 			//上一页
 			function previous() {
@@ -162,7 +162,7 @@
 					alert("到头啦");
 					return;
 				}
-				show_userByAdmin(index, size);
+				search_userByAdmin();
 			}
 
 			//按照名字搜索来源
@@ -234,15 +234,12 @@
 			}
 
 			
-			
-			function logout(){
-					if(confirm("您确定要退出系统吗？")){
-						atoken = null;
-						window.location.href = "signin.html";
-						//window.location.href='admin/logout';
-						//window.location.href='${pageContext.request.contextPath}/admin/logout';
-					}
-					return false;
+			function logout() {
+				if (confirm("您确定要退出系统吗？")) {
+					atoken = null;
+					sessionStorage.clear();
+					window.location.href = "signin.html";
+				}
 			}
 		</script>
 
@@ -418,6 +415,8 @@
 							<div class="col-md-4 compose">
 								<div class="mail-toolbar clearfix">
 									<div class="float-right">
+										<span class="name-caret">当前页：<span id="current_index"></span>&nbsp;&nbsp;</span>
+										<span class="name-caret">总数：<span id="current_count"></span>&nbsp;&nbsp;</span>
 										<div class="btn-group">
 											<a class="btn btn-warning" onclick="previous()"><i class="fa fa-angle-left">&nbsp;上一页</i></a>
 											<a class="btn btn-warning" onclick="next()">下一页&nbsp;<i class="fa fa-angle-right"></i></a>

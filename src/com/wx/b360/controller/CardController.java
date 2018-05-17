@@ -49,6 +49,15 @@ public class CardController extends BaseController {
 		}
 		return msg;
 	}
+	/**
+	 * 查找所有用户的
+	 * @return
+	 */
+	@PostMapping("/findUserName")
+	public List<Card> findUserName() {
+		List<Card> userNamelist = cardRepository.findUserName();
+		return userNamelist;
+	}
 	
 	//获取自己的名片
 	@PostMapping("/my")

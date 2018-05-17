@@ -43,7 +43,7 @@
 				
 				$.ajax({
 					type: "post",
-					url: api + "/user/findUserName",
+					url: api + "card/findUserName",
 					dataType: 'json',
 					data: {
 						atoken: atoken,
@@ -87,7 +87,20 @@
 							if(data.code == 0) {
 								var inventory = data.data;
 								var id = inventory.id;
-								var username = inventory.user.id;//用户微信名
+								if (inventory.user == null
+										&& inventory.userByAdmin != null) {
+									var userName = isString(inventory.userByAdmin.name) == true ? inventory.userByAdmin.name
+											: "-"; //持票人姓名
+								} else if (inventory.user != null
+										&& inventory.userByAdmin == null) {
+									var username = inventory.user.id;
+									/* var userName = '<a href="user_detail.html?id='
+											+ inventory.user.id
+											+ '" target="_blank"><button type="button" class="btn btn-link">查看</button></a>'; //持票人信息 */
+								} else {
+									var userName = '-';
+								}
+								//var username = inventory.user.id;//用户微信名
 								var company = isString(inventory.company) ? inventory.company : "";//持票企业名称
 								var money = isDouble(inventory.money) ? inventory.money : ""; //金额
 								var ctime = isString(inventory.ctime) ? inventory.ctime : "";//出票日期
@@ -157,6 +170,14 @@
 					window.location.href = "index.html";
 				}
 			}
+			
+			function logout() {
+				if (confirm("您确定要退出系统吗？")) {
+					atoken = null;
+					sessionStorage.clear();
+					window.location.href = "signin.html";
+				}
+			}
 		</script>
 	</head>
 
@@ -183,6 +204,9 @@
 						<ul class=" nav_1">
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
+							</li>
+							<li class="dropdown">
+								<a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
 							</li>
 						</ul>
 					</div>

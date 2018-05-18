@@ -1,6 +1,8 @@
 package com.wx.b360.controller;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.wx.b360.entity.Acceptance;
 import com.wx.b360.entity.Admin;
+import com.wx.b360.entity.Card;
 import com.wx.b360.entity.Inventory;
 import com.wx.b360.entity.User;
 import com.wx.b360.entity.UserByAdmin;
@@ -49,7 +52,6 @@ public class InventoryController extends BaseController {
 	// 修改持票信息
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam(required = false) String company,
-			@RequestParam(required = false) String img_front, @RequestParam(required = false) String img_back,
 			@RequestParam(required = false) BigDecimal money, @RequestParam(required = false) String ctime,
 			@RequestParam(required = false) String dtime, @RequestParam(required = false) String ttime,
 			@RequestParam(required = false) String offer) {
@@ -59,15 +61,6 @@ public class InventoryController extends BaseController {
 			if (!inventory.getCompany().equals(company)) { // 判断与修改前数据是否不一致
 				isChange = true;
 				inventory.setCompany(company);
-			}
-
-			if (!inventory.getImg_front().equals(img_front)) {
-				isChange = true;
-				inventory.setImg_front(img_front);
-			}
-			if (!inventory.getImg_back().equals(img_back)) {
-				isChange = true;
-				inventory.setImg_back(img_back);
 			}
 
 			if (money.compareTo(inventory.getMoney()) != 0) {
@@ -116,6 +109,27 @@ public class InventoryController extends BaseController {
 		return msg;
 	}
 
+	// 获取指定持票信息(返回用户的名片)
+	@PostMapping("/id/user")
+	public Msg findByIdAndUserId(@SessionAttribute Admin admin, @RequestParam int id) {
+		Inventory inventory = inventoryRepository.findOne(id);
+		if (inventory != null) {
+			User user = inventory.getUser();
+			Card card = cardRepository.findCardByUser(user);
+			if (card != null) {
+				Map<String, Object> result = new HashMap<>();
+				result.put("inventory", inventory);
+				result.put("card", card);
+				msg.set("查询成功", CodeConstant.SUCCESS_2, result);
+			} else {
+				msg.set("查询成功", CodeConstant.SUCCESS, inventory);
+			}
+		}else {
+			msg.set("未找到此条数据", CodeConstant.FIND_ERR, null);
+		}
+		return msg;
+	}
+
 	// 获取持票信息列表
 	@PostMapping("/find")
 	public Msg find(@RequestParam int index, @RequestParam int size, @RequestParam(required = false) String company) {
@@ -139,13 +153,13 @@ public class InventoryController extends BaseController {
 			@RequestParam(required = false) BigDecimal money, @RequestParam(required = false) String ctime,
 			@RequestParam(required = false) String dtime, @RequestParam(required = false) String ttime,
 			@RequestParam(required = false) String offer, HttpServletRequest request) {
-		
+
 		String fileName_front;
 		if (file_img_back != null) {
 			fileName_front = UUID.randomUUID().toString() + System.currentTimeMillis()
 					+ file_img_front.getOriginalFilename();
 			String fileName_back = UUID.randomUUID().toString() + System.currentTimeMillis()
-			+ file_img_back.getOriginalFilename();
+					+ file_img_back.getOriginalFilename();
 			String filePath = request.getSession().getServletContext().getRealPath("/");
 			try {
 				FileTool.uploadFile(file_img_front.getBytes(), filePath, fileName_front);
@@ -155,7 +169,7 @@ public class InventoryController extends BaseController {
 				msg.set("图片上传失败", CodeConstant.SET_ERR, null);
 			}
 		} else {
-			//String contentType = file_img_front.getContentType();
+			// String contentType = file_img_front.getContentType();
 			fileName_front = UUID.randomUUID().toString() + System.currentTimeMillis()
 					+ file_img_front.getOriginalFilename();
 			System.out.println("fileName_back-->" + file_img_back);
@@ -170,7 +184,8 @@ public class InventoryController extends BaseController {
 		}
 		UserByAdmin userByAdmin = userByAdminRepository.findOne(userByAdminId);
 
-		Inventory inventory = new Inventory(userByAdmin, company, fileName_front, null, money, ctime, dtime, ttime, offer);
+		Inventory inventory = new Inventory(userByAdmin, company, fileName_front, null, money, ctime, dtime, ttime,
+				offer);
 		inventory = inventoryRepository.save(inventory);
 		if (inventory != null) {
 			// 判断是否有这个名称的承兑企业，如果没有则创建之

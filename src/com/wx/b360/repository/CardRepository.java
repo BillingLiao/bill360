@@ -13,6 +13,8 @@ public interface CardRepository extends PagingAndSortingRepository<Card, Integer
 
 	List<Card> findByUser(User user);
 	
+	Card findCardByUser(User user);
+	
 	@Query(value="select * from b_card ORDER BY _id", nativeQuery=true)
 	public List<Card> findUserName();
 

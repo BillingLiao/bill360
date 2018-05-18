@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="application/x-javascript">
 	
+	
 			addEventListener("load", function() {
 				setTimeout(hideURLbar, 0);
 			}, false);
@@ -15,6 +16,7 @@
 				window.scrollTo(0, 1);
 			}
 		
+
 </script>
 <link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
 <!-- Custom Theme files -->
@@ -41,6 +43,11 @@
 
 		$('#toggle').click(function() {
 			screenfull.toggle($('#container')[0]);
+		});
+		
+		$("img.dialog").click(function() {
+			   var large_image = '<img src= ' + $(this).attr("src") + '></img>';
+			   $('#dialog_large_image').html($(large_image).animate({ height: '50%', width: '50%' }, 500));
 		});
 
 	});
@@ -89,7 +96,6 @@
 			}
 		});
 	}
-	
 </script>
 
 </head>
@@ -174,7 +180,8 @@
 				</div>
 
 				<div style="position: relative;">
-					<select id="s" style="width: 300px; line-height: 30px; height: 30px"
+					<select id="s"
+						style="width: 300px; line-height: 30px; height: 30px"
 						onchange="document.getElementById('inputDataDicName').value=this.value">
 						<option value="A类">A类</option>
 						<option value="B类">B类</option>
@@ -183,7 +190,7 @@
 					</select> <input id="inputDataDicName" name="inputDataDicName"
 						style="position: absolute; width: 280px; height: 26px; left: 1px; top: 1px; border: 0px;">
 				</div>
-				
+
 
 				<div class=" profile">
 					<div class="profile-bottom"
@@ -210,6 +217,11 @@
 							</tbody>
 						</table>
 					</div>
+				</div>
+
+				<div>
+					<img class="dialog" src= "upload/no1.jpg">
+					<div id="dialog_large_image"></div>
 				</div>
 
 				<div class="copy">

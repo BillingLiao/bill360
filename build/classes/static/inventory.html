@@ -5,6 +5,17 @@
 <title>查票360后台管理系统</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style>
+img{margin:5px;}
+#tool{
+	position:absolute;
+	border:1px solid #ccc;
+	background:#333;
+	padding:2px;
+	display:none;
+	color:#fff;
+}
+</style>
 <script type="application/x-javascript">
 	
 			addEventListener("load", function() {
@@ -126,21 +137,19 @@
 								var inventoryid = inventory.id;
 								var imgurl = api + "upload/"
 										+ inventory.img_front;
-								var img_front = '<div class="pic"><a id="src1" href="'+imgurl+'"><img src ="'+imgurl+'"  alt="商票正面" 	width="50px" height="40px"; /></a></div>'
+								var img_front = '<a href="'+imgurl+'" class="tool"><img src ="'+imgurl+'"  alt="商票正面" 	width="50px" height="40px"; /></a>'
 
 								if (!isString(inventory.img_back)) {
 									var img_back = '无图片';
 								} else {
 									var imgurl2 = api + "upload/"
 											+ inventory.img_back;
-									var img_back = '<img src ="'+imgurl2+'"  alt="背书面" 	width="50px" height="40px" /></a>'
-									//var img_back = '<div class="pic"><a id="src1" href="'+imgurl2+'"><img src ="'+imgurl2+'"  alt="背书面" 	width="50px" height="40px" /></a></div>'
+									//var img_back = '<img src ="'+imgurl2+'"  alt="背书面" 	width="50px" height="40px" /></a>'
+									var img_back = "<a  href="+imgurl2+" class='tool'><img src ="+imgurl2+"  alt='背书面' width='50px' height='40px' /></a>"
 								}
 
 								var company = isString(inventory.company) == true ? inventory.company
 										: "-"; //持票企业名称
-								//var img_front = isString(inventory.img_front) ? '<a href="'+api + "upload/"+inventory.img_front+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>' : "无图片";
-								//var img_back = isString(inventory.img_back) ? '<a href="'+api + "upload/"+inventory.img_back+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>' : "无图片";
 								var money = isDouble(inventory.money) ? inventory.money
 										: "-";//金额(万)
 								var ctime = isString(inventory.ctime) == true ? inventory.ctime
@@ -177,18 +186,42 @@
 										+ inventory.id
 										+ ')">删除</button></td></tr>	';
 								list.append(temp);
-								//<div id="pic_one" style="display:none;"><img src="'+imgurl+'" /></div><div id="pic_two" style="display:none;"><img src="'+imgurl2+'" /></div>
-								//document.getElementById('imgInit').setAttribute("src",imgurl);
 							}
 						} else {
 							alert(data.message);
 						}
+						showPicture();
 					},
 					error : function(data) {
 						console.log("系统错误");
 						console.log(data);
 					}
 				});
+	}
+	
+	function showPicture(){
+		var x = 10;
+		var y = 20;
+		$("a.tool").mouseover(function(e){
+				
+			var tooltip = "<div id='tool'><img src='"+ this.href +"' alt='产品预览图'/><\/div>"; //创建 div 元素
+			$("body").append(tooltip);	//把它追加到文档中				 
+			$("#tool")
+				.css({
+					"top": (e.pageY+y) + "px",
+					"left":  (e.pageX+x)  + "px"
+				}).show("fast");	  //设置x坐标和y坐标，并且显示
+	    }).mouseout(function(){
+				
+			$("#tool").remove();	 //移除 
+	    }).mousemove(function(e){
+			$("#tool")
+				.css({
+					"top": (e.pageY+y) + "px",
+					"left":  (e.pageX+x)  + "px"
+				});
+		});
+
 	}
 
 	function del(id) {

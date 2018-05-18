@@ -6429,7 +6429,7 @@ button.close {
 }
 
 .tooltip {
-	position: absolute;
+ 	position: absolute;
 	z-index: 1070;
 	display: block;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -6439,6 +6439,8 @@ button.close {
 	filter: alpha(opacity = 0);
 	opacity: 0
 }
+
+
 
 .tooltip.in {
 	filter: alpha(opacity = 90);

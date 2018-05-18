@@ -46,4 +46,9 @@ public class CodeConstant {
 	 * 无权操作
 	 */
 	public static final int NO_AUTH = 8;
+	
+	/**
+	 * 成功(特殊状态)
+	 */
+	public static final int SUCCESS_2 = 9;
 }

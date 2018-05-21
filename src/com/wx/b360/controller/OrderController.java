@@ -116,10 +116,10 @@ public class OrderController extends BaseController {
 	
 	//计算计息天数、每十万贴息和利息
 	@PostMapping("/calc")
-	public Msg calc(@RequestParam BigDecimal money, @RequestParam String time, @RequestParam int sourceId) {
+	public Msg calc(@RequestParam BigDecimal money, @RequestParam String time, @RequestParam int billId) {
 		if(CheckTool.isDate(time)) {
-			Source source = sourceRepository.findOne(sourceId);
-			if(source != null) {
+			Bill bill = billRepository.findOne(billId);
+			if(bill != null) {
 				Date dateEnt = AppTool.changeDate(time);
 				if(dateEnt.getTime() < System.currentTimeMillis()) {
 					msg.set("到期日期小于当前时间", CodeConstant.ERR_PAR, null);
@@ -136,9 +136,9 @@ public class OrderController extends BaseController {
 					//周六情况
 					day += 2;
 				}
-				day += source.getAdjuest();
+				day += bill.getAdjuest();
 				
-				BigDecimal rate = source.getRate();
+				BigDecimal rate = bill.getRate();
 				BigDecimal interest = money.multiply(rate).divide(new BigDecimal(100), 4,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
 				String interestInfo = money + "×" + rate +"÷100÷360×" + day +"=" +interest;
 				BigDecimal interestUnit = interest.multiply(new BigDecimal(100000)).divide(money, 4,BigDecimal.ROUND_HALF_UP);

@@ -1,5 +1,6 @@
 package com.wx.b360.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import com.wx.b360.entity.Acceptance;
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Bill;
+import com.wx.b360.entity.Record;
+import com.wx.b360.entity.User;
 import com.wx.b360.model.Msg;
 import com.wx.b360.tool.AppTool;
 import com.wx.b360.tool.CheckTool;
@@ -133,6 +136,33 @@ public class AcceptanceController extends BaseController {
 	public List<Acceptance> findInvoiceByCore(@RequestParam String core) {
 		List<Acceptance> acceptancelist = acceptanceRepository.findInvoiceByCore(core);
 		return acceptancelist;
+	}
+
+	// 企业核心名模糊搜索 （快速查询）
+	@PostMapping("/fast")
+	public Msg core(@RequestParam String core, @SessionAttribute User user) {
+
+		// 添加搜索记录
+		Page<Record> page = recordService.find(0, 1, user, core);
+		Record record = null;
+		if (page.getTotalElements() > 0) {
+			record = page.getContent().get(0);
+			record.setTime(new Date(System.currentTimeMillis()));
+		} else {
+			// 第一次搜索
+			record = new Record(user, core, new Date(System.currentTimeMillis()));
+		}
+		record = recordRepository.save(record);
+
+		List<String> coreList = acceptanceRepository.findAllCoreByCore(core);
+		for (String coretest : coreList) {
+			if (coretest != null) {
+				msg.set("查询成功", CodeConstant.SUCCESS, coreList);
+				return msg;
+			}
+		}
+		msg.set("查询不到该条核心企业", CodeConstant.FIND_ERR, null);
+		return msg;
 	}
 
 	// 添加承兑企业名

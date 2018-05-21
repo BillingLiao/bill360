@@ -39,6 +39,7 @@
 <script src="js/screenfull.js"></script>
 <script src="js/app.js" type="text/javascript" charset="utf-8"></script>
 <script>
+
 	$(function() {
 		$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
 
@@ -65,7 +66,7 @@
 					return;
 				}
 				$("#username").text(sessionStorage.getItem("name"));
-
+				
 			});
 
 	var index = 0;
@@ -77,7 +78,7 @@
 		show_bill(index, size);
 	};
 
-	function show_bill(index, size) {
+	function show_bill(index, size, core, invoice, status) {
 		$
 				.ajax({
 					type : "post",
@@ -88,7 +89,9 @@
 						atoken : atoken,
 						index : index,
 						size : size,
-					//core: core,
+						core: core,
+						invoice: invoice,
+						status: status,
 					},
 					success : function(data) {
 						if (data.code == 0) {
@@ -216,20 +219,20 @@
 	}
 
 	function search() {
-		var core_str = $("#core_btn").val();
-		if (isString(core_str)) {
-			core = core_str;
-			index = 0;
-			size = 10;
-			show_bill(index, size, core);
-		} else {
-			core_str = "";
-			core = core_str;
-			index = 0;
-			size = 10;
-			show_bill(index, size, core);
-			//alert("请输入核心企业名");
+		var core = $("#acceptance_core").val();
+		var invoice = $("#acceptance_invoice").val();
+		var status = $("#bill_status").val();
+		debugger;
+		if (!isString(core)) {
+			core = "";
 		}
+		if (!isString(invoice)) {
+			invoice = "";
+		}
+		if (!isString(status)) {
+			status = "";
+		}
+		show_bill(index, size, core, invoice, status);
 	}
 
 	function logout() {
@@ -329,15 +332,29 @@
 				<!--content-->
 				<div class=" profile">
 					<div class="profile-bottom" style="width: 100%; min-height: 800px;">
-						<div class="col-md-4 compose">
-							<label for="core_btn"
-								class="col-sm-3 control-label hor-form bill_search">核心企业名</label>
-							<div class="col-sm-9 bill_search">
-								<input class="form-control" id="core_btn" placeholder=""
-									type="search">
-							</div>
+						<div class="col-md-6 compose">
+						<form class="form-inline">
+							<div class="form-group">
+									&nbsp;上市主体：&nbsp;<input class="form-control"
+										id="acceptance_core" placeholder="" type="text" />
+
+								</div>
+								<div class="form-group">
+									&nbsp;承兑企业：&nbsp; <input class="form-control"
+										id="acceptance_invoice" placeholder="" type="text" />
+								</div>
+								<div class="form-group">
+										<label for="selector_status">状态</label> <select
+											name="bill_status" id="bill_status"
+											class="form-control">
+											<option value="">不限</option>
+											<option value="0">正常</option>
+											<option value="1">已关闭</option>
+										</select>
+								</div>
+						</form>		
 						</div>
-						<div class="col-md-4 compose">
+						<div class="col-md-3 compose">
 							<div>
 								<button type="button" class="btn btn-primary" onclick="search()">查询</button>
 								<a href="bill_add.html" target="_blank"><button
@@ -349,7 +366,7 @@
 							</div>
 
 						</div>
-						<div class="col-md-4 compose">
+						<div class="col-md-3 compose">
 							<div class="mail-toolbar clearfix">
 								<div class="float-right">
 									<span class="name-caret">当前页：<span id="current_index"></span>&nbsp;&nbsp;

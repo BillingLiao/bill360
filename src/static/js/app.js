@@ -1,5 +1,5 @@
 //var api = "http://xycs.wenxikeji.com/"
-var api = "http://localhost:8080/"
+var api = "http://localhost:80/"
 
 function AntiSqlValid(oField) {
 	var sql = /select|update|delete|exec|count|'|"|=|;|>|<|%/i;

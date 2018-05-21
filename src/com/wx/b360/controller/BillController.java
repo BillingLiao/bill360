@@ -1,8 +1,5 @@
 package com.wx.b360.controller;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,16 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wx.b360.entity.Acceptance;
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Bill;
-import com.wx.b360.entity.Inventory;
 import com.wx.b360.entity.Order;
 import com.wx.b360.entity.Record;
-import com.wx.b360.entity.Source;
 import com.wx.b360.entity.Staff;
 import com.wx.b360.entity.User;
 import com.wx.b360.model.Company;
@@ -34,65 +27,12 @@ import com.wx.b360.model.Msg;
 import com.wx.b360.tool.AppTool;
 import com.wx.b360.tool.CheckTool;
 import com.wx.b360.tool.CodeConstant;
-import com.wx.b360.tool.HttpTool;
 
 @RestController
 @RequestMapping("/bill")
 public class BillController extends BaseController {
 
-	// 识别票据信息
-	@PostMapping("/ocr")
-	public Msg ocr(@RequestParam MultipartFile file) {
-
-		String base64 = null;
-		FileInputStream fileInputStream;
-		try {
-			fileInputStream = (FileInputStream) file.getInputStream();
-			byte[] bytes = new byte[fileInputStream.available()];
-			fileInputStream.read(bytes);
-			base64 = java.util.Base64.getEncoder().encodeToString(bytes);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		if (CheckTool.isString(base64) && base64.length() > 21) {
-			String url = "http://120.76.155.30:9191/pcc-ocr/api/recognize";
-			Map<String, String> params = new HashMap<>();
-			params.put("image_data", base64);
-			String result = HttpTool.post(url, params);
-			JSONObject jsonObject = JSONObject.parseObject(result);
-			if (jsonObject.getInteger("code").intValue() == 200) {
-				String recognize = jsonObject.getString("recognize_data");
-				String endDate = null;
-				String company = null;
-				if (CheckTool.isString(recognize)) {
-					jsonObject = JSONObject.parseObject(recognize);
-					endDate = jsonObject.getString("endDate");
-					company = jsonObject.getString("kpCompany");
-					Map<String, String> data = new HashMap<>();
-					data.put("endDate", endDate);
-					data.put("company", company);
-					data.put("ocr-result", result);
-
-					msg.set("识别成功", CodeConstant.SUCCESS, data);
-				} else {
-					msg.set("识别失败:没有识别数据", CodeConstant.ERROR, null);
-				}
-
-			} else {
-				msg.set("识别失败:" + jsonObject.getString("message"), CodeConstant.ERROR, null);
-			}
-		} else {
-			msg.set("base64字串格式有误", CodeConstant.ERR_PAR, null);
-		}
-		return msg;
-	}
-
-	// 获取票据和与之关联的对接人信息、承兑企业信息
+	// 获取收票清单和与之关联的对接人信息、承兑企业信息
 	@PostMapping("/id/source")
 	public Msg findByIdWithSource(@SessionAttribute Admin admin, @RequestParam int id) {
 		Bill bill = billRepository.findOne(id);
@@ -115,7 +55,7 @@ public class BillController extends BaseController {
 		List<Order> orderList = orderRepository.findByBill(bill);
 		for (Order order : orderList) {
 			if (order != null) {
-				msg.set("改项有订单生成，请先删除对应订单！", CodeConstant.SET_ERR, null);
+				msg.set("该项有订单生成，请先删除对应订单！", CodeConstant.SET_ERR, null);
 				return msg;
 			}
 		}
@@ -128,12 +68,32 @@ public class BillController extends BaseController {
 		return msg;
 	}
 
-	// 精确搜索
+	//精准查询
+	@PostMapping("/precise")
+	public Msg precise(@RequestParam String core, @RequestParam int type, @RequestParam String invoice,
+			@SessionAttribute User user) {
+		if (user.getCard() == 1) {
+			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
+			msg.set("查询成功", CodeConstant.SUCCESS, billList);
+		} else if (user.getPrecise() < 5) {
+			user.setPrecise(user.getPrecise() + 1);
+			user = userRepository.save(user);
+			// 更新缓存
+			ValueOperations<String, User> operations = redisTemplate.opsForValue();
+			operations.set("user:" + user.getId(), user);
+			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
+			msg.set("查询成功", CodeConstant.SUCCESS, billList);
+		} else {
+			msg.set("请先上传名片", CodeConstant.ERROR, null);
+		}
+		return msg;
+	}
+	/*// 精确搜索
 	@PostMapping("/precise")
 	public Msg precise(@RequestParam String core, @RequestParam int type, @RequestParam String invoice,
 			@RequestParam int index, @RequestParam int size, @SessionAttribute(required = false) User user) {
 		if (user.getCard() == 1) {
-			Page<Bill> page = billService.find(index, size, 0, core, null, type, invoice);
+			Page<Bill> page = billService.find(index, size, type, 0 , core, invoice);
 			msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		} else if (user.getPrecise() < 5) {
 			user.setPrecise(user.getPrecise() + 1);
@@ -141,48 +101,14 @@ public class BillController extends BaseController {
 			// 更新缓存
 			ValueOperations<String, User> operations = redisTemplate.opsForValue();
 			operations.set("user:" + user.getId(), user);
-			Page<Bill> page = billService.find(index, size, 0, core, null, type, invoice);
+			Page<Bill> page = billService.find(index, size, type, 0 , core, invoice);
 			msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		} else {
 			msg.set("请先上传名片", CodeConstant.ERROR, null);
 		}
 		return msg;
 	}
-
-	// 企业核心名模糊搜索
-	@PostMapping("/core")
-	public Msg core(@RequestParam int index, @RequestParam int size, @RequestParam String core) {
-		Page<Bill> bills = billService.find(index, size, 0, core, null, null, null);
-		List<Bill> billsList = bills.getContent();
-		long count = bills.getTotalElements();
-		ArrayList<Company> companies = new ArrayList<>();
-		if (count > 0) {
-			for (Bill bill : billsList) {
-				// companies.add(new Company(bill.getCore(), bill.getId()));
-			}
-		}
-		Map<String, Object> result = new HashMap<>();
-		result.put("count", count);
-		result.put("content", companies);
-		msg.set("查询成功", CodeConstant.SUCCESS, result);
-
-		return msg;
-	}
-
-	// 获取指定票据
-	@PostMapping("/id")
-	public Msg id(@RequestParam int id, @SessionAttribute(required = false) Admin admin) {
-		Bill bill = billRepository.findOne(id);
-		if (bill != null && (bill.getStatus() == 0 || admin != null)) {
-
-			msg.set("查询成功", CodeConstant.SUCCESS, bill);
-
-		} else {
-			msg.set("未找到此条信息或此信息已关闭", CodeConstant.FIND_ERR, null);
-		}
-		return msg;
-	}
-
+	
 	// 快速搜索
 	@PostMapping("/fast")
 	public Msg fast(@SessionAttribute User user, @RequestParam String core, @RequestParam int index,
@@ -198,14 +124,66 @@ public class BillController extends BaseController {
 			record = new Record(user, core, new Date(System.currentTimeMillis()));
 		}
 		record = recordRepository.save(record);
-
-		Page<Bill> bills = billService.find(index, size, 0, core, null, null, null);
+		
+		Page<Bill> bills = billService.find(index, size, null, null, core, null);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(bills));
+		return msg;
+	}*/
+
+	// 企业核心名模糊搜索
+	@PostMapping("/core")
+	public Msg core(@RequestParam int index, @RequestParam int size, @RequestParam String core) {
+		Page<Bill> bills = billService.find(index, size, null, null, core, null);
+		List<Bill> billsList = bills.getContent();
+		long count = bills.getTotalElements();
+		ArrayList<Company> companies = new ArrayList<>();
+		if (count > 0) {
+			for (Bill bill : billsList) {
+				companies.add(new Company(bill.getAcceptance().getCore(), bill.getId()));
+			}
+		}
+		Map<String, Object> result = new HashMap<>();
+		result.put("count", count);
+		result.put("content", companies);
+		msg.set("查询成功", CodeConstant.SUCCESS, result);
 
 		return msg;
 	}
+	
+	/**
+	 * 通过核心企业名 查找 利率最小的 bill 收票清单
+	 * @param user
+	 * @param core
+	 * @return
+	 */
+	@PostMapping("/findByCore")
+	public Msg findMinRateByCore(@SessionAttribute User user,@RequestParam String core) {
+		
+		Bill bill = billRepository.findMinRateBycore(core);
+		if(bill != null && bill.getStatus() == 0) {
+			msg.set("查询成功", CodeConstant.SUCCESS, bill);
+		}else {
+			msg.set("查询失败", CodeConstant.FIND_ERR, null);
+		}
+		return msg;
+	}
 
-	// 修改票据
+	// 获取指定收票清单
+	@PostMapping("/id")
+	public Msg id(@RequestParam int id, @SessionAttribute(required = false) Admin admin) {
+		Bill bill = billRepository.findOne(id);
+		if (bill != null && (bill.getStatus() == 0 || admin != null)) {
+
+			msg.set("查询成功", CodeConstant.SUCCESS, bill);
+
+		} else {
+			msg.set("未找到此条信息或此信息已关闭", CodeConstant.FIND_ERR, null);
+		}
+		return msg;
+	}
+
+
+	// 修改对接人收票清单
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int staffId, @RequestParam int acceptanceId,
 			@RequestParam BigDecimal rate, @RequestParam(required = false) BigDecimal total,
@@ -320,15 +298,17 @@ public class BillController extends BaseController {
 		return msg;
 	}
 
-	// 获取票据列表
+	// 分页查询对接人收票清单
 	@PostMapping("/find")
-	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size) {
-		Page<Bill> page = billService.find(index, size, null, null, null, null, null);
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size,
+			@RequestParam(required = false) String core,@RequestParam(required = false) String invoice,
+			@RequestParam(required = false) Integer status) {
+		Page<Bill> page = billService.find(index, size, status, null, core, invoice);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
 	}
 
-	// 管理员添加票据
+	// 管理员添加收票清单
 	@PostMapping("/add")
 	public Msg add(@SessionAttribute Admin admin, @RequestParam int staffId, @RequestParam int acceptanceId,
 			@RequestParam BigDecimal rate, @RequestParam(required = false) BigDecimal total,
@@ -343,12 +323,15 @@ public class BillController extends BaseController {
 		 * if(CheckTool.isString(sphone) && !CheckTool.isPhone(sphone)) {
 		 * msg.set("手机号格式有误", CodeConstant.ERR_PAR, null); return msg; }
 		 */
-
+		Bill bill = billRepository.findByStaffAndAcceptance(staffId,acceptanceId);
+		
+		if(bill == null) {
+		
 		Staff staff = staffRepository.findOne(staffId);
 
 		Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
 
-		Bill bill = new Bill(acceptance, staff, rate, shortest, adjuest, initiate, max, min, total, usable, remark,
+		bill = new Bill(acceptance, staff, rate, shortest, adjuest, initiate, max, min, total, usable, remark,
 				status, level, is_bargain, is_invoice, is_moneyorback, is_financing, is_clean, etime, offer);
 		bill = billRepository.save(bill);
 		if (bill != null) {
@@ -356,6 +339,9 @@ public class BillController extends BaseController {
 
 		} else {
 			msg.set("添加失败", CodeConstant.SET_ERR, null);
+		}
+		}else {
+			msg.set("已有该条数据", CodeConstant.SET_ERR, null);
 		}
 		return msg;
 	}

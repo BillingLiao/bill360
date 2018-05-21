@@ -1,7 +1,5 @@
 package com.wx.b360.controller;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.wx.b360.entity.Admin;
 import com.wx.b360.model.Msg;
-import com.wx.b360.tool.CheckTool;
 import com.wx.b360.tool.CodeConstant;
 import com.wx.b360.tool.TokenTool;
 
@@ -22,7 +19,6 @@ public class AdminController extends BaseController {
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam String oldPwd, 
 			@RequestParam String newPwd) {
-		boolean isChange = false;
 		if(admin.getPwd().equals(oldPwd)) {
 			admin.setPwd(newPwd);
 			admin = adminRepository.save(admin);

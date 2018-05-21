@@ -115,7 +115,7 @@
 			success : function(result) {
 				var html;
 				for (var i = 0; i < result.length; i++) {
-					html += "<option value="+result[i].staff_id+">" + result[i].name
+					html += "<option value="+result[i].id+">" + result[i].name
 							+ "</option>";
 				}
 				$("#staff_name").html(html);
@@ -228,8 +228,9 @@
 		var is_moneyorback = $('input[name="add_moneyorback"]:checked').val();
 		var offer = $("#bill_offer").val();
 		var remark = $("#bill_remark").val();
-
+		debugger;
 		if (!isNum(staffId)) {
+			
 			alert("请选择对接人");
 			return;
 		}
@@ -270,11 +271,11 @@
 			alert("调整天数应该是一个正整数且非空");
 			return;
 		}
-		if (isString(level) && !isNum(level)) {
+		if (!isNum(level)) {
 			alert("优先级应该是一个正整数");
 			return;
 		}
-		if (isString(etime) && !isNum(etime)) {
+		if (!isNum(etime)) {
 			alert("背书次数限制应该是一个正整数");
 			return;
 		}

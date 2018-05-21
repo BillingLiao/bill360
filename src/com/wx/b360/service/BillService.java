@@ -1,6 +1,5 @@
 package com.wx.b360.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +24,7 @@ import com.wx.b360.tool.CheckTool;
 public class BillService {
 	@Resource BillRepository billRepository;
 
-	public Page<Bill> find(int index, int size, Integer status, String core, BigDecimal money,
-			Integer type, String invoice) {
+	public Page<Bill> find(int index, int size, Integer status, Integer type, String core, String invoice) {
 		Specification<Bill> specification = new Specification<Bill>() {
 
 			@Override
@@ -37,24 +35,19 @@ public class BillService {
 					Predicate predicate = cb.equal(path, status);
 					predicates.add(predicate);
 				}
+				if(type != null) {
+					Path<Integer> path = root.get("type");
+					Predicate predicate = cb.equal(path, type);
+					predicates.add(predicate);
+				}
 				if(CheckTool.isString(core)) {
-					Path<String> path = root.get("core");
+					Path<String> path = root.get("acceptance").get("core");
 					Predicate predicate = cb.like(path, "%"+core+"%");
 					predicates.add(predicate);
 				}
-				if(type != null) {
-					Path<Integer> path = root.get("type");
-					Predicate predicate = cb.equal(path, type);
-					predicates.add(predicate);
-				}
 				if(CheckTool.isString(invoice)) {
-					Path<String> path = root.get("invoice");
+					Path<String> path = root.get("acceptance").get("invoice");
 					Predicate predicate = cb.like(path, "%"+invoice+"%");
-					predicates.add(predicate);
-				}
-				if(type != null) {
-					Path<Integer> path = root.get("type");
-					Predicate predicate = cb.equal(path, type);
 					predicates.add(predicate);
 				}
 				return cb.and(predicates.toArray(new Predicate[] {}));

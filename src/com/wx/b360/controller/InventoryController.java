@@ -1,5 +1,8 @@
 package com.wx.b360.controller;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wx.b360.entity.Acceptance;
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Card;
@@ -23,8 +27,10 @@ import com.wx.b360.entity.User;
 import com.wx.b360.entity.UserByAdmin;
 import com.wx.b360.model.Msg;
 import com.wx.b360.tool.AppTool;
+import com.wx.b360.tool.CheckTool;
 import com.wx.b360.tool.CodeConstant;
 import com.wx.b360.tool.FileTool;
+import com.wx.b360.tool.HttpTool;
 
 /**
  * 持票信息Controller
@@ -35,6 +41,58 @@ import com.wx.b360.tool.FileTool;
 @RestController
 @RequestMapping("/inventory")
 public class InventoryController extends BaseController {
+	
+	// 识别票据信息
+	@PostMapping("/ocr")
+	public Msg ocr(@RequestParam MultipartFile file) {
+
+		String base64 = null;
+		FileInputStream fileInputStream;
+		try {
+			fileInputStream = (FileInputStream) file.getInputStream();
+			byte[] bytes = new byte[fileInputStream.available()];
+			fileInputStream.read(bytes);
+			base64 = java.util.Base64.getEncoder().encodeToString(bytes);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (CheckTool.isString(base64) && base64.length() > 21) {
+			String url = "http://120.76.155.30:9191/pcc-ocr/api/recognize";
+			Map<String, String> params = new HashMap<>();
+			params.put("image_data", base64);
+			String result = HttpTool.post(url, params);
+			JSONObject jsonObject = JSONObject.parseObject(result);
+			if (jsonObject.getInteger("code").intValue() == 200) {
+				String recognize = jsonObject.getString("recognize_data");
+				String endDate = null;
+				String company = null;
+				if (CheckTool.isString(recognize)) {
+					jsonObject = JSONObject.parseObject(recognize);
+					endDate = jsonObject.getString("endDate");
+					company = jsonObject.getString("kpCompany");
+					Map<String, String> data = new HashMap<>();
+					data.put("endDate", endDate);
+					data.put("company", company);
+					data.put("ocr-result", result);
+
+					msg.set("识别成功", CodeConstant.SUCCESS, data);
+				} else {
+					msg.set("识别失败:没有识别数据", CodeConstant.ERROR, null);
+				}
+
+			} else {
+				msg.set("识别失败:" + jsonObject.getString("message"), CodeConstant.ERROR, null);
+			}
+		} else {
+			msg.set("base64字串格式有误", CodeConstant.ERR_PAR, null);
+		}
+		return msg;
+	}
 
 	// 删除持票信息
 	@PostMapping("/del")

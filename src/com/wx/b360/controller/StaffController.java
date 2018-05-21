@@ -42,7 +42,7 @@ public class StaffController extends BaseController {
 	 * @return
 	 */
 	@PostMapping("/find")
-	public Msg find(@RequestParam int index, @RequestParam int size, @RequestParam(required = false) String name,
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, @RequestParam(required = false) String name,
 			@RequestParam(required = false) String company){
 		Page<Staff> page = staffService.find(index, size, name, company);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
@@ -56,12 +56,12 @@ public class StaffController extends BaseController {
 	 * @return
 	 */
 	@PostMapping("/id")
-	public Msg findById(@SessionAttribute Admin admin, @RequestParam int id){
+	public Msg findById(@RequestParam int id){
 		Staff staff = staffRepository.findOne(id);
 		if(staff != null) {
 			msg.set("查询成功", CodeConstant.SUCCESS, staff);
 		}else {
-			msg.set("查询成功", CodeConstant.FIND_ERR, null);
+			msg.set("查询失败", CodeConstant.FIND_ERR, null);
 		}
 		return msg;
 	}

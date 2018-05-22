@@ -60,9 +60,17 @@ public class AcceptanceController extends BaseController {
 		Acceptance acceptance = acceptanceRepository.findOne(id);
 		if (acceptance != null) {
 			boolean isChange = false;
-			if (!acceptance.getInvoice().equals(invoice)) { // 判断与修改前数据是否不一致
-				isChange = true;
-				acceptance.setInvoice(invoice);
+			// 判断与修改前数据是否不一致
+			if (CheckTool.isString(invoice) && (acceptance.getInvoice() == null || !acceptance.getInvoice().equals(invoice))) {
+				Acceptance acceptance2 = acceptanceRepository.findByInvoice(invoice);
+				if (acceptance2 == null) {
+					isChange = true;
+					acceptance.setInvoice(invoice);
+				} else {
+					msg.set("承兑企业名被占用", CodeConstant.ERROR, null);
+					return msg;
+				}
+				
 			}
 			if (CheckTool.isString(core) && (acceptance.getCore() == null || !acceptance.getCore().equals(core))) {
 				isChange = true;
@@ -137,6 +145,17 @@ public class AcceptanceController extends BaseController {
 		List<Acceptance> acceptancelist = acceptanceRepository.findInvoiceByCore(core);
 		return acceptancelist;
 	}
+	
+	/**
+	 * 查詢所有上市主體
+	 * 
+	 * @return
+	 */
+	@PostMapping("/findCore")
+	public List<String> findCore() {
+		List<String> acceptancelist = acceptanceRepository.findCore();
+		return acceptancelist;
+	}
 
 	// 企业核心名模糊搜索 （快速查询）
 	@PostMapping("/fast")
@@ -167,15 +186,14 @@ public class AcceptanceController extends BaseController {
 
 	// 添加承兑企业名
 	@PostMapping("/add")
-	public Msg add(@SessionAttribute Admin admin, @RequestParam String invoice,
+	public Msg add(@SessionAttribute Admin admin, @RequestParam(required = false) String invoice,
 			@RequestParam(required = false) String core, @RequestParam(required = false) String category,
-			@RequestParam(required = false) String nature, @RequestParam(required = false) int type,
+			@RequestParam(required = false) String nature, @RequestParam(required = false) Integer type,
 			@RequestParam(required = false) String addr) {
 
 		Acceptance acceptance = acceptanceRepository.findByInvoice(invoice);
 		if (acceptance == null) {
 			acceptance = new Acceptance(invoice, core, category, nature, type, addr, 1);
-
 			acceptance = acceptanceRepository.save(acceptance);
 			msg.set("添加成功", CodeConstant.SUCCESS, acceptance);
 		} else {

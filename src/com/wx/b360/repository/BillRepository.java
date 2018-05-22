@@ -27,7 +27,7 @@ public interface BillRepository extends PagingAndSortingRepository<Bill, Integer
 	Bill findMinRateBycore(String core);
 	
 	//通过核心企业，开票企业，类别 查找 bill
-	@Query(value="SELECT b.* FROM b_bill b LEFT JOIN b_acceptance a ON b._acceptance_id = a._id  WHERE a._core = ?1 and a._invoice = ?2 and a._type = ?3", nativeQuery=true)
-	List<Bill> findByCoreInvoiceType(String core,String invoice, Integer type);
+	//@Query(value="SELECT b.* FROM b_bill b LEFT JOIN b_acceptance a ON b._acceptance_id = a._id  WHERE a._core = ?1 and a._invoice = ?2 and a._type = ?3", nativeQuery=true)
+	//List<Bill> findByCoreInvoiceType(String core,String invoice, Integer type);
 	
 }

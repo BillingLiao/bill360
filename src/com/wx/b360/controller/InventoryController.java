@@ -118,7 +118,16 @@ public class InventoryController extends BaseController {
 			boolean isChange = false;
 			if (!inventory.getCompany().equals(company)) { // 判断与修改前数据是否不一致
 				isChange = true;
-				inventory.setCompany(company);
+				// 判断是否有这个名称的承兑企业，如果没有则创建之
+				Acceptance acceptance = acceptanceRepository.findByInvoice(company);
+				if (acceptance == null) {
+					acceptance = new Acceptance(company, null, null, null, 0, null, 0);
+					acceptance = acceptanceRepository.save(acceptance);
+					inventory.setCompany(company);
+				} else {
+					inventory.setCompany(company);
+				}
+				
 			}
 
 			if (money.compareTo(inventory.getMoney()) != 0) {

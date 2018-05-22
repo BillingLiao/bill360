@@ -20,7 +20,7 @@ public class Acceptance {
 	@Column(name="_id", nullable=false, columnDefinition="int comment 'id'")
 	private int id;
 	
-	@Column(name="_invoice", nullable=false, columnDefinition="varchar(255) comment '承兑企业名称(开票企业)'")
+	@Column(name="_invoice", nullable=true, columnDefinition="varchar(255) comment '承兑企业名称(开票企业)'")
 	private String invoice;
 	
 	@Column(name="_core", nullable=true, columnDefinition="varchar(255) comment '上市主体(核心)'")
@@ -35,8 +35,11 @@ public class Acceptance {
 	@Column(name="_type", nullable=true, columnDefinition="int default 0 comment '类型0-母公司、1-子公司、2-孙公司'")
 	private int type;
 	
-	@Column(name="_addr", nullable=true, columnDefinition="varchar(255) comment '地区'")
+	@Column(name="_addr", nullable=true, columnDefinition="varchar(255) comment '地址'")
 	private String addr;
+	
+	@Column(name="_area", nullable=true, columnDefinition="varchar(255) comment '地区'")
+	private String area;
 	
 	@Column(name="_is_finish", nullable=false, columnDefinition="int default 0 comment '企业信息0-未完善、1-已完善'")
 	private int is_finish;

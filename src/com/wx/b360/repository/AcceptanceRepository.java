@@ -18,4 +18,8 @@ public interface AcceptanceRepository extends PagingAndSortingRepository<Accepta
 	//通过core主体模糊查询 所有core
 	@Query(value="select distinct _core from b_acceptance where _core like %?1% order by _id", nativeQuery=true)
 	public List<String> findAllCoreByCore(String core);
+	
+	//查询 所有core
+	@Query(value="select distinct _core from b_acceptance", nativeQuery=true)
+	public List<String> findCore();
 }

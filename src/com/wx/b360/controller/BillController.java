@@ -68,32 +68,14 @@ public class BillController extends BaseController {
 		return msg;
 	}
 
-	//精准查询
-	@PostMapping("/precise")
-	public Msg precise(@RequestParam String core, @RequestParam int type, @RequestParam String invoice,
-			@SessionAttribute User user) {
-		if (user.getCard() == 1) {
-			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
-			msg.set("查询成功", CodeConstant.SUCCESS, billList);
-		} else if (user.getPrecise() < 5) {
-			user.setPrecise(user.getPrecise() + 1);
-			user = userRepository.save(user);
-			// 更新缓存
-			ValueOperations<String, User> operations = redisTemplate.opsForValue();
-			operations.set("user:" + user.getId(), user);
-			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
-			msg.set("查询成功", CodeConstant.SUCCESS, billList);
-		} else {
-			msg.set("请先上传名片", CodeConstant.ERROR, null);
-		}
-		return msg;
-	}
-	/*// 精确搜索
+	
+	// 精确搜索
 	@PostMapping("/precise")
 	public Msg precise(@RequestParam String core, @RequestParam int type, @RequestParam String invoice,
 			@RequestParam int index, @RequestParam int size, @SessionAttribute(required = false) User user) {
 		if (user.getCard() == 1) {
 			Page<Bill> page = billService.find(index, size, type, 0 , core, invoice);
+			//List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
 			msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		} else if (user.getPrecise() < 5) {
 			user.setPrecise(user.getPrecise() + 1);
@@ -109,6 +91,7 @@ public class BillController extends BaseController {
 		return msg;
 	}
 	
+	/*
 	// 快速搜索
 	@PostMapping("/fast")
 	public Msg fast(@SessionAttribute User user, @RequestParam String core, @RequestParam int index,
@@ -160,6 +143,7 @@ public class BillController extends BaseController {
 	public Msg findMinRateByCore(@SessionAttribute User user,@RequestParam String core) {
 		
 		Bill bill = billRepository.findMinRateBycore(core);
+		
 		if(bill != null && bill.getStatus() == 0) {
 			msg.set("查询成功", CodeConstant.SUCCESS, bill);
 		}else {

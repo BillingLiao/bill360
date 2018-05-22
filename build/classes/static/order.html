@@ -91,13 +91,17 @@
 							$("#current_index").text(index + 1);
 							$("#current_count").text(count);
 							var orders = data.data.content;
+							debugger;
 							var list = $("#order_list");
 							list.html("");
 							for (var i = 0; i < orders.length; i++) {
 								var order = orders[i];
-								var core = isString(order.core) ? order.core
+								var bill = order.bill;
+								var acceptance = bill.acceptance;
+								var inventory = order.inventory;
+								var core = isString(acceptance.core) ? acceptance.core
 										: "-";
-								var invoice = isString(order.invoice) ? order.invoice
+								var invoice = isString(inventory.company) ? inventory.company
 										: "-";
 								var time = isString(order.time) ? order.time
 										: "-";
@@ -108,7 +112,7 @@
 								var interest = isDouble(order.interest) ? order.interest
 										: "-";//利息
 								var day = isNum(order.day) ? order.day : "-";
-								var img = isString(order.img) ? '<a href="'+api + "upload/"+order.img+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>'
+								var img = isString(inventory.img_front) ? '<a href="'+api + "upload/"+inventory.img_front+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>'
 										: "无图片";
 								var user = '<a href="user_detail.html?id='
 										+ order.user.id

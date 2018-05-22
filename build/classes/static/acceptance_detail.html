@@ -33,8 +33,6 @@
 <script src="js/screenfull.js"></script>
 <script src="js/app.js" type="text/javascript" charset="utf-8"></script>
 <script>
-	var userlist;
-	var core_select = "上市主体";
 	var category_select = "企业类别";
 	var nature_select = "企业性质";
 	$(function() {
@@ -63,13 +61,12 @@
 				}
 				$("#username").text(sessionStorage.getItem("name"));
 
-				show_core(core_select);
 				show_category(category_select);
 				show_nature(nature_select);
 
 			});
 
-	function show_core(data_Dic_Name) {
+	function show_category(category_select) {
 		$.ajax({
 			type : "post",
 			url : api + "dataDic/findDataDicValue",
@@ -77,28 +74,7 @@
 			dataType : 'json',
 			data : {
 				atoken : atoken,
-				data_Dic_Name : data_Dic_Name,
-			},
-			success : function(result) {
-				var html;
-				for (var i = 0; i < result.length; i++) {
-					html += "<option value="+result[i].dataDicValue+">"
-							+ result[i].dataDicValue + "</option>";
-				}
-				$("#acceptance_core").html(html);
-			}
-		});
-	}
-
-	function show_category(data_Dic_Name) {
-		$.ajax({
-			type : "post",
-			url : api + "dataDic/findDataDicValue",
-			async : false,
-			dataType : 'json',
-			data : {
-				atoken : atoken,
-				data_Dic_Name : data_Dic_Name,
+				data_Dic_Name : category_select,
 			},
 			success : function(result) {
 				var html;
@@ -111,7 +87,7 @@
 		});
 	}
 
-	function show_nature(data_Dic_Name) {
+	function show_nature(nature_select) {
 		$.ajax({
 			type : "post",
 			url : api + "dataDic/findDataDicValue",
@@ -119,7 +95,7 @@
 			dataType : 'json',
 			data : {
 				atoken : atoken,
-				data_Dic_Name : data_Dic_Name,
+				data_Dic_Name : nature_select,
 			},
 			success : function(result) {
 				var html;
@@ -352,17 +328,15 @@
 					<table class="table table-bordered">
 						<tbody>
 							<tr>
-								<td width="15%">承兑企业名称<code>*</code></td>
+								<td width="15%">上市主体</td>
+								<td colspan="3"><input class="form-control"
+									id="acceptance_core" placeholder="请输入上市主体" type="text"></td>
+							</tr>
+							<tr>
+								<td width="15%">承兑企业名称</td>
 								<td colspan="3"><input class="form-control"
 									id="acceptance_invoice" placeholder="请输入承兑企业名称" type="text">
 								</td>
-							</tr>
-							<tr>
-								<td width="15%">上市主体<code>*</code></td>
-								<td colspan="3"><select id="acceptance_core"
-									class="form-control">
-
-								</select></td>
 							</tr>
 							<tr>
 								<td width="15%">企业类别<code>*</code></td>

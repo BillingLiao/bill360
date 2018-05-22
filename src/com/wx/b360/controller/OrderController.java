@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Bill;
+import com.wx.b360.entity.Inventory;
 import com.wx.b360.entity.Order;
-import com.wx.b360.entity.Source;
-import com.wx.b360.entity.Staff;
 import com.wx.b360.entity.User;
 import com.wx.b360.model.Msg;
 import com.wx.b360.tool.AppTool;
@@ -28,58 +27,58 @@ import com.wx.b360.tool.CodeConstant;
 @RestController
 @RequestMapping("/order")
 public class OrderController extends BaseController {
-	
-	//管理员处理订单
+
+	// 管理员处理订单
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int status) {
 		Order order = orderRepository.findOne(id);
-		if(order != null) {
+		if (order != null) {
 			boolean isChange = false;
-			if(order.getStatus() != status) {
+			if (order.getStatus() != status) {
 				isChange = true;
 				order.setStatus(status);
 			}
-			if(isChange) {
+			if (isChange) {
 				order.setStime(new Date(System.currentTimeMillis()));
 				order = orderRepository.save(order);
 				msg.set("更新成功", CodeConstant.SUCCESS, order);
-			}else {
+			} else {
 				msg.set("没有要修改的数据", CodeConstant.ERROR, null);
 			}
-			
+
 		} else {
 			msg.set("未找到此条数据", CodeConstant.FIND_ERR, null);
 		}
 		return msg;
 	}
-	
-	
-	//获取订单列表
+
+	// 获取订单列表
 	@PostMapping("/find")
-	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, 
-			@RequestParam(required=false) Integer status, @RequestParam(required=false) Integer userId,
-			@RequestParam(required=false) String invoice, @RequestParam(required=false) Integer id) {
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size,
+			@RequestParam(required = false) Integer status, @RequestParam(required = false) Integer userId,
+			@RequestParam(required = false) String invoice, @RequestParam(required = false) Integer id) {
 		User user = null;
-		if(userId != null) user = userRepository.findOne(userId);
+		if (userId != null)
+			user = userRepository.findOne(userId);
 		Page<Order> page = orderService.find(index, size, status, user, invoice, id);
 		msg.set("查找成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
 	}
-	
-	//获取指定订单详情
+
+	// 获取指定订单详情
 	@PostMapping("/id")
-	public Msg id(@SessionAttribute(required=false) User user, @SessionAttribute(required=false) Admin admin,
+	public Msg id(@SessionAttribute(required = false) User user, @SessionAttribute(required = false) Admin admin,
 			@RequestParam int id) {
-		if(user != null) {
+		if (user != null) {
 			Order order = orderRepository.findOne(id);
-			if(order != null && order.getUser().getId() == user.getId()) {
+			if (order != null && order.getUser().getId() == user.getId()) {
 				msg.set("查询成功", CodeConstant.SUCCESS, order);
 			} else {
 				msg.set("未找到此条数据", CodeConstant.FIND_ERR, null);
 			}
-		} else if(admin != null) {
+		} else if (admin != null) {
 			Order order = orderRepository.findOne(id);
-			if(order != null) {
+			if (order != null) {
 				msg.set("查询成功", CodeConstant.SUCCESS, order);
 			} else {
 				msg.set("未找到此条数据", CodeConstant.FIND_ERR, null);
@@ -89,21 +88,21 @@ public class OrderController extends BaseController {
 		}
 		return msg;
 	}
-	
-	//获取指定订单详情并生成文件
+
+	// 获取指定订单详情并生成文件
 	@PostMapping("/id/file")
-	public Msg idWithFile(@SessionAttribute(required=false) User user, @SessionAttribute(required=false) Admin admin,
-			@RequestParam int id) {
-		if(user != null) {
+	public Msg idWithFile(@SessionAttribute(required = false) User user,
+			@SessionAttribute(required = false) Admin admin, @RequestParam int id) {
+		if (user != null) {
 			Order order = orderRepository.findOne(id);
-			if(order != null && order.getUser().getId() == user.getId()) {
+			if (order != null && order.getUser().getId() == user.getId()) {
 				msg.set("查询成功", CodeConstant.SUCCESS, order);
 			} else {
 				msg.set("未找到此条数据", CodeConstant.FIND_ERR, null);
 			}
-		} else if(admin != null) {
+		} else if (admin != null) {
 			Order order = orderRepository.findOne(id);
-			if(order != null) {
+			if (order != null) {
 				msg.set("查询成功", CodeConstant.SUCCESS, order);
 			} else {
 				msg.set("未找到此条数据", CodeConstant.FIND_ERR, null);
@@ -113,35 +112,37 @@ public class OrderController extends BaseController {
 		}
 		return msg;
 	}
-	
-	//计算计息天数、每十万贴息和利息
+
+	// 计算计息天数、每十万贴息和利息
 	@PostMapping("/calc")
 	public Msg calc(@RequestParam BigDecimal money, @RequestParam String time, @RequestParam int billId) {
-		if(CheckTool.isDate(time)) {
+		if (CheckTool.isDate(time)) {
 			Bill bill = billRepository.findOne(billId);
-			if(bill != null) {
+			if (bill != null) {
 				Date dateEnt = AppTool.changeDate(time);
-				if(dateEnt.getTime() < System.currentTimeMillis()) {
+				if (dateEnt.getTime() < System.currentTimeMillis()) {
 					msg.set("到期日期小于当前时间", CodeConstant.ERR_PAR, null);
 					return msg;
 				}
-				
-				int day = (int)((dateEnt.getTime() - System.currentTimeMillis()) / 86400000 + 1);
+
+				int day = (int) ((dateEnt.getTime() - System.currentTimeMillis()) / 86400000 + 1);
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(dateEnt);
-				if(calendar.get(Calendar.DAY_OF_WEEK) == 1) {
-					//周日情况
+				if (calendar.get(Calendar.DAY_OF_WEEK) == 1) {
+					// 周日情况
 					day += 1;
-				} else if(calendar.get(Calendar.DAY_OF_WEEK) == 7) {
-					//周六情况
+				} else if (calendar.get(Calendar.DAY_OF_WEEK) == 7) {
+					// 周六情况
 					day += 2;
 				}
 				day += bill.getAdjuest();
-				
+
 				BigDecimal rate = bill.getRate();
-				BigDecimal interest = money.multiply(rate).divide(new BigDecimal(100), 4,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
-				String interestInfo = money + "×" + rate +"÷100÷360×" + day +"=" +interest;
-				BigDecimal interestUnit = interest.multiply(new BigDecimal(100000)).divide(money, 4,BigDecimal.ROUND_HALF_UP);
+				BigDecimal interest = money.multiply(rate).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
+						.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+				String interestInfo = money + "×" + rate + "÷100÷360×" + day + "=" + interest;
+				BigDecimal interestUnit = interest.multiply(new BigDecimal(100000)).divide(money, 4,
+						BigDecimal.ROUND_HALF_UP);
 				String interestUnitUnitInfo = interest + "×" + "100000" + "÷" + money + "=" + interestUnit;
 				Map<String, Object> result = new HashMap<String, Object>();
 				result.put("day", day);
@@ -150,7 +151,7 @@ public class OrderController extends BaseController {
 				result.put("interestUnit", interestUnit);
 				result.put("interestUnitUnitInfo", interestUnitUnitInfo);
 				msg.set("查询成功", CodeConstant.SUCCESS, result);
-				
+
 			} else {
 				msg.set("未找到此条收票渠道", CodeConstant.FIND_ERR, null);
 			}
@@ -159,74 +160,69 @@ public class OrderController extends BaseController {
 		}
 		return msg;
 	}
-	
-	//获取当前用户的订单
+
+	// 获取当前用户的订单
 	@PostMapping("/my")
 	public Msg my(@SessionAttribute User user, @RequestParam int index, @RequestParam int size,
-			@RequestParam(required=false) Integer status) {
+			@RequestParam(required = false) Integer status) {
 		Page<Order> page = orderService.find(index, size, status, user, null, null);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
 	}
-	/*
-	//生成订单
+
+	// 生成订单
 	@PostMapping("/add")
-	public Msg add(@SessionAttribute User user, @RequestParam int billId, @RequestParam BigDecimal money,
-			@RequestParam String time, @RequestParam int sourceId, @RequestParam String img, @RequestParam String invoice,
-			@RequestParam String core, @RequestParam BigDecimal subsidy) {
+	public Msg add(@SessionAttribute User user, @RequestParam int billId, @RequestParam int inventoryId,
+			@RequestParam BigDecimal money, @RequestParam String time,
+			@RequestParam String core, @RequestParam String invoice, @RequestParam BigDecimal subsidy) {
 		Bill bill = billRepository.findOne(billId);
-		Source source = sourceRepository.findOne(sourceId);
-		if(bill != null && bill.getStatus() == 0 && source != null) {
-			if(CheckTool.isDate(time)) {
+		Inventory inventory = inventoryRepository.findOne(inventoryId);
+		if (bill != null && bill.getStatus() == 0 && inventory != null) {
+			if (CheckTool.isDate(time)) {
 				Date date = AppTool.changeDate(time);
-				//if(bill.getInvoice().equals(source.getInvoice())) {
-				if(true){
-					//if(source.getStaffs() == null || source.getStaffs().size() == 0) {
-					if(true)
-						msg.set("此条收票渠道没有绑定员工联系方式，无法提交", CodeConstant.ERROR, null);
-					} else {
-						
-						if(date.getTime() < System.currentTimeMillis()) {
-							msg.set("到期日期小于当前时间", CodeConstant.ERR_PAR, null);
-							return msg;
-						}
-						
-						int day = (int)((date.getTime() - System.currentTimeMillis()) / 86400000 + 1);
-						Calendar calendar = Calendar.getInstance();
-						calendar.setTime(date);
-						if(calendar.get(Calendar.DAY_OF_WEEK) == 1) {
-							//周日情况
-							day += 1;
-						} else if(calendar.get(Calendar.DAY_OF_WEEK) == 7) {
-							//周六情况
-							day += 2;
-						}
-						day += source.getAdjuest();
-						
-						BigDecimal rate = source.getRate();
-						BigDecimal interest = money.multiply(rate).divide(new BigDecimal(100), 4,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
-						BigDecimal interestUnit = new BigDecimal(100000).multiply(rate).divide(new BigDecimal(100),4,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(360), 4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
-						
-						
-						Staff staff = source.getStaffs().get(0);
-						Order order = new Order(bill, source, invoice, core, money, date, subsidy, interest, day, img, staff.getName(), staff.getPhone(), user);
-						order = orderRepository.save(order);
-						msg.set("添加成功", CodeConstant.SUCCESS, order);
+				if (bill.getAcceptance().getInvoice().equals(inventory.getCompany())) {
+
+					if (date.getTime() < System.currentTimeMillis()) {
+						msg.set("到期日期小于当前时间", CodeConstant.ERR_PAR, null);
+						return msg;
 					}
+
+					int day = (int) ((date.getTime() - System.currentTimeMillis()) / 86400000 + 1);
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(date);
+					if (calendar.get(Calendar.DAY_OF_WEEK) == 1) {
+						// 周日情况
+						day += 1;
+					} else if (calendar.get(Calendar.DAY_OF_WEEK) == 7) {
+						// 周六情况
+						day += 2;
+					}
+					day += bill.getAdjuest();
+
+					BigDecimal rate = bill.getRate();
+					BigDecimal interest = money.multiply(rate).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
+							.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+					BigDecimal interestUnit = new BigDecimal(100000).multiply(rate)
+							.divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
+							.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+
+					Order order = new Order(bill, inventory, money, date, subsidy, interest, day, user);
+					order = orderRepository.save(order);
+					msg.set("添加成功", CodeConstant.SUCCESS, order);
+
 				} else {
-					msg.set("Bill与Source所属不正确", CodeConstant.MAT_ERR, null);
+					msg.set("Bill与inventory所属不正确", CodeConstant.MAT_ERR, null);
 				}
 			} else {
 				msg.set("时间格式有误", CodeConstant.ERR_PAR, null);
 			}
-			
+
 		} else {
 			msg.set("未找到此条信息", CodeConstant.FIND_ERR, null);
 		}
 		return msg;
 	}
-	*/
-	
+
 	@RequestMapping("/test")
 	public Msg test() {
 		msg.set("成功", CodeConstant.SUCCESS, this.getClass().getName());

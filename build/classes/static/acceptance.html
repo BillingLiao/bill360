@@ -40,9 +40,6 @@
 	var index = 0;
 	var size = 8;
 	var count = 0;
-	var invoice;
-	var source_id;
-	var core_select = "上市主体";
 	var category_select = "企业类别";
 	var nature_select = "企业性质";
 
@@ -71,7 +68,6 @@
 	//页面加载成功时访问
 	$(window).load(function() {
 		show_source(index, size);
-		show_core(core_select);
 		show_category(category_select);
 		show_nature(nature_select);
 	});
@@ -150,27 +146,6 @@
 						console.log(data);
 					}
 				});
-	}
-
-	function show_core(data_Dic_Name) {
-		$.ajax({
-			type : "post",
-			url : api + "dataDic/findDataDicValue",
-			dataType : 'json',
-			data : {
-				atoken : atoken,
-				data_Dic_Name : data_Dic_Name,
-			},
-			success : function(result) {
-				var html;
-				for (var i = 0; i < result.length; i++) {
-					html += "<option value="+result[i].dataDicValue+">"
-							+ result[i].dataDicValue + "</option>";
-				}
-
-				$("#acceptance_core").html(html);
-			}
-		});
 	}
 
 	function show_category(data_Dic_Name) {
@@ -290,11 +265,12 @@
 		var add_acceptance_addr = $("#acceptance_addr").val();
 
 		console.log("add_acceptance_type=" + add_acceptance_type);
-
-		if (!isString(add_acceptance_invoice)) {
-			alert("请输入承兑企业名称");
+		
+		if (!isString(add_acceptance_core)) {
+			alert("上市主体不能为空！");
 			return;
 		}
+
 
 		$.ajax({
 			type : "post",
@@ -443,17 +419,17 @@
 								<table class="table table-bordered">
 									<tbody>
 										<tr>
-											<td width="15%">承兑企业名称<code>*</code></td>
-											<td colspan="3"><input class="form-control"
-												id="acceptance_invoice" placeholder="请输入承兑企业名称" type="text">
+											<td width="15%">上市主体<code>*</code></td>
+											<td colspan="3">
+											<input class="form-control"
+												id="acceptance_core" placeholder="请输入上市主体" type="text">
 											</td>
 										</tr>
 										<tr>
-											<td width="15%">上市主体<code>*</code></td>
-											<td colspan="3"><select id="acceptance_core"
-												class="form-control">
-
-											</select></td>
+											<td width="15%">承兑企业名称</td>
+											<td colspan="3"><input class="form-control"
+												id="acceptance_invoice" placeholder="请输入承兑企业名称" type="text">
+											</td>
 										</tr>
 										<tr>
 											<td width="15%">企业类别<code>*</code></td>

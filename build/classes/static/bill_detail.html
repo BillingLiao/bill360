@@ -14,6 +14,7 @@
 <script type="application/x-javascript">
 	
 	
+	
 			addEventListener("load", function() {
 				setTimeout(hideURLbar, 0);
 			}, false);
@@ -22,6 +23,7 @@
 				window.scrollTo(0, 1);
 				
 			}
+
 
 
 
@@ -43,7 +45,6 @@
 <script src="js/screenfull.js"></script>
 <script src="js/app.js" type="text/javascript" charset="utf-8"></script>
 <script>
-	var core_select = "上市主体";
 
 	$(function() {
 		$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
@@ -71,29 +72,29 @@
 				}
 				$("#username").text(sessionStorage.getItem("name"));
 
-				show_core(core_select);
+				show_core();
 				show_staff_name();
-				changeInvoice();
 			});
 
 	/*  
 	*初始化核心企业(上市主体)下拉框
 	*/
-	function show_core(data_Dic_Name) {
+	function show_core() {
 		$.ajax({
 			type : "post",
-			url : api + "dataDic/findDataDicValue",
+			url : api + "acceptance/findCore",
 			async : false,
 			dataType : 'json',
 			data : {
 				atoken : atoken,
-				data_Dic_Name : data_Dic_Name,
 			},
 			success : function(result) {
 				var html;
 				for (var i = 0; i < result.length; i++) {
-					html += "<option value="+result[i].dataDicValue+">"
-							+ result[i].dataDicValue + "</option>";
+					if(result[i] != null && result[i] != ""){
+					html += "<option value="+result[i]+">"
+							+ result[i]+ "</option>";
+					}
 				}
 				$("#acceptance_core").html(html);
 			}
@@ -101,8 +102,8 @@
 	}
 
 	/*  
-	*初始化对接人下拉框
-	*/
+	 *初始化对接人下拉框
+	 */
 	function show_staff_name() {
 		$.ajax({
 			type : "post",
@@ -124,30 +125,6 @@
 
 	}
 
-	/*  
-	*初始化开票企业下拉框/二级联动
-	*/
-	function changeInvoice() {
-		var core = $("#acceptance_core").val();
-		var html;
-		$.ajax({
-			type : "post",
-			url : api + "acceptance/findByCore",
-			async : false,
-			dataType : 'json',
-			data : {
-				atoken : atoken,
-				core : core,
-			},
-			success : function(result) {
-				for (var i = 0; i < result.length; i++) {
-					html += "<option value="+result[i].id+">"
-							+ result[i].invoice + "</option>";
-				}
-				$("#acceptance_invoice").html(html);
-			}
-		});
-	}
 
 	show_detail(id);
 
@@ -168,16 +145,15 @@
 								var acceptance = bill.acceptance;
 								var staff = bill.staff;
 								console.log(bill);
+								$("#bill_id").html("<font style='color: black;'>"+bill.id + "</font>");
 								$("#acceptance_core").val(acceptance.core);
-								changeInvoice(); //初始化核心企业后 ，调用初始化 开票企业
-								$("#acceptance_invoice").val(acceptance.id);
+								$("#acceptance_invoice").val(acceptance.invoice);
 								$("#bill_rate").val(bill.rate);
 								$("#bill_initiate").val(bill.initiate);
 								$("#bill_total").val(bill.total);
 								$("#bill_usable").val(bill.usable);
 								$("#bill_shortest").val(bill.shortest);
 								$("#bill_adjuest").val(bill.adjuest);
-								$("#bill_is_bargain").val(bill.is_bargain);
 								$("#bill_remark").val(bill.remark);
 								$("#bill_offer").val(bill.offer);
 								$("#bill_etime").val(bill.etime);
@@ -185,13 +161,31 @@
 								$("#bill_level").val(bill.level);
 								$("#bill_max").val(bill.max);
 								$("#bill_min").val(bill.min);
-								$("input[name='add_status'][value="+bill.status+"]").attr("checked",true); 
-								$("input[name='add_bargain'][value="+bill.isBargain+"]").attr("checked",true);
-								$("input[name='add_invoice'][value="+bill.isInvoice+"]").attr("checked",true); 
-								$("input[name='add_financing'][value="+bill.isFinancing+"]").attr("checked",true); 
-								$("input[name='add_clean'][value="+bill.isClean+"]").attr("checked",true);
-								$("input[name='add_moneyorback'][value="+bill.isMoneyOrBack+"]").attr("checked",true);
-								
+								$(
+										"input[name='add_status'][value="
+												+ bill.status + "]").attr(
+										"checked", true);
+								$(
+										"input[name='add_bargain'][value="
+												+ bill.isBargain + "]").attr(
+										"checked", true);
+								$(
+										"input[name='add_invoice'][value="
+												+ bill.isInvoice + "]").attr(
+										"checked", true);
+								$(
+										"input[name='add_financing'][value="
+												+ bill.isFinancing + "]").attr(
+										"checked", true);
+								$(
+										"input[name='add_clean'][value="
+												+ bill.isClean + "]").attr(
+										"checked", true);
+								$(
+										"input[name='add_moneyorback'][value="
+												+ bill.isMoneyOrBack + "]")
+										.attr("checked", true);
+
 							} else {
 								alert(data.message);
 							}
@@ -209,7 +203,8 @@
 
 	function save() {
 		var staffId = $("#staff_name").val();
-		var acceptanceId = $("#acceptance_invoice").val();
+		var core = $("#acceptance_core").val();
+		var invoice = $("#acceptance_invoice").val();
 		var rate = $("#bill_rate").val();
 		var initiate = $("#bill_initiate").val();
 		var total = $("#bill_total").val();
@@ -219,7 +214,7 @@
 		var adjuest = $("#bill_adjuest").val();
 		var etime = $("#bill_etime").val();
 		var usable = $("#bill_usable").val();
-		var status =$('input[name="add_status"]:checked').val();
+		var status = $('input[name="add_status"]:checked').val();
 		var level = $("#bill_level").val();
 		var is_bargain = $('input[name="add_bargain"]:checked').val();
 		var is_invoice = $('input[name="add_invoice"]:checked').val();
@@ -230,13 +225,11 @@
 		var remark = $("#bill_remark").val();
 		debugger;
 		if (!isNum(staffId)) {
-			
 			alert("请选择对接人");
 			return;
 		}
-		if (!isNum(acceptanceId)) {
-			alert("请选择开票企业");
-			return;
+		if (!isString(core)){
+			alert("请选择上市主体");
 		}
 		if (!isDouble(rate)) {
 			alert("请输入利率");
@@ -287,9 +280,10 @@
 			dataType : 'json',
 			data : {
 				atoken : atoken,
-				id: id,
-				staffId: staffId,
-				acceptanceId: acceptanceId,
+				id : id,
+				staffId : staffId,
+				core: core,
+				invoice: invoice,
 				rate : rate,
 				initiate : initiate,
 				total : total,
@@ -297,16 +291,16 @@
 				min : min,
 				shortest : shortest,
 				adjuest : adjuest,
-				etime: etime,
+				etime : etime,
 				usable : usable,
-				status: status,
+				status : status,
 				level : level,
-				is_bargain: is_bargain,
-				is_invoice: is_invoice,
-				is_financing: is_financing,
+				is_bargain : is_bargain,
+				is_invoice : is_invoice,
+				is_financing : is_financing,
 				is_clean : is_clean,
-				is_moneyorback: is_moneyorback,
-				offer: offer,
+				is_moneyorback : is_moneyorback,
+				offer : offer,
 				remark : remark,
 			},
 			success : function(data) {
@@ -325,7 +319,7 @@
 			},
 		});
 	}
-	
+
 	function logout() {
 		if (confirm("您确定要退出系统吗？")) {
 			atoken = null;
@@ -364,8 +358,7 @@
 							class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span
 								class=" name-caret"><span id="username"></span></span><img
 								src="images/wo.png"></a></li>
-						<li class="dropdown">
-								<a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						<li class="dropdown"><a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
 						</li>
 					</ul>
 				</div>
@@ -423,8 +416,7 @@
 
 					<h2>
 						<a href="index.html">Home</a> <i class="fa fa-angle-right"></i> <span>对接人清单管理</span>
-						<i class="fa fa-angle-right"></i>&nbsp;<span>对接人清单修改
-						</span>
+						<i class="fa fa-angle-right"></i>&nbsp;<span>对接人清单修改 </span>
 					</h2>
 				</div>
 
@@ -434,22 +426,29 @@
 						<table class="table table-bordered">
 							<tbody>
 								<tr>
+									<td width="10%" class="color_td">编号</td>
+									<td width="35%"><span id="bill_id"></span></td>
 									<td width="10%" class="color_td">对接人姓名<code>*</code></td>
 									<td width="40%"><select id="staff_name"
 										class="form-control">
 									</select></td>
-									<td class="color_td">利率(%)<code>*</code></td>
-									<td><input class="form-control" id="bill_rate"
-										placeholder="请输入利率" type="number"></td>
 								</tr>
 								<tr>
 									<td class="color_td">核心企业名(上市主体)<code>*</code></td>
-									<td><select id="acceptance_core" class="form-control"
-										onchange="changeInvoice()">
+									<td><select id="acceptance_core" class="form-control">
 									</select></td>
-									<td class="color_td">开票企业(承兑企业)<code>*</code></td>
-									<td><select id="acceptance_invoice" class="form-control">
-									</select></td>
+									<td class="color_td">开票企业(承兑企业)</td>
+									<td><input class="form-control" id="acceptance_invoice"
+										placeholder="请输入开票企业" type="text" required="required">
+									</td>
+								</tr>
+								<tr>
+									<td class="color_td">利率(%)<code>*</code></td>
+									<td><input class="form-control" id="bill_rate"
+										placeholder="请输入利率" type="number" required="required"></td>
+									<td class="color_td">调整天数 <code>*</code></td>
+									<td><input class="form-control" id="bill_adjuest"
+										placeholder="请输入调整天数" type="number" required="required"></td>
 								</tr>
 								<tr>
 									<td class="color_td">起步金额</td>
@@ -471,54 +470,56 @@
 									<td class="color_td">最短期限（天）<code>*</code></td>
 									<td><input class="form-control" id="bill_shortest"
 										placeholder="请输入最短期限" type="number"></td>
-									<td class="color_td">调整天数</td>
-									<td><input class="form-control" id="bill_adjuest"
-										placeholder="请输入调整天数" type="number"></td>
-								</tr>
-								<tr>
-									<td class="color_td">背书次数限制</td>
-									<td><input class="form-control" id="bill_etime"
-										placeholder="请输入背书次数限制" type="number"></td>
 									<td class="color_td">可用额度</td>
 									<td><input class="form-control" id="bill_usable"
 										placeholder="请输入可用额度" type="number"></td>
 								</tr>
 								<tr>
-										<td class="color_td">状态</td>
-										<td id="bill_status">
-										<label> <input type="radio" name="add_status"  id="bill_status_yes" value="0"> 正常</label> 
-										<label> <input type="radio" name="add_status"  id="bill_status_no" value="1" > 已关闭</label></td>
-										<td class="color_td">优先级(默认0)</td>
-										<td><input class="form-control" id="bill_level"
+									<td class="color_td">背书次数限制</td>
+									<td><input class="form-control" id="bill_etime"
+										placeholder="请输入背书次数限制" type="number"></td>
+									<td class="color_td"></td>
+									<td width="35%"><span ></span></td>
+
+								</tr>
+								<tr>
+									<td class="color_td">状态</td>
+									<td id="bill_status"><label> <input type="radio"
+											name="add_status" id="bill_status_yes" value="0"> 正常
+									</label> <label> <input type="radio" name="add_status"
+											id="bill_status_no" value="1"> 已关闭
+									</label></td>
+									<td class="color_td">优先级(默认0)</td>
+									<td><input class="form-control" id="bill_level"
 										placeholder="请输入0~10" type="number"></td>
-									</tr>
+								</tr>
 								<tr>
 									<td class="color_td">合同</td>
-									<td id="bill_is_bargain">
-									<label> <input type="radio" name="add_bargain" id="bill_is_bargain_no" value="0"> 不是
-									</label>
-									 <label> 
-									 <input type="radio" name="add_bargain" id="bill_is_bargain_yes" value="1"> 是
+									<td id="bill_is_bargain"><label> <input
+											type="radio" name="add_bargain" id="bill_is_bargain_no"
+											value="0"> 无
+									</label> <label> <input type="radio" name="add_bargain"
+											id="bill_is_bargain_yes" value="1"> 有
 									</label></td>
 									<td class="color_td">发票</td>
 									<td id="bill_is_invoice"><label> <input
 											type="radio" name="add_invoice" id="bill_is_invoice_no"
-											value="0"> 不是
+											value="0"> 无
 									</label> <label> <input type="radio" name="add_invoice"
-											id="bill_is_invoice_yes" value="1"> 是
+											id="bill_is_invoice_yes" value="1"> 有
 									</label></td>
 								</tr>
 								<tr>
 									<td class="color_td">融资票</td>
 									<td id="bill_is_financing"><label> <input
 											type="radio" name="add_financing" id="bill_is_financing_no"
-											value="0"> 不是
+											value="0"> 否
 									</label> <label> <input type="radio" name="add_financing"
 											id="bill_is_financing_yes" value="1"> 是
 									</label></td>
 									<td class="color_td">光票</td>
 									<td id="bill_is_clean"><label> <input type="radio"
-											name="add_clean" id="bill_is_clean_no" value="0"> 不是
+											name="add_clean" id="bill_is_clean_no" value="0"> 否
 									</label> <label> <input type="radio" name="add_clean"
 											id="bill_is_clean_yes" value="1"> 是
 									</label></td>
@@ -538,8 +539,7 @@
 								<tr>
 									<td class="color_td">备注</td>
 									<td colspan="3" id="remark"><input class="form-control"
-										id="bill_remark" placeholder="请输入备注" type="text">
-									</td>
+										id="bill_remark" placeholder="请输入备注" type="text"></td>
 								</tr>
 
 								<tr class="traa">

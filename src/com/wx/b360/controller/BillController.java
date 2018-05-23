@@ -74,7 +74,7 @@ public class BillController extends BaseController {
 	public Msg precise(@RequestParam String core, @RequestParam int type, @RequestParam String invoice,
 			@RequestParam int index, @RequestParam int size, @SessionAttribute(required = false) User user) {
 		if (user.getCard() == 1) {
-			Page<Bill> page = billService.find(index, size, type, 0 , core, invoice);
+			Page<Bill> page = billService.find(index, size, null, type, 0 , core, invoice);
 			//List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
 			msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		} else if (user.getPrecise() < 5) {
@@ -83,7 +83,7 @@ public class BillController extends BaseController {
 			// 更新缓存
 			ValueOperations<String, User> operations = redisTemplate.opsForValue();
 			operations.set("user:" + user.getId(), user);
-			Page<Bill> page = billService.find(index, size, type, 0 , core, invoice);
+			Page<Bill> page = billService.find(index, size, null, type, 0 , core, invoice);
 			msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		} else {
 			msg.set("请先上传名片", CodeConstant.ERROR, null);
@@ -116,7 +116,7 @@ public class BillController extends BaseController {
 	// 企业核心名模糊搜索
 	@PostMapping("/core")
 	public Msg core(@RequestParam int index, @RequestParam int size, @RequestParam String core) {
-		Page<Bill> bills = billService.find(index, size, null, null, core, null);
+		Page<Bill> bills = billService.find(index, size, null, null, null, core, null);
 		List<Bill> billsList = bills.getContent();
 		long count = bills.getTotalElements();
 		ArrayList<Company> companies = new ArrayList<>();
@@ -169,7 +169,7 @@ public class BillController extends BaseController {
 
 	// 修改对接人收票清单
 	@PostMapping("/set")
-	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int staffId, @RequestParam int acceptanceId,
+	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int staffId, @RequestParam String core, @RequestParam(required = false) String invoice,
 			@RequestParam BigDecimal rate, @RequestParam(required = false) BigDecimal total,
 			@RequestParam BigDecimal initiate, @RequestParam BigDecimal max, @RequestParam BigDecimal min,
 			@RequestParam int shortest, @RequestParam int adjuest, @RequestParam(required = false) int etime,
@@ -178,22 +178,39 @@ public class BillController extends BaseController {
 			@RequestParam int is_financing, @RequestParam int is_clean, @RequestParam int is_moneyorback,
 			@RequestParam(required = false) String offer, @RequestParam(required = false) String remark) {
 		
+		Acceptance acceptance = acceptanceRepository.findByCoreAndInvoice(core, invoice);
+		if(acceptance != null) {
+			int acceptanceId = acceptance.getId();
+			Bill bill = billRepository.findByStaffAndAcceptance(staffId,acceptanceId);
+			if(bill != null && id != bill.getId()) {
+				msg.set("已有该条数据", CodeConstant.SET_ERR, null);
+				return msg;
+			}
+		}else {
+			acceptance = new Acceptance(invoice, core, null, null, 0, null, null, 0);
+		}
+		
 		Bill bill = billRepository.findOne(id);
 		if (bill != null) {
 			boolean isChange = false;
 			if (staffId != bill.getStaff().getId()) {
 				isChange = true;
-				bill.setRate(rate);
+				Staff staff = staffRepository.findOne(staffId);
+				bill.setStaff(staff);
 			}
-			if (acceptanceId != bill.getAcceptance().getId()) {
+			if (CheckTool.isString(core) && (acceptance.getCore() == null || !acceptance.getCore().equals(core))) {
 				isChange = true;
-				bill.setRate(rate);
+				acceptance.setCore(core);
+			}
+			if (CheckTool.isString(invoice) && (acceptance.getInvoice() == null || !acceptance.getInvoice().equals(invoice))) {
+				isChange = true;
+				acceptance.setInvoice(invoice);
 			}
 			if (rate.compareTo(bill.getRate()) != 0) {
 				isChange = true;
 				bill.setRate(rate);
 			}
-			if (total.compareTo(bill.getTotal()) != 0) {
+			if (total != null && total.compareTo(bill.getTotal()) != 0) {
 				isChange = true;
 				bill.setTotal(total);
 			}
@@ -267,6 +284,7 @@ public class BillController extends BaseController {
 			}
 			
 			if (isChange) {
+				acceptance = acceptanceRepository.save(acceptance);
 				bill = billRepository.save(bill);
 				if (bill != null) {
 					msg.set("修改成功", CodeConstant.SUCCESS, bill);
@@ -284,17 +302,17 @@ public class BillController extends BaseController {
 
 	// 分页查询对接人收票清单
 	@PostMapping("/find")
-	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size,
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, @RequestParam(required = false) String staffName,
 			@RequestParam(required = false) String core,@RequestParam(required = false) String invoice,
 			@RequestParam(required = false) Integer status) {
-		Page<Bill> page = billService.find(index, size, status, null, core, invoice);
+		Page<Bill> page = billService.find(index, size, staffName, status, null, core, invoice);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
 	}
 
 	// 管理员添加收票清单
 	@PostMapping("/add")
-	public Msg add(@SessionAttribute Admin admin, @RequestParam int staffId, @RequestParam int acceptanceId,
+	public Msg add(@SessionAttribute Admin admin, @RequestParam int staffId, @RequestParam String core,@RequestParam(required = false) String invoice,
 			@RequestParam BigDecimal rate, @RequestParam(required = false) BigDecimal total,
 			@RequestParam BigDecimal initiate, @RequestParam BigDecimal max, @RequestParam BigDecimal min,
 			@RequestParam int shortest, @RequestParam int adjuest, @RequestParam(required = false) int etime,
@@ -307,13 +325,19 @@ public class BillController extends BaseController {
 		 * if(CheckTool.isString(sphone) && !CheckTool.isPhone(sphone)) {
 		 * msg.set("手机号格式有误", CodeConstant.ERR_PAR, null); return msg; }
 		 */
+		Acceptance acceptance = acceptanceRepository.findByCoreAndInvoice(core, invoice);
+		if(acceptance == null) {
+			acceptance = new Acceptance(invoice, core, null, null, 0, null, null, 0);
+		}
+		int acceptanceId = acceptance.getId();
+		
 		Bill bill = billRepository.findByStaffAndAcceptance(staffId,acceptanceId);
 		
 		if(bill == null) {
+			
+		acceptance = acceptanceRepository.save(acceptance);
 		
 		Staff staff = staffRepository.findOne(staffId);
-
-		Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
 
 		bill = new Bill(acceptance, staff, rate, shortest, adjuest, initiate, max, min, total, usable, remark,
 				status, level, is_bargain, is_invoice, is_moneyorback, is_financing, is_clean, etime, offer);

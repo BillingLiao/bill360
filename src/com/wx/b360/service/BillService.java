@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.sun.xml.internal.ws.developer.StreamingAttachment;
 import com.wx.b360.entity.Bill;
 import com.wx.b360.repository.BillRepository;
 import com.wx.b360.tool.CheckTool;
@@ -24,7 +25,7 @@ import com.wx.b360.tool.CheckTool;
 public class BillService {
 	@Resource BillRepository billRepository;
 
-	public Page<Bill> find(int index, int size, Integer status, Integer type, String core, String invoice) {
+	public Page<Bill> find(int index, int size, String staffName, Integer status, Integer type, String core, String invoice) {
 		Specification<Bill> specification = new Specification<Bill>() {
 
 			@Override
@@ -38,6 +39,11 @@ public class BillService {
 				if(type != null) {
 					Path<Integer> path = root.get("type");
 					Predicate predicate = cb.equal(path, type);
+					predicates.add(predicate);
+				}
+				if(CheckTool.isString(staffName)) {
+					Path<String> path = root.get("staff").get("name");
+					Predicate predicate = cb.like(path, "%"+staffName+"%");
 					predicates.add(predicate);
 				}
 				if(CheckTool.isString(core)) {

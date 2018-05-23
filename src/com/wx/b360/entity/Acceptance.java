@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 //承兑企业表
-@Table(name="b_acceptance", indexes= {@Index(name="_invoice_index", columnList="_invoice", unique=true)})
+@Table(name="b_acceptance")
 @Entity @Data @NoArgsConstructor @AllArgsConstructor
 public class Acceptance {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -44,7 +44,7 @@ public class Acceptance {
 	@Column(name="_is_finish", nullable=false, columnDefinition="int default 0 comment '企业信息0-未完善、1-已完善'")
 	private int is_finish;
 
-	public Acceptance(String invoice, String core, String category, String nature, int type, String addr, int is_finish) {
+	public Acceptance(String invoice, String core, String category, String nature, int type, String addr, String area, int is_finish) {
 		super();
 		this.invoice = invoice;
 		this.core = core;
@@ -52,6 +52,7 @@ public class Acceptance {
 		this.nature = nature;
 		this.type = type;
 		this.addr = addr;
+		this.area = area;
 		this.is_finish = is_finish;
 	}
 	

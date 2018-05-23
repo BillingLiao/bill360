@@ -22,4 +22,8 @@ public interface AcceptanceRepository extends PagingAndSortingRepository<Accepta
 	//查询 所有core
 	@Query(value="select distinct _core from b_acceptance", nativeQuery=true)
 	public List<String> findCore();
+	
+	//通过core跟invoice查询一条信息
+	@Query(value="select * from b_acceptance where _core = ?1 and _invoice = ?2", nativeQuery=true)
+	public Acceptance findByCoreAndInvoice(String core,String invoice);
 }

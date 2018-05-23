@@ -116,18 +116,14 @@ public class InventoryController extends BaseController {
 		Inventory inventory = inventoryRepository.findOne(id);
 		if (inventory != null) {
 			boolean isChange = false;
+			Acceptance acceptance = acceptanceRepository.findByInvoice(company);
 			if (!inventory.getCompany().equals(company)) { // 判断与修改前数据是否不一致
-				isChange = true;
 				// 判断是否有这个名称的承兑企业，如果没有则创建之
-				Acceptance acceptance = acceptanceRepository.findByInvoice(company);
 				if (acceptance == null) {
-					acceptance = new Acceptance(company, null, null, null, 0, null, 0);
-					acceptance = acceptanceRepository.save(acceptance);
-					inventory.setCompany(company);
-				} else {
-					inventory.setCompany(company);
+					acceptance = new Acceptance(company, null, null, null, 0, null, null,  0);
 				}
-				
+				isChange = true;
+				inventory.setCompany(company);
 			}
 
 			if (money.compareTo(inventory.getMoney()) != 0) {
@@ -151,8 +147,8 @@ public class InventoryController extends BaseController {
 				isChange = true;
 				inventory.setOffer(offer);
 			}
-
 			if (isChange) {
+				acceptance = acceptanceRepository.save(acceptance);
 				inventory = inventoryRepository.save(inventory);
 				msg.set("修改成功", CodeConstant.SUCCESS, inventory);
 			} else {
@@ -258,7 +254,7 @@ public class InventoryController extends BaseController {
 			// 判断是否有这个名称的承兑企业，如果没有则创建之
 			Acceptance acceptance = acceptanceRepository.findByInvoice(company);
 			if (acceptance == null) {
-				acceptance = new Acceptance(company, null, null, null, 0, null, 0);
+				acceptance = new Acceptance(company, null, null, null, 0, null, null, 0);
 				acceptance = acceptanceRepository.save(acceptance);
 
 				if (acceptance != null) {

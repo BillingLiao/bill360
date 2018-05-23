@@ -136,6 +136,8 @@
 								var nature = isString(acceptance.nature) ? acceptance.nature
 										: "";//企业性质
 								var addr = isString(acceptance.addr) ? acceptance.addr
+										: ""; //地址
+								var area = isString(acceptance.area) ? acceptance.area
 										: ""; //地区
 								//企业类型
 								if (acceptance.type == 0) {
@@ -175,6 +177,7 @@
 								$("#acceptance_category").val(category);
 								$("#acceptance_nature").val(nature);
 								$("#acceptance_addr").val(addr);
+								$("#acceptance_area").val(area);
 
 							} else {
 								alert(data.message);
@@ -207,6 +210,7 @@
 					nature : $("#acceptance_nature").val(),
 					type : $("input[name='acceptance_type']:checked").val(),//获取选中项的值
 					addr : $("#acceptance_addr").val(),
+					area : $("#acceptance_area").val(),
 				},
 				success : function(data) {
 					if (data.code == 0) {
@@ -357,7 +361,12 @@
 							<tr>
 								<td width="15%">地区</td>
 								<td colspan="3"><input class="form-control"
-									id="acceptance_addr" placeholder="请输入地区" type="text"></td>
+									id="acceptance_addr" placeholder="请输入地址" type="text"></td>
+							</tr>
+							<tr>
+								<td width="15%">地区</td>
+								<td colspan="3"><input class="form-control"
+									id="acceptance_area" placeholder="请输入地区" type="text"></td>
 							</tr>
 							<tr class="traa">
 								<td colspan="4" style="text-align: right;">

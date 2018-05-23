@@ -82,11 +82,13 @@
 								var acceptance = bill.acceptance;
 
 								console.log(bill);
+								var staff_id = staff.id;
 								var staff_name = isString(staff.name) ? staff.name : "-"; 
 								var staff_eAccount = isString(staff.eaccount) ? staff.eaccount : "-";
 								var staff_company =  isString(staff.company) ? staff.company : "-";
 								var staff_phone = isString(staff.phone) ? staff.phone : "-";
 								var staff_addr = isString(staff.addr) ? staff.addr : "-";
+								var acceptance_id = acceptance.id;
 								var acceptance_core = isString(acceptance.core) ? acceptance.core : "-";
 								var acceptance_invoice = isString(acceptance.invoice) ? acceptance.invoice : "-";
 								var acceptance_addr = isString(acceptance.addr) ? acceptance.addr : "-";
@@ -94,6 +96,7 @@
 								var acceptance_nature = isString(acceptance.nature) ? acceptance.nature : "-";
 								var acceptance_type = isNum(acceptance.type) ? acceptance.type : "-";
 
+								var bill_id = bill.id;
 								var rate = isDouble(bill.rate) ? bill.rate : "-";
 								var max = isDouble(bill.max) ? bill.max : "-";
 								var min = isDouble(bill.min) ? bill.min : "-";
@@ -115,17 +118,20 @@
 								var level = isNum(bill.level) ? bill.level : "-";
 								}
 								
+								$("#acceptance_id").text(acceptance_id);
 								$("#acceptance_invoice").text(acceptance_invoice);
 								$("#acceptance_core").text(acceptance_core);
 								$("#acceptance_addr").text(acceptance_addr);
 								$("#acceptance_category").text(acceptance_category);
 								$("#acceptance_nature").text(acceptance_nature);
+								$("#staff_id").text(staff_id);
 								$("#staff_name").text(staff_name);
 								$("#staff_eAccount").text(staff_eAccount);
 								$("#staff_company").text(staff_company);
 								$("#staff_phone").text(staff_phone);
 								$("#staff_addr").text(staff_addr);
 								
+								$("#bill_id").text(bill_id);
 								$("#rate").text(rate);
 								$("#ctime").text(ctime);
 								$("#initiate").text(initiate);
@@ -297,24 +303,34 @@
 							<table class="table table-bordered">
 								<tbody>
 									<tr>
-										<td width="10%" class="color_td">对接人姓名</td>
-										<td width="40%"><font id="staff_name"></font></td>
-										<td width="10%" class="color_td">背书公司名</td>
-										<td width="40%"><font id="staff_company"></font></td>
+										<td width="15%" class="color_td">对接人编号</td>
+										<td width="35%"><font id="staff_id"></font></td>
+										<td width="15%" class="color_td">对接人姓名</td>
+										<td width="35%"><font id="staff_name"></font></td>
+										
 									</tr>
 									<tr>
+										<td class="color_td">背书公司名</td>
+										<td ><font id="staff_company"></font></td>
 										<td class="color_td">背书账号</td>
 										<td><font id="staff_eAccount"></font></td>
-										<td class="color_td">联系电话</td>
-										<td><font id="staff_phone"></font></td>
+									
 									</tr>
 									<tr>
+										<td class="color_td">联系电话</td>
+										<td><font id="staff_phone"></font></td>
 										<td class="color_td">对接人地址</td>
 										<td><font id="staff_addr"></font></td>
-										<td class="color_td">利率(%)</td>
-										<td><font id="rate"></font></td>
 									</tr>
-
+									<tr>
+										<td colspan="4"></td>
+									</tr>
+									<tr>
+										<td width="15%" class="color_td">承兑企业编号</td>
+										<td width="35%"><font id="acceptance_id"></font></td>
+										<td class="color_td" width="15%"></td>
+										<td width="35%"> <span ></span></td>
+									</tr>
 									<tr>
 										<td class="color_td">上市主体</td>
 										<td><font id="acceptance_core"></font></td>
@@ -335,6 +351,22 @@
 										<td><font id="acceptance_addr"></font></td>
 									</tr>
 									<tr>
+										<td colspan="4"></td>
+									</tr>
+									<tr>
+										<td width="15%" class="color_td">收票清单编号</td>
+										<td width="35%"><font id="bill_id"></font></td>
+										<td class="color_td" width="15%"></td>
+										<td width="35%"> <span ></span></td>
+									</tr>
+									<tr>
+										<td class="color_td">利率(%)</td>
+										<td><font id="rate"></font></td>
+										<td class="color_td">调整天数</td>
+										<td><font id="adjuest"></font></td>
+									</tr>
+									<tr>
+										
 										<td class="color_td">最大金额</td>
 										<td><font id="max"></font></td>
 										<td class="color_td">最小金额</td>
@@ -343,26 +375,23 @@
 									<tr>
 										<td class="color_td">总额度</td>
 										<td><font id="total"></font></td>
-										<td class="color_td">背书次数限制</td>
-										<td><font id="etime"></font></td>
-									</tr>
-									<tr>
 										<td class="color_td">可用额度</td>
 										<td><font id="usable"></font></td>
-										<td class="color_td">添加时间</td>
-										<td><font id="ctime"></font></td>
 									</tr>
 									<tr>
 										<td class="color_td">最短期限</td>
 										<td><font id="shortest"></font></td>
-										<td class="color_td">调整天数</td>
-										<td><font id="adjuest"></font></td>
-									</tr>
-									<tr>
 										<td class="color_td">起步金额</td>
 										<td><font id="initiate"></font></td>
-										<td class="color_td">报价方式</td>
-										<td><font id="offer"></font></td>
+									</tr>
+									<tr>
+										<td class="color_td">背书次数限制</td>
+										<td><font id="etime"></font></td>
+										<td class="color_td">添加时间</td>
+										<td><font id="ctime"></font></td>
+									</tr>
+									<tr>
+										
 									</tr>
 									<tr>
 										<td class="color_td">状态</td>
@@ -385,8 +414,8 @@
 									<tr>
 										<td class="color_td">先款先背</td>
 										<td id="is_moneyorback">
-										<td class="color_td"></td>
-										<td><span></span></td>
+										<td class="color_td">报价方式</td>
+										<td><font id="offer"></font></td>
 									</tr>
 									<tr>
 										<td class="color_td">备注</td>

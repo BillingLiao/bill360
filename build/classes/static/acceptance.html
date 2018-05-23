@@ -115,7 +115,9 @@
 									typeValue = '孙公司';
 								}
 								var addr = isString(acceptance.addr) == true ? acceptance.addr
-										: "-"; //地区
+										: "-"; //地址
+								var area = isString(acceptance.area) == true ? acceptance.area
+										: "-"; //地址
 								temp = '<tr id="acceptance_tr_'+acceptanceId+'"><td>'
 										+ acceptanceId
 										+ '</td><td>'
@@ -130,6 +132,8 @@
 										+ typeValue
 										+ '</td><td>'
 										+ addr
+										+ '</td><td>'
+										+ area
 										+ '</td><td><a href="acceptance_detail.html?id='
 										+ acceptance.id
 										+ '" target="_blank"><button type="button" class="btn btn-sm btn-default">编辑</button></a><button type="button"class="btn btn-sm btn-danger" onclick="del('
@@ -263,6 +267,7 @@
 		var add_acceptance_type = $("input[name='acceptance_type']:checked")
 				.val();//获取选中项的值
 		var add_acceptance_addr = $("#acceptance_addr").val();
+		var add_acceptance_area = $("#acceptance_area").val();
 
 		console.log("add_acceptance_type=" + add_acceptance_type);
 		
@@ -285,6 +290,7 @@
 				nature : add_acceptance_nature,
 				type : add_acceptance_type,
 				addr : add_acceptance_addr,
+				area : add_acceptance_area,
 			},
 			success : function(data) {
 				if (data.code == 0) {
@@ -454,7 +460,13 @@
 										<tr>
 											<td width="15%">地区</td>
 											<td colspan="3"><input class="form-control"
-												id="acceptance_addr" placeholder="请输入地区" type="text">
+												id="acceptance_addr" placeholder="请输入地址" type="text">
+											</td>
+										</tr>
+										<tr>
+											<td width="15%">地区</td>
+											<td colspan="3"><input class="form-control"
+												id="acceptance_area" placeholder="请输入地区" type="text">
 											</td>
 										</tr>
 
@@ -534,6 +546,7 @@
 										<th>企业类别</th>
 										<th>企业性质</th>
 										<th>企业类型</th>
+										<th>地址</th>
 										<th>地区</th>
 										<th>操作</th>
 									</tr>

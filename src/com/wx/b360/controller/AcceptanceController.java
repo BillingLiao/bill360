@@ -61,7 +61,8 @@ public class AcceptanceController extends BaseController {
 		if (acceptance != null) {
 			boolean isChange = false;
 			// 判断与修改前数据是否不一致
-			if (CheckTool.isString(invoice) && (acceptance.getInvoice() == null || !acceptance.getInvoice().equals(invoice))) {
+			if (CheckTool.isString(invoice)
+					&& (acceptance.getInvoice() == null || !acceptance.getInvoice().equals(invoice))) {
 				Acceptance acceptance2 = acceptanceRepository.findByInvoice(invoice);
 				if (acceptance2 == null) {
 					isChange = true;
@@ -70,11 +71,18 @@ public class AcceptanceController extends BaseController {
 					msg.set("承兑企业名被占用", CodeConstant.ERROR, null);
 					return msg;
 				}
-				
+
 			}
 			if (CheckTool.isString(core) && (acceptance.getCore() == null || !acceptance.getCore().equals(core))) {
-				isChange = true;
-				acceptance.setCore(core);
+				Acceptance acceptance3 = acceptanceRepository.findByCoreAndInvoice(core, invoice);
+				if (acceptance3 == null) {
+					isChange = true;
+					acceptance.setCore(core);
+				}else {
+					msg.set("已有该条数据！", CodeConstant.ERROR, null);
+					return msg;
+				}
+				
 			}
 			if (CheckTool.isString(category)
 					&& (acceptance.getCategory() == null || !acceptance.getCategory().equals(category))) {
@@ -128,7 +136,7 @@ public class AcceptanceController extends BaseController {
 
 	// 获取承兑企业列表
 	@PostMapping("/find")
-	public Msg find(@RequestParam int index, @RequestParam int size, @RequestParam(required = false) String invoice,
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, @RequestParam(required = false) String invoice,
 			@RequestParam(required = false) String core, @RequestParam(required = false) Integer is_finish) {
 		Page<Acceptance> page = acceptanceService.find(index, size, invoice, core, is_finish);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
@@ -145,7 +153,7 @@ public class AcceptanceController extends BaseController {
 		List<Acceptance> acceptancelist = acceptanceRepository.findInvoiceByCore(core);
 		return acceptancelist;
 	}
-	
+
 	/**
 	 * 查詢所有上市主體
 	 * 
@@ -153,8 +161,8 @@ public class AcceptanceController extends BaseController {
 	 */
 	@PostMapping("/findCore")
 	public List<String> findCore() {
-		List<String> acceptancelist = acceptanceRepository.findCore();
-		return acceptancelist;
+		List<String> coreList = acceptanceRepository.findCore();
+		return coreList;
 	}
 
 	// 企业核心名模糊搜索 （快速查询）
@@ -189,17 +197,16 @@ public class AcceptanceController extends BaseController {
 	public Msg add(@SessionAttribute Admin admin, @RequestParam(required = false) String invoice,
 			@RequestParam(required = false) String core, @RequestParam(required = false) String category,
 			@RequestParam(required = false) String nature, @RequestParam(required = false) Integer type,
-			@RequestParam(required = false) String addr) {
+			@RequestParam(required = false) String addr, @RequestParam(required = false) String area) {
 
-		Acceptance acceptance = acceptanceRepository.findByInvoice(invoice);
-		if (acceptance == null) {
-			acceptance = new Acceptance(invoice, core, category, nature, type, addr, 1);
-			acceptance = acceptanceRepository.save(acceptance);
-			msg.set("添加成功", CodeConstant.SUCCESS, acceptance);
-		} else {
-			msg.set("承兑企业名被占用", CodeConstant.ERROR, null);
-		}
-
+			Acceptance acceptance = acceptanceRepository.findByCoreAndInvoice(core, invoice);
+			if(acceptance == null) {
+				acceptance = new Acceptance(invoice, core, category, nature, type, addr, area, 1);
+				acceptance = acceptanceRepository.save(acceptance);
+				msg.set("添加成功", CodeConstant.SUCCESS, acceptance);
+			}else {
+				msg.set("已有该条数据存在", CodeConstant.ERROR, null);
+			}
 		return msg;
 	}
 

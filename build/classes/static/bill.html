@@ -6,14 +6,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="application/x-javascript">
-	
-			addEventListener("load", function() {
-				setTimeout(hideURLbar, 0);
-			}, false);
+	addEventListener("load", function() {
+		setTimeout(hideURLbar, 0);
+	}, false);
 
-			function hideURLbar() {
-				window.scrollTo(0, 1);
-			}
+	function hideURLbar() {
+		window.scrollTo(0, 1);
+	}
 		
 </script>
 <link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
@@ -78,17 +77,17 @@
 		show_bill(index, size);
 	};
 
-	function show_bill(index, size, core, invoice, status) {
-		$
-				.ajax({
+	function show_bill(index, size, staffName, core, invoice, status) {
+		$.ajax({
 					type : "post",
 					url : api + "bill/find",
-					async : false,
+					async : true,
 					dataType : 'json',
 					data : {
 						atoken : atoken,
 						index : index,
 						size : size,
+						staffName : staffName,
 						core: core,
 						invoice: invoice,
 						status: status,
@@ -106,6 +105,10 @@
 							for (var i = 0; i < bills.length; i++) {
 								var bill = bills[i];
 								var acceptance = bill.acceptance;
+								var staff = bill.staff;
+								var billId = bill.id;
+								var name = isString(staff.name) ? staff.name
+										: "-";//对接人姓名
 								var invoice = isString(acceptance.invoice) ? acceptance.invoice
 										: "-";//开票企业
 								var core = isString(acceptance.core) ? acceptance.core
@@ -126,11 +129,17 @@
 										: "-"; //备注
 
 								temp = '<tr id="bill_tr_'+bill.id+'"><td>'
+										+ billId
+										+ '</td><td>'
+										+ name
+										+ '</td><td>'
 										+ invoice
 										+ '</td><td>'
 										+ core
 										+ '</td><td>'
 										+ rate
+										+ '</td><td>'
+										+ adjuest
 										+ '</td><td>'
 										+ initiate
 										+ '</td><td>'
@@ -141,8 +150,6 @@
 										+ usable
 										+ '</td><td>'
 										+ shortest
-										+ '</td><td>'
-										+ adjuest
 										+ '</td><td>'
 										+ remark
 										+ '</td><td><a href="bill_detail.html?id='
@@ -219,10 +226,13 @@
 	}
 
 	function search() {
+		var staffName = $("#staff_name").val();
 		var core = $("#acceptance_core").val();
 		var invoice = $("#acceptance_invoice").val();
 		var status = $("#bill_status").val();
-		debugger;
+		if (!isString(staffName)) {
+			staffName = "";
+		}
 		if (!isString(core)) {
 			core = "";
 		}
@@ -232,7 +242,7 @@
 		if (!isString(status)) {
 			status = "";
 		}
-		show_bill(index, size, core, invoice, status);
+		show_bill(index, size, staffName, core, invoice, status);
 	}
 
 	function logout() {
@@ -331,11 +341,16 @@
 				<!--//banner-->
 				<!--content-->
 				<div class=" profile">
-					<div class="profile-bottom" style="width: 100%; min-height: 800px;">
+					<div class="profile-bottom" style="width: 100%; min-height: 800px">
 						<div class="col-md-6 compose">
-						<form class="form-inline">
-							<div class="form-group">
-									&nbsp;上市主体：&nbsp;<input class="form-control"
+							<form class="form-inline">
+								<div class="form-group">
+									&nbsp;对接人：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class="form-control"
+										id="staff_name" placeholder="" type="text" />
+
+								</div>
+								<div class="form-group">
+									&nbsp;&nbsp;上市主体：&nbsp;<input class="form-control"
 										id="acceptance_core" placeholder="" type="text" />
 
 								</div>
@@ -344,15 +359,14 @@
 										id="acceptance_invoice" placeholder="" type="text" />
 								</div>
 								<div class="form-group">
-										<label for="selector_status">状态</label> <select
-											name="bill_status" id="bill_status"
-											class="form-control">
-											<option value="">不限</option>
-											<option value="0">正常</option>
-											<option value="1">已关闭</option>
-										</select>
+									&nbsp;&nbsp;&nbsp;<label for="selector_status">状态:</label> &nbsp;&nbsp;&nbsp;<select
+										name="bill_status" id="bill_status" class="form-control">
+										<option value="">不限</option>
+										<option value="0">正常</option>
+										<option value="1">已关闭</option>
+									</select>
 								</div>
-						</form>		
+							</form>
 						</div>
 						<div class="col-md-3 compose">
 							<div>
@@ -388,15 +402,17 @@
 							<table class="table table-striped table-bordered table-hover">
 								<thead>
 									<tr>
+										<th>编号</th>
+										<th>对接人</th>
 										<th>开票企业</th>
 										<th>核心企业名</th>
 										<th>利率(%)</th>
+										<th>调整天数</th>
 										<th>起步金额</th>
 										<th>最大金额</th>
 										<th>总额度</th>
 										<th>可用额度</th>
 										<th>最短期限</th>
-										<th>调整天数</th>
 										<th>备注</th>
 										<th>操作</th>
 									</tr>

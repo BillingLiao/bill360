@@ -26,4 +26,8 @@ public interface AcceptanceRepository extends PagingAndSortingRepository<Accepta
 	//通过core跟invoice查询一条信息
 	@Query(value="select * from b_acceptance where _core = ?1 and _invoice = ?2", nativeQuery=true)
 	public Acceptance findByCoreAndInvoice(String core,String invoice);
+	
+	//通过core跟invoice,type 查询一条信息
+	@Query(value="select * from b_acceptance where _core = ?1 and _invoice = ?2 and _type = ?3", nativeQuery=true)
+	public Acceptance findByCoreAndInvoiceAndType(String core,String invoice,Integer type);
 }

@@ -112,7 +112,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 		} else {
 			//没有带token的情况
 			msg.set("请先登录", CodeConstant.ERR_AUTH, null);
-			return true; //测试
 		}
 		HttpTool.jsonMsg(response, msg);
 		return false;

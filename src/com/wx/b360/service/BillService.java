@@ -37,7 +37,7 @@ public class BillService {
 					predicates.add(predicate);
 				}
 				if(type != null) {
-					Path<Integer> path = root.get("type");
+					Path<Integer> path = root.get("acceptance").get("type");
 					Predicate predicate = cb.equal(path, type);
 					predicates.add(predicate);
 				}

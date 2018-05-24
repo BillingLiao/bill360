@@ -2,7 +2,6 @@ package com.wx.b360.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import com.wx.b360.entity.Acceptance;
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Bill;
 import com.wx.b360.entity.Order;
-import com.wx.b360.entity.Record;
 import com.wx.b360.entity.Staff;
 import com.wx.b360.entity.User;
 import com.wx.b360.model.Company;
@@ -71,20 +69,20 @@ public class BillController extends BaseController {
 	
 	// 精确搜索
 	@PostMapping("/precise")
-	public Msg precise(@RequestParam String core, @RequestParam int type, @RequestParam String invoice,
-			@RequestParam int index, @RequestParam int size, @SessionAttribute(required = false) User user) {
+	public Msg precise(@RequestParam String core,@RequestParam Integer type, @RequestParam String invoice, @SessionAttribute User user) {
 		if (user.getCard() == 1) {
-			Page<Bill> page = billService.find(index, size, null, type, 0 , core, invoice);
-			//List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
-			msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
+			Acceptance acceptance = acceptanceRepository.findByCoreAndInvoiceAndType(core, invoice, type);
+			List<Bill> billList = billRepository.findByAcceptance(acceptance);
+			msg.set("查询成功", CodeConstant.SUCCESS, billList);
 		} else if (user.getPrecise() < 5) {
 			user.setPrecise(user.getPrecise() + 1);
 			user = userRepository.save(user);
 			// 更新缓存
 			ValueOperations<String, User> operations = redisTemplate.opsForValue();
 			operations.set("user:" + user.getId(), user);
-			Page<Bill> page = billService.find(index, size, null, type, 0 , core, invoice);
-			msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
+			Acceptance acceptance = acceptanceRepository.findByCoreAndInvoiceAndType(core, invoice, type);
+			List<Bill> billList = billRepository.findByAcceptance(acceptance);
+			msg.set("查询成功", CodeConstant.SUCCESS, billList);
 		} else {
 			msg.set("请先上传名片", CodeConstant.ERROR, null);
 		}
@@ -170,11 +168,11 @@ public class BillController extends BaseController {
 	// 修改对接人收票清单
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int staffId, @RequestParam String core, @RequestParam(required = false) String invoice,
-			@RequestParam BigDecimal rate, @RequestParam(required = false) BigDecimal total,
-			@RequestParam BigDecimal initiate, @RequestParam BigDecimal max, @RequestParam BigDecimal min,
-			@RequestParam int shortest, @RequestParam int adjuest, @RequestParam(required = false) int etime,
+			@RequestParam(required = false) BigDecimal rate, @RequestParam(required = false) BigDecimal total,
+			@RequestParam BigDecimal deductions, @RequestParam String max, @RequestParam BigDecimal min,
+			@RequestParam  Integer shortest, @RequestParam Integer longest, @RequestParam(required = false) Integer adjuest, @RequestParam(required = false) Integer etime,
 			@RequestParam(required = false) BigDecimal usable, @RequestParam int status,
-			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,
+			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,@RequestParam int agreement,
 			@RequestParam int is_financing, @RequestParam int is_clean, @RequestParam int is_moneyorback,
 			@RequestParam(required = false) String offer, @RequestParam(required = false) String remark) {
 		
@@ -214,27 +212,31 @@ public class BillController extends BaseController {
 				isChange = true;
 				bill.setTotal(total);
 			}
-			if (initiate.compareTo(bill.getInitiate()) != 0) {
+			if (deductions.compareTo(bill.getDeductions()) != 0) {
 				isChange = true;
-				bill.setInitiate(initiate);
+				bill.setDeductions(deductions);
 			}
-			if (max.compareTo(bill.getMax()) != 0) {
+			if (CheckTool.isString(max) && (bill.getMax() == null || !bill.getMax().equals(max))) {
 				isChange = true;
-				bill.setMax(max);
+				acceptance.setInvoice(invoice);
 			}
 			if (bill.getMin().compareTo(min) != 0) {
 				isChange = true;
 				bill.setMin(min);
 			}
-			if (shortest != bill.getShortest()) {
+			if (shortest != null && shortest.compareTo(bill.getShortest()) != 0) {
 				isChange = true;
 				bill.setShortest(shortest);
 			}
-			if (adjuest != bill.getAdjuest()) {
+			if (longest != null && longest.compareTo(bill.getLongest()) != 0) {
+				isChange = true;
+				bill.setLongest(longest);
+			}
+			if (adjuest != null && adjuest.compareTo(bill.getAdjuest()) != 0) {
 				isChange = true;
 				bill.setAdjuest(adjuest);
 			}
-			if (etime != bill.getEtime()) {
+			if (etime != null && etime.compareTo(bill.getEtime()) != 0) {
 				isChange = true;
 				bill.setEtime(etime);
 			}
@@ -258,6 +260,11 @@ public class BillController extends BaseController {
 			if (is_invoice != bill.getIsInvoice()) {
 				isChange = true;
 				bill.setIsInvoice(is_invoice);
+			}
+			
+			if (agreement != bill.getAgreement()) {
+				isChange = true;
+				bill.setAgreement(agreement);
 			}
 
 			if (is_financing != bill.getIsFinancing()) {
@@ -313,11 +320,11 @@ public class BillController extends BaseController {
 	// 管理员添加收票清单
 	@PostMapping("/add")
 	public Msg add(@SessionAttribute Admin admin, @RequestParam int staffId, @RequestParam String core,@RequestParam(required = false) String invoice,
-			@RequestParam BigDecimal rate, @RequestParam(required = false) BigDecimal total,
-			@RequestParam BigDecimal initiate, @RequestParam BigDecimal max, @RequestParam BigDecimal min,
-			@RequestParam int shortest, @RequestParam int adjuest, @RequestParam(required = false) int etime,
+			@RequestParam(required = false) BigDecimal rate, @RequestParam(required = false) BigDecimal total,
+			@RequestParam(required = false) BigDecimal deductions, @RequestParam String max, @RequestParam BigDecimal min,
+			@RequestParam Integer shortest, @RequestParam Integer longest, @RequestParam Integer adjuest, @RequestParam(required = false) int etime,
 			@RequestParam(required = false) BigDecimal usable, @RequestParam(required = false) int status,
-			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,
+			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice, @RequestParam int agreement,
 			@RequestParam int is_financing, @RequestParam int is_clean, @RequestParam int is_moneyorback,
 			@RequestParam(required = false) String offer, @RequestParam(required = false) String remark) {
 
@@ -339,8 +346,7 @@ public class BillController extends BaseController {
 		
 		Staff staff = staffRepository.findOne(staffId);
 
-		bill = new Bill(acceptance, staff, rate, shortest, adjuest, initiate, max, min, total, usable, remark,
-				status, level, is_bargain, is_invoice, is_moneyorback, is_financing, is_clean, etime, offer);
+		bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, max, min, total, usable, remark, status, level,is_bargain, is_invoice, agreement, is_moneyorback, is_financing, is_clean, etime, offer);
 		bill = billRepository.save(bill);
 		if (bill != null) {
 			msg.set("添加成功", CodeConstant.SUCCESS, bill);

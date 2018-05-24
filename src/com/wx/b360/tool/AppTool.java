@@ -5,7 +5,6 @@ package com.wx.b360.tool;
  *
  */
 
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

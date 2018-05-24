@@ -98,7 +98,7 @@
 										: "-"; //用户姓名
 								var staffId = staff.id;
 								var company = isString(staff.company) == true ? staff.company
-										: "-"; //背书公司名
+										: "-"; //公司
 								var eAccount = isString(staff.eaccount) == true ? staff.eaccount
 
 										: "-"; //背书账号
@@ -189,7 +189,7 @@
 		search_staff();
 	}
 
-	//按照姓名跟背书公司 搜索
+	//按照姓名跟公司 搜索
 
 	function search_staff() {
 		var name = $("#search_staff_name").val();
@@ -215,7 +215,7 @@
 			return;
 		}
 		if (!isString(staff_company)) {
-			alert("请输入背书公司名");
+			alert("请输入公司");
 			return;
 		}
 		if (!isString(staff_eAccount)) {
@@ -376,9 +376,9 @@
 												</td>
 											</tr>											
 											<tr>
-												<td width="15%">背书公司名</td>
+												<td width="15%">公司</td>
 												<td  colspan="3" >
-													<input class="form-control" id="staff_company" placeholder="请输入背书公司名" type="text">
+													<input class="form-control" id="staff_company" placeholder="请输入公司" type="text">
 												</td>
 											</tr>
 											<tr>
@@ -424,9 +424,9 @@
 										placeholder="请输入姓名" type="text" />
 								</div>
 								<div class="form-group">
-									<label for="search_staff_company">&nbsp;背书公司:</label> <input
+									<label for="search_staff_company">&nbsp;公司:</label> <input
 										class="form-control" id="search_staff_company"
-										placeholder="请输入公司名称" type="text" />
+										placeholder="请输入公司" type="text" />
 								</div>
 
 							</form>
@@ -463,7 +463,7 @@
 									<tr>
 										<th>编号</th>
 										<th>姓名</th>
-										<th>背书公司名</th>
+										<th>公司</th>
 										<th>背书帐号</th>
 										<th>联系电话</th>
 										<th>地址</th>

@@ -47,12 +47,16 @@ public class Staff {
 	
 	@Column(name="_business_license", nullable=true, columnDefinition="varchar(255) comment '营业执照号'")
 	private String bLicense;
+	
 	@Column(name="_business_license_photo", nullable=true, columnDefinition="varchar(255) comment '营业执照（照片）'")
 	private String bLPhono;
+	
 	@Column(name="_legal_person_name", nullable=true, columnDefinition="varchar(255) comment '法人姓名'")
 	private String lPName;
+	
 	@Column(name="_idCard_front", nullable=true, columnDefinition="varchar(255) comment '法人身份证(正面)'")
 	private String idCard_front;
+	
 	@Column(name="_idCard_back", nullable=true, columnDefinition="varchar(255) comment '法人身份证(反面)'")
 	private String idCard_back;
 

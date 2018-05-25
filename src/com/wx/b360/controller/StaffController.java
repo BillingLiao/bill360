@@ -1,25 +1,31 @@
 package com.wx.b360.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.catalina.ant.FindLeaksTask;
-import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Bill;
 import com.wx.b360.entity.Staff;
-import com.wx.b360.entity.UserByAdmin;
 import com.wx.b360.model.Msg;
-import com.wx.b360.service.StaffService;
 import com.wx.b360.tool.AppTool;
 import com.wx.b360.tool.CheckTool;
 import com.wx.b360.tool.CodeConstant;
+import com.wx.b360.tool.ImportExcelTool;
 
 /**
  * 對接人 controller
@@ -30,36 +36,77 @@ import com.wx.b360.tool.CodeConstant;
 @RestController
 @RequestMapping("/staff")
 public class StaffController extends BaseController {
-	
+
+	/**
+	 * 上传excel 对接人清单导入数据库
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping("/importExcel")
+	public Msg importExcel(@RequestParam MultipartFile file) throws Exception {
+		byte[] fBytes = file.getBytes();
+		InputStream fis = new ByteArrayInputStream(fBytes);
+		Map<String, String> m = new HashMap<String, String>();
+		m.put("编号", "id");
+		m.put("姓名", "name");
+		m.put("公司", "company");
+		m.put("联系电话", "phone");
+		m.put("背书公司名", "eCompany");
+		m.put("背书账号", "eAccount");
+		m.put("微信ID", "wechat");
+		m.put("地址", "addr");
+		m.put("地区", "area");
+		List<Map<String, Object>> ls = ImportExcelTool.parseExcel(fis, file.getOriginalFilename(), m);
+		String string = JSON.toJSONString(ls);
+		if (string == null || string.equals("[]")) {
+			msg.set("表格内容不能为空", CodeConstant.SET_ERR, null);
+		} else {
+			Staff staff = null;
+			JSONArray platformList = JSON.parseArray(string);
+			for (Object jsonObject : platformList) {
+				staff = JSONObject.parseObject(jsonObject.toString(), Staff.class);
+				staff = staffRepository.save(staff);
+			}
+			msg.set("导入成功", CodeConstant.SUCCESS, null);
+		}
+		return msg;
+	}
+
 	/**
 	 * 分页查询对接人列表
 	 * 
-	 * @param index 开始位置
-	 * @param size 列数
-	 * @param name 对接人姓名
-	 * @param company 背书公司名
+	 * @param index
+	 *            开始位置
+	 * @param size
+	 *            列数
+	 * @param name
+	 *            对接人姓名
+	 * @param company
+	 *            公司名
 	 * @return
 	 */
 	@PostMapping("/find")
-	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, @RequestParam(required = false) String name,
-			@RequestParam(required = false) String company){
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size,
+			@RequestParam(required = false) String name, @RequestParam(required = false) String company) {
 		Page<Staff> page = staffService.find(index, size, name, company);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
 	}
-	
+
 	/**
 	 * 查询指定的对接人 通过id
+	 * 
 	 * @param admin
 	 * @param id
 	 * @return
 	 */
 	@PostMapping("/id")
-	public Msg findById(@RequestParam int id){
+	public Msg findById(@RequestParam int id) {
 		Staff staff = staffRepository.findOne(id);
-		if(staff != null) {
+		if (staff != null) {
 			msg.set("查询成功", CodeConstant.SUCCESS, staff);
-		}else {
+		} else {
 			msg.set("查询失败", CodeConstant.FIND_ERR, null);
 		}
 		return msg;
@@ -86,6 +133,7 @@ public class StaffController extends BaseController {
 
 	/**
 	 * 查詢所有對接人姓名
+	 * 
 	 * @return
 	 */
 	@PostMapping("/findStaffName")
@@ -97,8 +145,8 @@ public class StaffController extends BaseController {
 	// 修改對接人
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam String name,
-			@RequestParam String company, @RequestParam String eAccount,
-			@RequestParam String phone, @RequestParam(required = false) String addr) {
+			@RequestParam String company, @RequestParam String eAccount, @RequestParam String phone,
+			@RequestParam(required = false) String addr) {
 		Staff staff = staffRepository.findOne(id);
 		if (staff != null) {
 			boolean isChange = false;
@@ -110,7 +158,7 @@ public class StaffController extends BaseController {
 				isChange = true;
 				staff.setCompany(company);
 			}
-			if (!staff.getEAccount().equals(eAccount)) { //背书账号
+			if (!staff.getEAccount().equals(eAccount)) { // 背书账号
 				isChange = true;
 				staff.setName(name);
 			}

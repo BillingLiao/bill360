@@ -149,7 +149,6 @@
 								$("#acceptance_core").val(acceptance.core);
 								$("#acceptance_invoice").val(acceptance.invoice);
 								$("#bill_rate").val(bill.rate);
-								$("#bill_initiate").val(bill.initiate);
 								$("#bill_total").val(bill.total);
 								$("#bill_usable").val(bill.usable);
 								$("#bill_shortest").val(bill.shortest);
@@ -206,7 +205,6 @@
 		var core = $("#acceptance_core").val();
 		var invoice = $("#acceptance_invoice").val();
 		var rate = $("#bill_rate").val();
-		var initiate = $("#bill_initiate").val();
 		var total = $("#bill_total").val();
 		var max = $("#bill_max").val();
 		var min = $("#bill_min").val();
@@ -233,10 +231,6 @@
 		}
 		if (!isDouble(rate)) {
 			alert("请输入利率");
-			return;
-		}
-		if (!isDouble(initiate)) {
-			alert("请输入起步金额");
 			return;
 		}
 		if (!isDouble(max)) {
@@ -285,11 +279,12 @@
 				core: core,
 				invoice: invoice,
 				rate : rate,
-				initiate : initiate,
 				total : total,
+				deductions : null,
 				max : max,
 				min : min,
 				shortest : shortest,
+				longest : "360",
 				adjuest : adjuest,
 				etime : etime,
 				usable : usable,
@@ -297,6 +292,7 @@
 				level : level,
 				is_bargain : is_bargain,
 				is_invoice : is_invoice,
+				agreement : "0",
 				is_financing : is_financing,
 				is_clean : is_clean,
 				is_moneyorback : is_moneyorback,

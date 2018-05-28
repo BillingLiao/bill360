@@ -114,7 +114,7 @@
 								var core = isString(acceptance.core) ? acceptance.core
 										: "-"; //核心企业
 								var rate = isDouble(bill.rate) ? bill.rate : ""; //利率
-								var initiate = isDouble(bill.initiate) ? bill.initiate
+								var min = isDouble(bill.min) ? bill.min
 										: ""; //起步金额
 								var max = isDouble(bill.max) ? bill.max : ""; //最大金额
 								var total = isDouble(bill.total) ? bill.total
@@ -141,7 +141,7 @@
 										+ '</td><td>'
 										+ adjuest
 										+ '</td><td>'
-										+ initiate
+										+ min
 										+ '</td><td>'
 										+ max
 										+ '</td><td>'
@@ -349,11 +349,11 @@
 										id="staff_name" placeholder="" type="text"/>
 
 								</div>
-								<div class="form-group">
+								<!-- <div class="form-group">
 									&nbsp;&nbsp;上市主体：&nbsp;<input class="form-control"
 										id="acceptance_core" placeholder="" type="text"/>
 
-								</div>
+								</div> -->
 								<div class="form-group">
 									&nbsp;承兑企业：&nbsp; <input class="form-control"
 										id="acceptance_invoice" placeholder="" type="text"/>

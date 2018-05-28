@@ -137,7 +137,7 @@ public class BillController extends BaseController {
 	 * @param core
 	 * @return
 	 */
-	@PostMapping("/findByCore")
+	@PostMapping("/findMinByCore")
 	public Msg findMinRateByCore(@SessionAttribute User user,@RequestParam String core) {
 		
 		Bill bill = billRepository.findMinRateBycore(core);
@@ -169,7 +169,7 @@ public class BillController extends BaseController {
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int staffId, @RequestParam String core, @RequestParam(required = false) String invoice,
 			@RequestParam(required = false) BigDecimal rate, @RequestParam(required = false) BigDecimal total,
-			@RequestParam BigDecimal deductions, @RequestParam String max, @RequestParam BigDecimal min,
+			@RequestParam(required = false) BigDecimal deductions, @RequestParam String max, @RequestParam BigDecimal min,
 			@RequestParam  Integer shortest, @RequestParam Integer longest, @RequestParam(required = false) Integer adjuest, @RequestParam(required = false) Integer etime,
 			@RequestParam(required = false) BigDecimal usable, @RequestParam int status,
 			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,@RequestParam int agreement,
@@ -212,7 +212,7 @@ public class BillController extends BaseController {
 				isChange = true;
 				bill.setTotal(total);
 			}
-			if (deductions.compareTo(bill.getDeductions()) != 0) {
+			if (deductions !=null && deductions.compareTo(bill.getDeductions()) != 0) {
 				isChange = true;
 				bill.setDeductions(deductions);
 			}

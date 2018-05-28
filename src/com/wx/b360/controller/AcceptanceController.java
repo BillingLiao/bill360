@@ -56,7 +56,7 @@ public class AcceptanceController extends BaseController {
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam(required = false) String invoice,
 			@RequestParam(required = false) String core, @RequestParam(required = false) String category,
 			@RequestParam(required = false) String nature, @RequestParam(required = false) Integer type,
-			@RequestParam(required = false) String addr) {
+			@RequestParam(required = false) String addr, @RequestParam(required = false) String area) {
 		Acceptance acceptance = acceptanceRepository.findOne(id);
 		if (acceptance != null) {
 			boolean isChange = false;
@@ -102,6 +102,10 @@ public class AcceptanceController extends BaseController {
 				isChange = true;
 				acceptance.setAddr(addr);
 			}
+			if (CheckTool.isString(area) && (acceptance.getArea() == null || !acceptance.getArea().equals(area))) {
+				isChange = true;
+				acceptance.setArea(area);
+			}
 
 			if (isChange) {
 				// 修改后资料完善为1
@@ -141,17 +145,6 @@ public class AcceptanceController extends BaseController {
 		Page<Acceptance> page = acceptanceService.find(index, size, invoice, core, is_finish);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
-	}
-
-	/**
-	 * 通過上市主體查詢所有承兌企業
-	 * 
-	 * @return
-	 */
-	@PostMapping("/findByCore")
-	public List<Acceptance> findInvoiceByCore(@RequestParam String core) {
-		List<Acceptance> acceptancelist = acceptanceRepository.findInvoiceByCore(core);
-		return acceptancelist;
 	}
 
 	/**

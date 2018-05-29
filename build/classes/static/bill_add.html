@@ -121,7 +121,6 @@
 	
 	<!--提交保存对接人收票清单 -->
 	function save() {
-		var billId = $("#bill_id").val();
 		var staffId = $("#staff_name").val();
 		var core = $("#acceptance_core").val();
 		var invoice = $("#acceptance_invoice").val();
@@ -186,7 +185,6 @@
 			dataType : 'json',
 			data : {
 				atoken : atoken,
-				id : id,
 				staffId : staffId,
 				core: core,
 				invoice: invoice,

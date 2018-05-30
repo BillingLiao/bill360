@@ -172,16 +172,14 @@ public class OrderController extends BaseController {
 
 	// 生成订单
 	@PostMapping("/add")
-	public Msg add(@SessionAttribute User user, @RequestParam int billId, @RequestParam int inventoryId,
-			@RequestParam BigDecimal money, @RequestParam String time,
-			@RequestParam String core, @RequestParam String invoice, @RequestParam BigDecimal subsidy) {
+	public Msg add(@SessionAttribute User user, @RequestParam int billId,
+			@RequestParam BigDecimal money, @RequestParam String time, 
+			@RequestParam String img, @RequestParam BigDecimal subsidy) {
 		Bill bill = billRepository.findOne(billId);
-		Inventory inventory = inventoryRepository.findOne(inventoryId);
-		if (bill != null && bill.getStatus() == 0 && inventory != null) {
+		if (bill != null && bill.getStatus() == 0) {
 			if (CheckTool.isDate(time)) {
 				Date date = AppTool.changeDate(time);
-				if (bill.getAcceptance().getInvoice().equals(inventory.getCompany())) {
-
+	
 					if (date.getTime() < System.currentTimeMillis()) {
 						msg.set("到期日期小于当前时间", CodeConstant.ERR_PAR, null);
 						return msg;
@@ -206,13 +204,10 @@ public class OrderController extends BaseController {
 							.divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
 							.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
 
-					Order order = new Order(bill, inventory, money, date, subsidy, interest, day, user);
+					Order order = new Order(bill, money, img, date, subsidy, interest, day, user);
 					order = orderRepository.save(order);
 					msg.set("添加成功", CodeConstant.SUCCESS, order);
 
-				} else {
-					msg.set("Bill与inventory所属不正确", CodeConstant.MAT_ERR, null);
-				}
 			} else {
 				msg.set("时间格式有误", CodeConstant.ERR_PAR, null);
 			}

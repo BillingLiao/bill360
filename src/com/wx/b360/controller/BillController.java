@@ -166,7 +166,7 @@ public class BillController extends BaseController {
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int staffId,
 			@RequestParam String core, @RequestParam(required = false) String invoice,
 			@RequestParam(required = false) BigDecimal rate, @RequestParam(required = false) BigDecimal total,
-			@RequestParam(required = false) BigDecimal deductions, @RequestParam String max,
+			@RequestParam(required = false) BigDecimal deductions, @RequestParam(required = false) BigDecimal direct,@RequestParam String max,
 			@RequestParam BigDecimal min, @RequestParam Integer shortest, @RequestParam Integer longest,
 			@RequestParam(required = false) Integer adjuest, @RequestParam(required = false) Integer etime,
 			@RequestParam(required = false) BigDecimal usable, @RequestParam int status,
@@ -321,7 +321,7 @@ public class BillController extends BaseController {
 	@PostMapping("/add")
 	public Msg add(@SessionAttribute Admin admin, @RequestParam int staffId, @RequestParam String core,
 			@RequestParam(required = false) String invoice, @RequestParam(required = false) BigDecimal rate,
-			@RequestParam(required = false) BigDecimal total, @RequestParam(required = false) BigDecimal deductions,
+			@RequestParam(required = false) BigDecimal total, @RequestParam(required = false) BigDecimal deductions,@RequestParam(required = false) BigDecimal direct,
 			@RequestParam String max, @RequestParam BigDecimal min, @RequestParam Integer shortest,
 			@RequestParam Integer longest, @RequestParam Integer adjuest, @RequestParam(required = false) int etime,
 			@RequestParam(required = false) BigDecimal usable, @RequestParam(required = false) int status,

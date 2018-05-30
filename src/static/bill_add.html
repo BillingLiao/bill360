@@ -109,14 +109,28 @@
 			success : function(result) {
 				var html;
 				for (var i = 0; i < result.length; i++) {
-					html += "<option value="+result[i].id+">" + result[i].name
-							+"   "+result[i].id+"</option>";
+					html += "<option value="+result[i].id+">"+result[i].id+"\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;"+ result[i].name
+							+ "\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;"+result[i].company+"</option>";
 				}
 				
 				$("#staff_name").html(html);
 			}
 		});
 
+	}
+	
+	function change(){
+		var b = parseInt($("#bill_offer  option:selected").val());
+		debugger;
+		if(b==0){
+			$('#select_value').hide(); //隐藏id为trid1的元素。
+			//var sum1=document.getElementById("select_value");//隐藏输入框
+			//sum1.style.display="none";
+		}else{
+			/* var sum1=document.getElementById("select_value");//隐藏输入框
+			sum1.style.display="block"; */
+			 $('#select_value').show(); //显示id为trid2的元素。
+		}
 	}
 	
 	<!--提交保存对接人收票清单 -->
@@ -347,7 +361,7 @@
 										placeholder="请输入开票企业" type="text" required="required">
 									</td>
 								</tr>
-								<tr>
+								<tr id="select_value">
 									<td class="color_td">利率(%)<code>*</code></td>
 									<td><input class="form-control" id="bill_rate"
 										placeholder="请输入利率" type="number" required="required"></td>
@@ -440,8 +454,12 @@
 											id="bill_is_back" value="1" checked="checked"> 先背
 									</label></td>
 									<td class="color_td">报价方式</td>
-									<td><input class="form-control" id="bill_offer"
-										placeholder="请输入报价方式" type="text"></td>
+									<td><select name="bill_offer" id="bill_offer"
+										class="form-control" onchange="change()">
+										<option value="0">年化</option>
+										<option value="1">每十万扣</option>
+										<option value="2">直接扣</option>
+									</select></td>
 								</tr>
 								<tr>
 									<td class="color_td">备注</td>

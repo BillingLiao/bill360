@@ -43,7 +43,7 @@ public class OrderService {
 					predicates.add(predicate);
 				}
 				if(CheckTool.isString(invoice)) {
-					Path<String> path = root.get("inventory").get("company");
+					Path<String> path = root.get("bill").get("acceptance").get("invoice");
 					Predicate predicate = cb.like(path, "%" + invoice + "%");
 					predicates.add(predicate);
 				}

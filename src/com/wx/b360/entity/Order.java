@@ -26,7 +26,10 @@ public class Order {
 	private int id;
 	
 	@Column(name="_money", nullable=false, columnDefinition="DECIMAL(14,2) default '0.00' comment '金额'")
-	private BigDecimal money; 
+	private BigDecimal money;
+	
+	@Column(name="_img", nullable=false, columnDefinition="String default '' comment '商票照片'")
+	private String img;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="_time", nullable=false, columnDefinition="timestamp default current_timestamp comment '到期时间'")
@@ -56,17 +59,13 @@ public class Order {
 	@JoinColumn(name="_bill_id", nullable=false, columnDefinition="int comment '收票id'")
 	private Bill bill;
 	
-	@ManyToOne(targetEntity=Inventory.class)
-	@JoinColumn(name="_inventory_id", nullable=false, columnDefinition="int comment '持票id'")
-	private Inventory inventory;
-	
 	@ManyToOne(targetEntity=User.class)
 	@JoinColumn(name="_user_id", nullable=false, columnDefinition="int comment '用户id'")
 	private User user;
 	
-	public Order(Bill bill, Inventory inventory, BigDecimal money,
+	public Order(Bill bill, BigDecimal money, String img,
 			Date time, BigDecimal subsidy, BigDecimal interest, int day, User user) {
-		this.bill = bill;	this.inventory = inventory;
+		this.bill = bill; this.img = img;
 		this.money = money;	this.time = time;	this.subsidy = subsidy;	this.interest = interest;
 		this.day = day;	this.user = user;
 		

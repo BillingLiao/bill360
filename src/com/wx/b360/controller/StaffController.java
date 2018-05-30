@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +44,7 @@ public class StaffController extends BaseController {
 	 * @return
 	 * @throws Exception
 	 */
+	@Transactional
 	@PostMapping("/importExcel")
 	public Msg importExcel(@RequestParam MultipartFile file) throws Exception {
 		byte[] fBytes = file.getBytes();

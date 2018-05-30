@@ -101,6 +101,9 @@ public class Bill {
 
 	@Column(name = "_deductions", nullable = true, columnDefinition = "DECIMAL(14,2) default '0.00' comment '每十万扣费'")
 	private BigDecimal deductions;
+	
+	@Column(name = "_direct", nullable = true, columnDefinition = "DECIMAL(14,2) default '0.00' comment '直接扣？%'")
+	private BigDecimal direct;
 
 	public Bill(Acceptance acceptance, Staff staff, BigDecimal rate, Integer shortest, Integer longest,Integer adjuest, BigDecimal deductions,
 			String max, BigDecimal min, BigDecimal total, BigDecimal usable, String remark, int status, int level,

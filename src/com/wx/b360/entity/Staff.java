@@ -54,10 +54,10 @@ public class Staff {
 	@Column(name="_legal_person_name", nullable=true, columnDefinition="varchar(255) comment '法人姓名'")
 	private String lPName;
 	
-	@Column(name="_idCard_front", nullable=true, columnDefinition="varchar(255) comment '法人身份证(正面)'")
+	@Column(name="_id_card_front", nullable=true, columnDefinition="varchar(255) comment '法人身份证(正面)'")
 	private String idCard_front;
 	
-	@Column(name="_idCard_back", nullable=true, columnDefinition="varchar(255) comment '法人身份证(反面)'")
+	@Column(name="_id_card_back", nullable=true, columnDefinition="varchar(255) comment '法人身份证(反面)'")
 	private String idCard_back;
 
 	public Staff(String name, String company, String eAccount, String phone, String addr) {

@@ -12,8 +12,6 @@
 }
 </style>
 <script type="application/x-javascript">
-	
-	
 			addEventListener("load", function() {
 				setTimeout(hideURLbar, 0);
 			}, false);
@@ -21,8 +19,6 @@
 			function hideURLbar() {
 				window.scrollTo(0, 1);
 			}
-		
-
 </script>
 <link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
 <!-- Custom Theme files -->
@@ -67,6 +63,7 @@
 				$("#username").text(sessionStorage.getItem("name"));
 				show_core();
 				show_staff_name();
+				change();
 			});
 	
 	/*  
@@ -89,7 +86,7 @@
 							+ result[i]+ "</option>";
 					}
 				}
-				$("#acceptance_core").html(html);
+				$("#data_acceptance_core").html(html);
 			}
 		});
 	}
@@ -112,7 +109,6 @@
 					html += "<option value="+result[i].id+">"+result[i].id+"\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;"+ result[i].name
 							+ "\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;"+result[i].company+"</option>";
 				}
-				
 				$("#staff_name").html(html);
 			}
 		});
@@ -121,20 +117,34 @@
 	
 	function change(){
 		var b = parseInt($("#bill_offer  option:selected").val());
-		debugger;
 		if(b==0){
-			$('#select_value').hide(); //隐藏id为trid1的元素。
-			//var sum1=document.getElementById("select_value");//隐藏输入框
-			//sum1.style.display="none";
-		}else{
+			$('#select_offer_0').show(); //显示id为select_offer_0的元素。
+			$('#select_offer_1').hide(); //隐藏id为select_offer_1的元素。
+			$('#select_offer_2').hide();
+			$("#bill_deductions").val("0");
+			$("#bill_direct").val("0");
+		}else if(b==1){
 			/* var sum1=document.getElementById("select_value");//隐藏输入框
 			sum1.style.display="block"; */
-			 $('#select_value').show(); //显示id为trid2的元素。
+			$('#select_offer_0').hide();
+			$('#select_offer_1').show();
+			$('#select_offer_2').hide();
+			$('#bill_rate').val("0");
+			$("#bill_adjuest").val("0");
+			$("#bill_direct").val("0");
+		}else if(b==2){
+			$('#select_offer_0').hide();
+			$('#select_offer_1').hide();
+			$('#select_offer_2').show();
+			$('#bill_rate').val("0");
+			$("#bill_adjuest").val("0");
+			$("#bill_deductions").val("0");
 		}
 	}
 	
 	<!--提交保存对接人收票清单 -->
 	function save() {
+		debugger;
 		var staffId = $("#staff_name").val();
 		var core = $("#acceptance_core").val();
 		var invoice = $("#acceptance_invoice").val();
@@ -143,7 +153,10 @@
 		var max = $("#bill_max").val();
 		var min = $("#bill_min").val();
 		var shortest = $("#bill_shortest").val();
+		var longest = $("#bill_longest").val();
 		var adjuest = $("#bill_adjuest").val();
+		var deductions = $('#bill_deductions').val();
+		var direct = $('#bill_direct').val();
 		var etime = $("#bill_etime").val();
 		var usable = $("#bill_usable").val();
 		var status =$('input[name="add_status"]:checked').val();
@@ -152,9 +165,12 @@
 		var is_invoice = $('input[name="add_invoice"]:checked').val();
 		var is_financing = $('input[name="add_financing"]:checked').val();
 		var is_clean = $('input[name="add_clean"]:checked').val();
+		var agreement = $('input[name="add_agreement"]:checked').val();
 		var is_moneyorback = $('input[name="add_moneyorback"]:checked').val();
 		var offer = $("#bill_offer").val();
 		var remark = $("#bill_remark").val();
+		
+		
 		if (!isNum(staffId)) {
 			alert("请选择对接人");
 			return;
@@ -163,25 +179,40 @@
 			alert("请输入上市主体");
 			return;
 		}
-		if (!isDouble(rate)) {
-			alert("请输入利率");
-			return;
+		if(offer == 0){
+			if (!isDouble(rate)) {
+				alert("请输入利率");
+				return;
+			}
+			if (!isNum(adjuest)) {
+				alert("调整天数应为正整数且非空");
+				return;
+			}
+		}else if(offer == 1){
+			if (!isDouble(deductions)) {
+				alert("请输入每十万扣费金额");
+				return;
+			}
+		}else if(offer == 2){
+			if (!isDouble(direct)) {
+				alert("请输入扣费百分比");
+				return;
+			}
 		}
 		if (!isDouble(max)) {
-			alert("请输入最大金额");
+			alert("请输入上限金额");
 			return;
 		}
 		if (!isDouble(min)) {
-			alert("请输入最小金额");
+			alert("请输入起步金额");
 			return;
 		}
-
 		if (!isNum(shortest)) {
 			alert("最短期限应为正整数且非空");
 			return;
 		}
-		if (!isNum(adjuest)) {
-			alert("调整天数应为正整数且非空");
+		if (!isNum(longest)) {
+			alert("最长期限应为正整数且非空");
 			return;
 		}
 		if (!isNum(level)) {
@@ -204,11 +235,12 @@
 				invoice: invoice,
 				rate : rate,
 				total : total,
-				deductions : null,
+				deductions : deductions,
+				direct : direct,
 				max : max,
 				min : min,
 				shortest : shortest,
-				longest : 360,
+				longest : longest,
 				adjuest : adjuest,
 				etime : etime,
 				usable : usable,
@@ -216,7 +248,7 @@
 				level : level,
 				is_bargain : is_bargain,
 				is_invoice : is_invoice,
-				agreement : 0,
+				agreement : agreement,
 				is_financing : is_financing,
 				is_clean : is_clean,
 				is_moneyorback : is_moneyorback,
@@ -228,7 +260,7 @@
 					alert("添加成功");
 					window.opener.location.reload();
 					//location.reload();
-					window.close();
+					//window.close();
 				} else {
 					alert(data.message);
 				}
@@ -278,8 +310,7 @@
 							class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span
 								class=" name-caret"><span id="username"></span></span><img
 								src="images/wo.png"></a></li>
-						<li class="dropdown">
-								<a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						<li class="dropdown"><a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
 						</li>
 					</ul>
 				</div>
@@ -341,140 +372,165 @@
 					<div class="profile-bottom"
 						style="min-height: 800px; padding: 20px; width: 100%;">
 						<form id="bill_save" method="post">
-						<table class="table table-bordered">
-							<tbody>
-								<tr>
-									<td width="10%" class="color_td">对接人姓名<code>*</code></td>
-									<td width="40%" ><select id="staff_name"
-										class="form-control">
-									</select></td>
-									<td class="color_td" width="10%"></td>
-									<td width="40%"> <span ></span></td>
-								</tr>
-								<tr>
-									<td class="color_td">核心企业名(上市主体)<code>*</code></td>
-									<td><select id="acceptance_core" class="form-control">
-									</select></td>
-									<td class="color_td">开票企业(承兑企业)</td>
-									<td>
-									<input class="form-control" id="acceptance_invoice"
-										placeholder="请输入开票企业" type="text" required="required">
-									</td>
-								</tr>
-								<tr id="select_value">
-									<td class="color_td">利率(%)<code>*</code></td>
-									<td><input class="form-control" id="bill_rate"
-										placeholder="请输入利率" type="number" required="required"></td>
-									<td class="color_td">调整天数 <code>*</code></td>
-									<td><input class="form-control" id="bill_adjuest"
-										placeholder="请输入调整天数" type="number" required="required" value='0'></td>
-								</tr>
-								<tr>
-									<td class="color_td">起步金额 <code>*</code></td>
-									<td><input class="form-control" id="bill_initiate"
-										placeholder="请输入起步金额" type="number" value='0' required="required"></td>
-									<td class="color_td">总额度</td>
-									<td><input class="form-control" id="bill_total"
-										placeholder="请输入总额度" type="number" value='0'></td>
-								</tr>
-								<tr>
-									<td class="color_td">最大金额 <code>*</code></td>
-									<td><input class="form-control" id="bill_max"
-										placeholder="请输入最大金额" type="number" required="required" value='0'></td>
-									<td class="color_td">最小金额 <code>*</code></td>
-									<td><input class="form-control" id="bill_min"
-										placeholder="请输入最小金额" type="number" required="required" value='0'></td>
-								</tr>
-								<tr>
-									<td class="color_td">最短期限（天）<code>*</code></td>
-									<td><input class="form-control" id="bill_shortest"
-										placeholder="请输入最短期限" type="number" required="required" value='360'></td>
-									<td class="color_td">可用额度</td>
-									<td><input class="form-control" id="bill_usable"
-										placeholder="请输入可用额度" type="number" value='0'></td>
-								</tr>
-								<tr>
-									<td class="color_td">背书次数限制</td>
-									<td><input class="form-control" id="bill_etime"
-										placeholder="请输入背书次数限制" type="number" value='2'></td>
-									<td class="color_td"></td>
-									<td><span ></span></td>
-								</tr>
-								<tr>
-									<td class="color_td">状态</td>
-									<td id="bill_status"><label> <input type="radio"
-											name="add_status" id="bill_status_yes" value="0"
-											checked="checked"> 正常
-									</label> <label> <input type="radio" name="add_status"
-											id="bill_status_no" value="1"> 已关闭
-									</label></td>
-									<td class="color_td">优先级</td>
-									<td><input class="form-control" id="bill_level" value='0'
-										placeholder="请输入0~10"  type="number"></td>
-								</tr>
-								<tr>
-									<td class="color_td">合同</td>
-									<td id="bill_is_bargain"><label> <input
-											type="radio" name="add_bargain" id="bill_is_bargain_no"
-											value="0"> 无
-									</label> <label> <input type="radio" name="add_bargain"
-											id="bill_is_bargain_yes" value="1" checked="checked">
-											有
-									</label></td>
-									<td class="color_td">发票</td>
-									<td id="bill_is_invoice"><label> <input
-											type="radio" name="add_invoice" id="bill_is_invoice_no"
-											value="0" checked="checked"> 无
-									</label> <label> <input type="radio" name="add_invoice"
-											id="bill_is_invoice_yes" value="1"> 有
-									</label></td>
-								</tr>
-								<tr>
-									<td class="color_td">融资票</td>
-									<td id="bill_is_financing"><label> <input
-											type="radio" name="add_financing" id="bill_is_financing_no"
-											value="0" checked="checked"> 否
-									</label> <label> <input type="radio" name="add_financing"
-											id="bill_is_financing_yes" value="1"> 是
-									</label></td>
-									<td class="color_td">光票</td>
-									<td id="bill_is_clean"><label> <input type="radio"
-											name="add_clean" id="bill_is_clean_no" value="0"
-											checked="checked"> 否
-									</label> <label> <input type="radio" name="add_clean"
-											id="bill_is_clean_yes" value="1"> 是
-									</label></td>
-								</tr>
-								<tr>
-									<td class="color_td">先款先背</td>
-									<td id="bill_is_moneyorback"><label> <input
-											type="radio" name="add_moneyorback" id="bill_is_money"
-											value="0" > 先款
-									</label> <label> <input type="radio" name="add_moneyorback"
-											id="bill_is_back" value="1" checked="checked"> 先背
-									</label></td>
-									<td class="color_td">报价方式</td>
-									<td><select name="bill_offer" id="bill_offer"
-										class="form-control" onchange="change()">
-										<option value="0">年化</option>
-										<option value="1">每十万扣</option>
-										<option value="2">直接扣</option>
-									</select></td>
-								</tr>
-								<tr>
-									<td class="color_td">备注</td>
-									<td colspan="3" id="remark"><input class="form-control"
-										id="bill_remark" name="remark" placeholder="请输入备注" type="text"></td>
-								</tr>
+							<table class="table table-bordered">
+								<tbody>
+									<tr>
+										<td width="15%" class="color_td">核心企业名(上市主体)<code>*</code></td>
+										<td width="35%"><input id="acceptance_core" list="data_acceptance_core" type="text" class="form-control"/>
+										<datalist id="data_acceptance_core" >
+										</datalist>
+										</td>
+										<td width="15%" class="color_td">开票企业(承兑企业)</td>
+										<td width="35%"><input class="form-control" id="acceptance_invoice"
+											placeholder="请输入开票企业" type="text" required="required">
+										</td>
+									</tr>
+									<tr>
+										<td class="color_td">对接人姓名<code>*</code></td>
+										<td><select id="staff_name"
+											class="form-control">
+										</select></td>
+										<td class="color_td">报价方式</td>
+										<td><select name="bill_offer" id="bill_offer"
+											class="form-control" onchange="change()">
+												<option value="0">年化</option>
+												<option value="1">每十万扣</option>
+												<option value="2">直接扣</option>
+										</select></td>
+									</tr>
+									<tr id="select_offer_0">
+										<td class="color_td">利率(%)<code>*</code></td>
+										<td><input class="form-control" id="bill_rate"
+											placeholder="请输入利率" type="number" required="required"></td>
+										<td class="color_td">调整天数 <code>*</code></td>
+										<td><input class="form-control" id="bill_adjuest"
+											placeholder="请输入调整天数" type="number" required="required"
+											value='0'></td>
+									</tr>
+									<tr id="select_offer_1">
+										<td class="color_td">每10万扣利息(元)<code>*</code></td>
+										<td><input class="form-control" id="bill_deductions"
+											placeholder="请输入利息" type="number" required="required"></td>
+										<td class="color_td"></td>
+										<td><span></span></td>
+									</tr>
+									<tr id="select_offer_2">
+										<td class="color_td">扣费百分比(%)<code>*</code></td>
+										<td><input class="form-control" id="bill_direct"
+											placeholder="请输入扣费百分比" type="number" required="required"></td>
+										<td class="color_td"></td>
+										<td><span></span></td>
+									</tr>
+									<tr>
+										<td class="color_td">上限金额（万） <code>*</code></td>
+										<td><input class="form-control" id="bill_max"
+											placeholder="请输入上限金额" type="text" required="required"
+											value='0'></td>
+										<td class="color_td">起步金额 （万）<code>*</code></td>
+										<td><input class="form-control" id="bill_min"
+											placeholder="请输入起步金额" type="number" required="required"
+											value='0'></td>
+									</tr>
+									<tr>
+										<td class="color_td">可用额度（万）</td>
+										<td><input class="form-control" id="bill_usable"
+											placeholder="请输入可用额度" type="number" value='0'></td>
+										<td class="color_td">总额度（万）</td>
+										<td><input class="form-control" id="bill_total"
+											placeholder="请输入总额度" type="number" value='0'></td>
+									</tr>
+									<tr>
+										<td class="color_td">最短期限（天）<code>*</code></td>
+										<td><input class="form-control" id="bill_shortest"
+											placeholder="请输入最短期限" type="number" required="required"
+											value='30'></td>
+										<td class="color_td">最长期限（天）</td>
+										<td><input class="form-control" id="bill_longest"
+											placeholder="请输入最长期限" type="number" value='360'></td>
+									</tr>
+									<tr>
+										<td class="color_td">背书次数限制</td>
+										<td><input class="form-control" id="bill_etime"
+											placeholder="请输入背书次数限制" type="number" value='1'></td>
+										<td class="color_td"></td>
+										<td><span></span></td>
+									</tr>
+									<tr>
+										<td class="color_td">状态</td>
+										<td id="bill_status"><label> <input type="radio"
+												name="add_status" id="bill_status_yes" value="0"
+												checked="checked"> 正常
+										</label> <label> <input type="radio" name="add_status"
+												id="bill_status_no" value="1"> 已关闭
+										</label></td>
+										<td class="color_td">优先级</td>
+										<td><input class="form-control" id="bill_level" value='0'
+											placeholder="请输入0~10" type="number"></td>
+									</tr>
+									<tr>
+										<td class="color_td">合同</td>
+										<td id="bill_is_bargain"><label> <input
+												type="radio" name="add_bargain" id="bill_is_bargain_no"
+												value="0"> 无
+										</label> <label> <input type="radio" name="add_bargain"
+												id="bill_is_bargain_yes" value="1" checked="checked">
+												有
+										</label></td>
+										<td class="color_td">发票</td>
+										<td id="bill_is_invoice"><label> <input
+												type="radio" name="add_invoice" id="bill_is_invoice_no"
+												value="0" checked="checked"> 无
+										</label> <label> <input type="radio" name="add_invoice"
+												id="bill_is_invoice_yes" value="1"> 有
+										</label></td>
+									</tr>
+									<tr>
+										<td class="color_td">融资票</td>
+										<td id="bill_is_financing"><label> <input
+												type="radio" name="add_financing" id="bill_is_financing_no"
+												value="0" checked="checked"> 否
+										</label> <label> <input type="radio" name="add_financing"
+												id="bill_is_financing_yes" value="1"> 是
+										</label></td>
+										<td class="color_td">光票</td>
+										<td id="bill_is_clean"><label> <input
+												type="radio" name="add_clean" id="bill_is_clean_no"
+												value="0" checked="checked"> 否
+										</label> <label> <input type="radio" name="add_clean"
+												id="bill_is_clean_yes" value="1"> 是
+										</label></td>
+									</tr>
+									<tr>
+										<td class="color_td">质押协议</td>
+										<td id="bill_agreement"><label> <input
+												type="radio" name="add_agreement" id="bill_agreement_no"
+												value="0" checked="checked"> 否
+										</label> <label> <input type="radio" name="add_agreement"
+												id="bill_agreement_yes" value="1"> 是
+										</label></td>
+										<td class="color_td">先款先背</td>
+										<td id="bill_is_moneyorback"><label> <input
+												type="radio" name="add_moneyorback" id="bill_is_money"
+												value="0"> 先款
+										</label> <label> <input type="radio" name="add_moneyorback"
+												id="bill_is_back" value="1" checked="checked"> 先背
+										</label></td>
+									</tr>
+									<tr>
+										<td class="color_td">备注</td>
+										<td colspan="3" id="remark"><input class="form-control"
+											id="bill_remark" name="remark" placeholder="请输入备注"
+											type="text"></td>
+									</tr>
 
-								<tr class="traa">
-									<td colspan="4" style="text-align: right;">
-										<input type="button" id = "submit" value="提交" class="btn btn-primary" onclick="save()" />
-									</td>
-								</tr>
+									<tr class="traa">
+										<td colspan="4" style="text-align: right;"><input
+											type="button" id="submit" value="提交" class="btn btn-primary"
+											onclick="save()" /></td>
+									</tr>
 
-							</tbody>
-						</table>
+								</tbody>
+							</table>
 						</form>
 					</div>
 				</div>

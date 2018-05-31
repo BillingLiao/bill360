@@ -114,22 +114,32 @@
 										: "-";//开票企业
 								var core = isString(acceptance.core) ? acceptance.core
 										: "-"; //核心企业
-								var rate = isDouble(bill.rate) ? bill.rate : "-"; //利率
+								var offer = isNum(bill.offer) ? bill.offer : "-"; //报价方式
+								
+								if(offer == 0){
+									var offer_text = '年化';
+									var offer_value = '利率:'+bill.rate+'+调整天数:'+bill.adjuest;
+								}else if(offer == 1){
+									var offer_text = '每十万扣';
+									var offer_value = '利息:'+bill.deductions;
+								}else if(offer == 2){
+									var offer_text = '直接扣';
+									var offer_value = '百分比(%):'+bill.direct;
+								}
+								
 								var min = isDouble(bill.min) ? bill.min : "-"; //起步金额
-								var max = isDouble(bill.max) ? bill.max : "-"; //最大金额
+								var max = isDouble(bill.max) ? bill.max : "-"; //上限金额
 								var total = isDouble(bill.total) ? bill.total
-										: "-"; //总额
+										: "-"; //总额度
 								var usable = isDouble(bill.usable) ? bill.usable
 										: "-"; //可用额度
 								var shortest = isNum(bill.shortest) ? bill.shortest
 										: "-"; //最短期限
-								var adjuest = isNum(bill.adjuest) ? bill.adjuest
-										: "-"; //调整天数
+								var longest = isNum(bill.longest) ? bill.longest
+										: "-"; //最长期限
 
 								var remark = isString(bill.remark) ? bill.remark
 										: "-"; //备注
-								var deductions = isNum(bill.deductions) ? bill.deductions
-										: "-"; //每十万扣
 
 								temp = '<tr id="bill_tr_'+bill.id+'"><td>'
 										+ billId
@@ -140,11 +150,9 @@
 										+ '</td><td>'
 										+ core
 										+ '</td><td>'
-										+ rate
+										+ offer_text
 										+ '</td><td>'
-										+ adjuest
-										+ '</td><td>'
-										+ deductions
+										+ offer_value
 										+ '</td><td>'
 										+ min
 										+ '</td><td>'
@@ -155,6 +163,8 @@
 										+ usable
 										+ '</td><td>'
 										+ shortest
+										+ '</td><td>'
+										+ longest
 										+ '</td><td>'
 										+ remark
 										+ '</td><td><a href="bill_detail.html?id='
@@ -410,17 +420,17 @@
 								<thead>
 									<tr>
 										<th>编号</th>
-										<th>对接人</th>
+										<th>对接人姓名</th>
 										<th>开票企业</th>
 										<th>核心企业名</th>
-										<th>利率(%)</th>
-										<th>调整天数</th>
-										<th>每10万扣</th>
+										<th>报价方式</th>
+										<th>扣费详细</th>
 										<th>起步金额(万)</th>
-										<th>最大金额(万)</th>
+										<th>上限金额(万)</th>
 										<th>总额度(万)</th>
 										<th>可用额度(万)</th>
-										<th>最短期限</th>
+										<th>最短期限(天)</th>
+										<th>最长期限(天)</th>
 										<th>备注</th>
 										<th>操作</th>
 									</tr>

@@ -172,7 +172,7 @@ public class BillController extends BaseController {
 			@RequestParam(required = false) BigDecimal usable, @RequestParam int status,
 			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,
 			@RequestParam int agreement, @RequestParam int is_financing, @RequestParam int is_clean,
-			@RequestParam int is_moneyorback, @RequestParam(required = false) String offer,
+			@RequestParam int is_moneyorback, @RequestParam Integer offer,
 			@RequestParam(required = false) String remark) {
 
 		Acceptance acceptance = acceptanceRepository.findByCoreAndInvoice(core, invoice);
@@ -204,7 +204,7 @@ public class BillController extends BaseController {
 				isChange = true;
 				acceptance.setInvoice(invoice);
 			}
-			if (rate.compareTo(bill.getRate()) != 0) {
+			if (rate != null && rate.compareTo(bill.getRate()) != 0) {
 				isChange = true;
 				bill.setRate(rate);
 			}
@@ -215,6 +215,10 @@ public class BillController extends BaseController {
 			if (deductions != null && deductions.compareTo(bill.getDeductions()) != 0) {
 				isChange = true;
 				bill.setDeductions(deductions);
+			}
+			if (direct != null && direct.compareTo(bill.getDirect()) != 0) {
+				isChange = true;
+				bill.setDirect(direct);
 			}
 			if (CheckTool.isString(max) && (bill.getMax() == null || !bill.getMax().equals(max))) {
 				isChange = true;
@@ -280,7 +284,7 @@ public class BillController extends BaseController {
 				isChange = true;
 				bill.setIsMoneyOrBack(is_moneyorback);
 			}
-			if (CheckTool.isString(offer) && (bill.getOffer() == null || !bill.getOffer().equals(offer))) {
+			if (bill.getOffer().compareTo(offer) != 0) {
 				isChange = true;
 				bill.setOffer(offer);
 			}
@@ -323,11 +327,11 @@ public class BillController extends BaseController {
 			@RequestParam(required = false) String invoice, @RequestParam(required = false) BigDecimal rate,
 			@RequestParam(required = false) BigDecimal total, @RequestParam(required = false) BigDecimal deductions,@RequestParam(required = false) BigDecimal direct,
 			@RequestParam String max, @RequestParam BigDecimal min, @RequestParam Integer shortest,
-			@RequestParam Integer longest, @RequestParam Integer adjuest, @RequestParam(required = false) int etime,
+			@RequestParam Integer longest, @RequestParam(required = false) Integer adjuest, @RequestParam(required = false) int etime,
 			@RequestParam(required = false) BigDecimal usable, @RequestParam(required = false) int status,
 			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,
 			@RequestParam int agreement, @RequestParam int is_financing, @RequestParam int is_clean,
-			@RequestParam int is_moneyorback, @RequestParam(required = false) String offer,
+			@RequestParam int is_moneyorback, @RequestParam Integer offer,
 			@RequestParam(required = false) String remark) {
 
 		/*
@@ -348,7 +352,7 @@ public class BillController extends BaseController {
 
 			Staff staff = staffRepository.findOne(staffId);
 
-			bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, max, min, total, usable,
+			bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, direct, max, min, total, usable,
 					remark, status, level, is_bargain, is_invoice, agreement, is_moneyorback, is_financing, is_clean,
 					etime, offer);
 			bill = billRepository.save(bill);

@@ -69,13 +69,16 @@ public class InventoryController extends BaseController {
 			JSONObject jsonObject = JSONObject.parseObject(result);
 			if (jsonObject.getInteger("code").intValue() == 200) {
 				String recognize = jsonObject.getString("recognize_data");
+				String amount = null;
 				String endDate = null;
 				String company = null;
 				if (CheckTool.isString(recognize)) {
 					jsonObject = JSONObject.parseObject(recognize);
+					amount  = jsonObject.getString("amount");
 					endDate = jsonObject.getString("endDate");
 					company = jsonObject.getString("kpCompany");
 					Map<String, String> data = new HashMap<>();
+					data.put("amount", amount);
 					data.put("endDate", endDate);
 					data.put("company", company);
 					data.put("ocr-result", result);

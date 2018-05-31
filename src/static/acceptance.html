@@ -68,14 +68,14 @@
 	//页面加载成功时访问
 	$(window).load(function() {
 		show_source(index, size);
+		show_core();
 		show_category(category_select);
 		show_nature(nature_select);
 	});
 
 	function show_source(index, size, invoice, core, is_finish) {
 
-		$
-				.ajax({
+		$.ajax({
 					type : "post",
 					url : api + "/acceptance/find",
 					dataType : 'json',
@@ -152,6 +152,33 @@
 				});
 	}
 
+	/*  
+	*初始化核心企业(上市主体)下拉框
+	*/
+	function show_core() {
+		$.ajax({
+			type : "post",
+			url : api + "acceptance/findCore",
+			async : true,
+			dataType : 'json',
+			data : {
+				atoken : atoken,
+			},
+			success : function(result) {
+				var html;
+				for (var i = 0; i < result.length; i++) {
+					if(result[i] != null && result[i] != ""){
+					html += "<option value="+result[i]+">"
+							+ result[i]+ "</option>";
+					}
+				}
+				$("#data_acceptance_core").html(html);
+			}
+		});
+	}
+	
+	
+	//初始化企业类别下拉框
 	function show_category(data_Dic_Name) {
 		$.ajax({
 			type : "post",
@@ -172,7 +199,8 @@
 			}
 		});
 	}
-
+	
+	//初始化企业性质下拉框
 	function show_nature(data_Dic_Name) {
 		$.ajax({
 			type : "post",
@@ -427,8 +455,9 @@
 										<tr>
 											<td width="15%">上市主体<code>*</code></td>
 											<td colspan="3">
-											<input class="form-control"
-												id="acceptance_core" placeholder="请输入上市主体" type="text">
+											<input id="acceptance_core" list="data_acceptance_core" type="text" class="form-control"/>
+											<datalist id="data_acceptance_core" >
+											</datalist>
 											</td>
 										</tr>
 										<tr>

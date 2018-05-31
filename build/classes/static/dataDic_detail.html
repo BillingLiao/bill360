@@ -45,7 +45,24 @@
 		$('#toggle').click(function() {
 			screenfull.toggle($('#container')[0]);
 		});
-
+		
+		$.ajax({
+			type : "post",
+			url : api + "dataDic/findDataDicName",
+			dataType : 'json',
+			data : {
+				atoken : atoken,
+			},
+			success : function(data) {
+				var html;
+				var arr = data.data;
+				for (var i = 0; i < arr.length; i++) {
+					var dataDicName = arr[i];
+					html += "<option>" + dataDicName + "</option>";
+				}
+				$("#datalist_dataDic_name").html(html);
+			}
+		});
 	});
 	var atoken = sessionStorage.getItem("atoken");
 	var id = getQueryString("id");
@@ -238,7 +255,10 @@
 							<tr style="height: 100px;">
 								<td width="15%">数据字典名</td>
 								<td width="35%"><input class="form-control"
-									id="add_dataDic_name" placeholder="请输入数据字典名" type="text">
+									id="add_dataDic_name" placeholder="请输入数据字典名" type="text" list="datalist_dataDic_name">
+									<datalist id="datalist_dataDic_name">
+
+									</datalist> 
 								</td>
 								<td width="15%">数据字典值</td>
 								<td width="35%"><input class="form-control"

@@ -96,8 +96,8 @@ public class Bill {
 	@Column(name = "_endorse_time", nullable = true, columnDefinition = "int comment '背书次数限制'")
 	private int etime;
 
-	@Column(name = "_offer", nullable = true, columnDefinition = "String comment '报价方式'")
-	private String offer;
+	@Column(name = "_offer", nullable = true, columnDefinition = "int comment '报价方式'")
+	private Integer offer;
 
 	@Column(name = "_deductions", nullable = true, columnDefinition = "DECIMAL(14,2) default '0.00' comment '每十万扣费'")
 	private BigDecimal deductions;
@@ -106,8 +106,8 @@ public class Bill {
 	private BigDecimal direct;
 
 	public Bill(Acceptance acceptance, Staff staff, BigDecimal rate, Integer shortest, Integer longest,Integer adjuest, BigDecimal deductions,
-			String max, BigDecimal min, BigDecimal total, BigDecimal usable, String remark, int status, int level,
-			int isBargain, int isInvoice, int agreement, int isMoneyOrBack, int isFinancing, int isClean, int etime, String offer) {
+			BigDecimal direct, String max, BigDecimal min, BigDecimal total, BigDecimal usable, String remark, int status, int level,
+			int isBargain, int isInvoice, int agreement, int isMoneyOrBack, int isFinancing, int isClean, int etime, Integer offer) {
 		super();
 		this.acceptance = acceptance;
 		this.staff = staff;
@@ -116,6 +116,7 @@ public class Bill {
 		this.longest = longest;
 		this.adjuest = adjuest;
 		this.deductions = deductions;
+		this.direct = direct;
 		this.max = max;
 		this.min = min;
 		this.total = total;

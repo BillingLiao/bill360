@@ -77,8 +77,7 @@
 					html2 += "<option>" + dataDicName + "</option>";
 				}
 				$("#dataDic_name").html(html);
-
-				$("#add_dataDic_name").html(html2);
+				$("#datalist_dataDic_name").html(html2);
 			}
 		});
 
@@ -91,8 +90,7 @@
 
 	function show_dataDic(index, size, dataDicName, dataDicValue) {
 
-		$
-				.ajax({
+		$.ajax({
 					type : "post",
 					url : api + "dataDic/find",
 					dataType : 'json',
@@ -177,10 +175,10 @@
 	//添加数据字典
 	function add_dataDic() {
 
-		var inputDataDicName = $("#inputDataDicName").val();
+		var add_dataDic_name  = $("#add_dataDic_name").val();
 		var add_dataDic_value = $("#add_dataDic_value").val();
 
-		if (!isString(inputDataDicName)) {
+		if (!isString(add_dataDic_name)) {
 			alert("请输入数据字典名");
 			return;
 		}
@@ -196,7 +194,7 @@
 			dataType : 'json',
 			data : {
 				atoken : atoken,
-				dataDicName : inputDataDicName,
+				dataDicName : add_dataDic_name,
 				dataDicValue : add_dataDic_value,
 			},
 
@@ -362,12 +360,10 @@
 									<tbody>
 										<tr>
 											<td>数据字典名<code>*</code></td>
-											<td><select id="add_dataDic_name" class="form-control"
-												style="width: 100%;"
-												onchange="document.getElementById('inputDataDicName').value=this.value">
+											<td><input id="add_dataDic_name" class="form-control" list="datalist_dataDic_name" type="text"/>
+											<datalist id="datalist_dataDic_name">
 
-											</select> <input id="inputDataDicName" name="inputDataDicName"
-												style="position: absolute; width: 310px; height: 27px; left: 242px; top: 35px; border: 0px;">
+											</datalist> 
 											</td>
 										</tr>
 										<tr>

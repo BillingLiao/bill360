@@ -50,10 +50,9 @@ public class StaffController extends BaseController {
 		byte[] fBytes = file.getBytes();
 		InputStream fis = new ByteArrayInputStream(fBytes);
 		Map<String, String> m = new HashMap<String, String>();
-		m.put("编号", "id");
+		m.put("联系电话", "phone");
 		m.put("姓名", "name");
 		m.put("公司", "company");
-		m.put("联系电话", "phone");
 		m.put("背书公司名", "eCompany");
 		m.put("背书账号", "eAccount");
 		m.put("微信ID", "wechat");
@@ -116,14 +115,14 @@ public class StaffController extends BaseController {
 
 	// 添加對接人
 	@PostMapping("/add")
-	public Msg add(@SessionAttribute Admin admin, @RequestParam String name, @RequestParam String company,
-			@RequestParam String eAccount, @RequestParam String phone, @RequestParam(required = false) String addr) {
+	public Msg add(@SessionAttribute Admin admin, @RequestParam String name, @RequestParam String company, @RequestParam(required = false) String eCompany,
+			@RequestParam(required = false) String eAccount, @RequestParam(required = false) String phone, @RequestParam(required = false) String addr, @RequestParam(required = false) String area) {
 		if (!CheckTool.isPhone(phone)) {
 			msg.set("手机号格式有误", CodeConstant.ERR_PAR, null);
 			return msg;
 		}
 
-		Staff staff = new Staff(name, company, eAccount, phone, addr);
+		Staff staff = new Staff(name, company,eCompany, eAccount, phone, addr, area);
 		staff = staffRepository.save(staff);
 		if (staff != null) {
 			msg.set("添加成功", CodeConstant.SUCCESS, staff);
@@ -147,8 +146,8 @@ public class StaffController extends BaseController {
 	// 修改對接人
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam String name,
-			@RequestParam String company, @RequestParam String eAccount, @RequestParam String phone,
-			@RequestParam(required = false) String addr) {
+			@RequestParam String company,@RequestParam(required = false) String eCompany, @RequestParam(required = false) String eAccount, @RequestParam(required = false) String phone,
+			@RequestParam(required = false) String addr,@RequestParam(required = false) String area) {
 		Staff staff = staffRepository.findOne(id);
 		if (staff != null) {
 			boolean isChange = false;
@@ -160,17 +159,25 @@ public class StaffController extends BaseController {
 				isChange = true;
 				staff.setCompany(company);
 			}
-			if (!staff.getEAccount().equals(eAccount)) { // 背书账号
+			if (CheckTool.isString(eCompany) && (staff.getECompany() == null || !staff.getECompany().equals(eCompany))) {
 				isChange = true;
-				staff.setName(name);
+				staff.setECompany(eCompany);
 			}
-			if (!staff.getPhone().equals(phone)) {
+			if (CheckTool.isString(eAccount) && (staff.getEAccount() == null || !staff.getEAccount().equals(eAccount))) { // 背书账号
+				isChange = true;
+				staff.setEAccount(eAccount);
+			}
+			if (CheckTool.isString(phone) && (staff.getPhone() == null || !staff.getPhone().equals(phone))) {
 				isChange = true;
 				staff.setPhone(phone);
 			}
 			if (CheckTool.isString(addr) && (staff.getAddr() == null || !staff.getAddr().equals(addr))) {
 				isChange = true;
 				staff.setAddr(addr);
+			}
+			if (CheckTool.isString(area) && (staff.getArea() == null || !staff.getArea().equals(area))) {
+				isChange = true;
+				staff.setArea(area);
 			}
 			if (isChange) {
 				staff = staffRepository.save(staff);

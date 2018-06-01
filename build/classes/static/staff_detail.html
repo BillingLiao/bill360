@@ -70,26 +70,32 @@
 							if(data.code == 0) {
 								var staff = data.data;
 								var staffId = isString(staff.id) == true ? staff.id
-										: "-"; //用户姓名
+										: ""; //用户姓名
 								var name = isString(staff.name) == true ? staff.name
-										: "-"; //用户姓名
+										: ""; //用户姓名
 								var staffId = staff.id;
 								var company = isString(staff.company) == true ? staff.company
-										: "-"; //背书公司名
+										: ""; //公司名
+								var eCompany = isString(staff.eCompany) == true ? staff.eCompany
+										: ""; //背书公司名
 								var eAccount = isString(staff.eaccount) == true ? staff.eaccount
 
-										: "-"; //背书账号
+										: ""; //背书账号
 								var phone = isString(staff.phone) == true ? staff.phone
-										: "-"; //电话
+										: ""; //电话
 								var addr = isString(staff.addr) == true ? staff.addr
-										: "-"; //地址
+										: ""; //地址
+								var area = isString(staff.area) == true ? staff.area
+										: ""; //地区
 								
 								$("#staff_id").html("<font style='color: black;'>"+staffId + "</font>");
 								$("#staff_name").val(name);
 								$("#staff_company").val(company);
+								$("#staff_eCompany").val(eCompany);
 								$("#staff_eAccount").val(eAccount);
 								$("#staff_phone").val(phone);
 								$("#staff_addr").val(addr);
+								$("#staff_area").val(area);
 
 							} else {
 								alert(data.message);
@@ -111,10 +117,12 @@
 					
 					var staff_name = $("#staff_name").val();
 					var staff_company = $("#staff_company").val();
+					var staff_eCompany = $("#staff_eCompany").val();
 					var staff_eAccount = $("#staff_eAccount").val();
 					var staff_phone = $("#staff_phone").val();
 					var staff_addr = $("#staff_addr").val();
-					
+					var staff_area = $("#staff_area").val();
+
 					if (!isString(staff_name)) {
 						alert("姓名不能为空");
 						return;
@@ -127,8 +135,8 @@
 						alert("背书账号不能为空");
 						return;
 					}
-					if (!isString(staff_phone)) {
-						alert("电话号码不能为空");
+					if (!isPhone(staff_phone)) {
+						alert("请输入正确的电话号码");
 						return;
 					}
 					$.ajax({
@@ -141,16 +149,18 @@
 							id: id,
 							name : staff_name,
 							company : staff_company,
+							eCompany : staff_eCompany,
 							eAccount : staff_eAccount,
 							phone : staff_phone,
 							addr : staff_addr,
+							area : staff_area,
 						},
 						success: function(data) {
 							if(data.code == 0) {
 								alert("修改成功");
 								window.opener.location.reload();
 								//location.reload();
-								window.close();
+								//window.close();
 								//location.reload();
 							} else {
 								alert(data.message);
@@ -284,14 +294,8 @@
 									</tr>
 									<tr>
 										<td width="15%">公司</td>
-										<td  colspan="3" >
-											<input class="form-control" id="staff_company" placeholder="请输入公司" type="text">
-										</td>
-									</tr>
-									<tr>
-										<td width="15%">背书账号</td>
 										<td width="35%">
-											<input class="form-control" id="staff_eAccount" placeholder="请输入背书账号" type="text">
+											<input class="form-control" id="staff_company" placeholder="请输入公司" type="text">
 										</td>
 										<td width="15%">联系方式</td>
 										<td width="35%">
@@ -299,9 +303,23 @@
 							 			</td>
 									</tr>
 									<tr>
-										<td width="15%">地址</td>
-										<td  colspan="3" >
+										<td width="15%">背书公司名</td>
+										<td width="35%">
+											<input class="form-control" id="staff_eCompany" placeholder="请输入背书公司名" type="text">
+										</td>
+										<td width="15%">背书账号</td>
+										<td width="35%">
+											<input class="form-control" id="staff_eAccount" placeholder="请输入背书账号" type="text">
+										</td>
+									</tr>
+									<tr>
+										<td>地址</td>
+										<td >
 											<input class="form-control" id="staff_addr" placeholder="请输入地址" type="text">
+										</td>
+										<td>地址</td>
+										<td >
+											<input class="form-control" id="staff_area" placeholder="请输入地区" type="text">
 										</td>
 									</tr>
 									<tr class="traa">

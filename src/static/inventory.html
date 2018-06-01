@@ -289,7 +289,6 @@ img{margin:5px;}
 
 	//添加持票清单
 	function add_inventory() {
-
 		var formData = new FormData();
 		formData.append('atoken', atoken);
 		formData.append('userByAdminId', $('#user').val());
@@ -307,10 +306,19 @@ img{margin:5px;}
 			alert("请选择商票上传");
 			return;
 		}
+		 if(!/image\/\w+/.test(uploadfile.type)){ 
+		        alert("文件必须为图片！"); 
+		        return false; 
+		    }
+		 
 		formData.append('file_img_front',
 				$('#uploadFile_img_front')[0].files[0]);
 
 		if (uploadfile3 != null) {
+			if(!/image\/\w+/.test(uploadfile3.type)){ 
+		        alert("文件必须为图片！"); 
+		        return false; 
+		    }
 			console.log("uploadfile2=" + uploadfile);
 			formData.append('file_img_back',
 					$('#uploadFile_img_back')[0].files[0]);

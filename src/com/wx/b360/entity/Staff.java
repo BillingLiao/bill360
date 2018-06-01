@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -60,13 +62,15 @@ public class Staff {
 	@Column(name="_id_card_back", nullable=true, columnDefinition="varchar(255) comment '法人身份证(反面)'")
 	private String idCard_back;
 
-	public Staff(String name, String company, String eAccount, String phone, String addr) {
+	public Staff(String name, String company, String eCompany, String eAccount, String phone, String addr, String area) {
 		super();
 		this.name = name;
 		this.company = company;
+		this.eCompany = eCompany;
 		this.eAccount = eAccount;
 		this.phone = phone;
 		this.addr = addr;
+		this.area = area;
 	}
 	
 }

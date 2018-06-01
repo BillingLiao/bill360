@@ -99,13 +99,16 @@
 								var staffId = staff.id;
 								var company = isString(staff.company) == true ? staff.company
 										: "-"; //公司
+								var eCompany = isString(staff.ecompany) == true ? staff.ecompany
+										: "-"; //背书公司名
 								var eAccount = isString(staff.eaccount) == true ? staff.eaccount
-
 										: "-"; //背书账号
 								var phone = isString(staff.phone) == true ? staff.phone
 										: "-"; //电话
 								var addr = isString(staff.addr) == true ? staff.addr
 										: "-"; //地址
+								var area = isString(staff.area) == true ? staff.area
+										: "-"; //地区
 								temp = '<tr id="staff_tr_'+staffId+'"><td>'
 										+ staffId
 										+ '</td><td>'
@@ -113,11 +116,15 @@
 										+ '</td><td>'
 										+ company
 										+ '</td><td>'
+										+ eCompany
+										+ '</td><td>'
 										+ eAccount
 										+ '</td><td>'
 										+ phone
 										+ '</td><td>'
 										+ addr
+										+ '</td><td>'
+										+ area
 										+ '</td><td><a href="staff_detail.html?id='
 										+ staff.id
 										+ '" target="_blank"><button type="button" class="btn btn-sm btn-default">编辑</button></a><button type="button"class="btn btn-sm btn-danger" onclick="del('
@@ -206,9 +213,11 @@
 
 		var staff_name = $("#staff_name").val();
 		var staff_company = $("#staff_company").val();
+		var staff_eCompany = $("#staff_eCompany").val();
 		var staff_eAccount = $("#staff_eAccount").val();
 		var staff_phone = $("#staff_phone").val();
 		var staff_addr = $("#staff_addr").val();
+		var staff_area = $("#staff_area").val();
 
 		if (!isString(staff_name)) {
 			alert("请输入姓名");
@@ -222,8 +231,8 @@
 			alert("请输入背书账号");
 			return;
 		}
-		if (!isString(staff_phone)) {
-			alert("请输入电话号码");
+		if (!isPhone(staff_phone)) {
+			alert("请输入正确的电话号码");
 			return;
 		}
 
@@ -236,9 +245,11 @@
 				atoken : atoken,
 				name : staff_name,
 				company : staff_company,
+				eCompany : staff_eCompany,
 				eAccount : staff_eAccount,
 				phone : staff_phone,
 				addr : staff_addr,
+				area : staff_area,
 			},
 			success : function(data) {
 				if (data.code == 0) {
@@ -256,6 +267,51 @@
 			}
 		});
 
+	}
+	
+	function importExcel(){
+		var formData = new FormData();
+		formData.append('atoken', atoken);
+		var uploadfile = $('#uploadFile_excel')[0].files[0];
+		var fileName = $("#uploadFile_excel").val();
+		var index = fileName.lastIndexOf(".");  
+		var suffix = fileName.substring(index).toLowerCase();
+		if (uploadfile == null) {
+			alert("请选择文件上传");
+			return;
+		}
+		 // 验证文件格式  
+        if(fileName == "" || !(".xlsx" == suffix || ".xls" == suffix)) {  
+        	alert('请选择.xls .xlsx文件!');
+            return;  
+        }
+        formData.append('file', $('#uploadFile_excel')[0].files[0]);
+        $.ajax({
+			type : "post",
+			url : api + "staff/importExcel",
+			async : true,
+			//dataType: 'json',
+			data : formData,
+			processData : false,
+			contentType : false,
+			cache : false,
+			success : function(data) {
+				if (data.code == 0) {
+					console.log(data);
+					alert("添加成功");
+					location.reload();
+
+				} else {
+					//alert(data.message);
+					alert("导入失败，请检查数据是否正确!");
+				}
+			},
+			error : function(data) {
+				console.log("系统错误");
+				console.log(data);
+			}
+		});
+		
 	}
 
 	function logout() {
@@ -376,25 +432,33 @@
 												</td>
 											</tr>											
 											<tr>
-												<td width="15%">公司</td>
-												<td  colspan="3" >
+												<td width="15%">公司<code>*</code></td>
+												<td width="35%" >
 													<input class="form-control" id="staff_company" placeholder="请输入公司" type="text">
 												</td>
-											</tr>
-											<tr>
-												<td width="15%">背书帐号</td>
-												<td width="35%">
-													<input class="form-control" type="text" placeholder="请输入背书账号" id="staff_eAccount">
-												</td>
-												<td width="15%">联系电话</td>
+												<td width="15%">联系电话<code>*</code></td>
 												<td width="35%">
 													<input class="form-control" type="text" placeholder="请输入联系电话" id="staff_phone">
 									 			</td>
 											</tr>
 											<tr>
-												<td width="15%">地址</td>
-												<td  colspan="3" >
+												<td width="15%">背书公司名</td>
+												<td width="35%" >
+													<input class="form-control" id="staff_eCompany" placeholder="请输入背书公司名" type="text">
+												</td>
+												<td width="15%">背书帐号<code>*</code></td>
+												<td width="35%">
+													<input class="form-control" type="text" placeholder="请输入背书账号" id="staff_eAccount">
+												</td>
+											</tr>
+											<tr>
+												<td>地址</td>
+												<td >
 													<input class="form-control" id="staff_addr" placeholder="请输入地址" type="text">
+												</td>
+												<td>地址</td>
+												<td >
+													<input class="form-control" id="staff_area" placeholder="请输入地区" type="text">
 												</td>
 											</tr>
 
@@ -406,6 +470,42 @@
 									data-dismiss="modal">关闭</button>
 								<button type="button" class="btn btn-primary"
 									onclick="add_staff()">添加</button>
+							</div>
+						</div>
+						<!-- /.modal-content -->
+					</div>
+					<!-- /.modal-dialog -->
+				</div>
+				
+				<div class="modal fade" id="myModal_import" tabindex="-1" role="dialog"
+					aria-labelledby="myModalLabel" aria-hidden="true"
+					style="display: none;">
+					<div class="modal-dialog" style="width: 1000px">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"
+									aria-hidden="true">×</button>
+								<h4 class="modal-title">
+									导入对接人信息
+								</h4>
+							</div>
+							<div class="modal-body">
+								<!--这里是弹窗内容-->
+								<table class="table table-bordered">
+									<tbody>
+											<tr>
+												<td colspan="4" >
+													<input class="form-control" id="uploadFile_excel" type="file">
+												</td>
+											</tr>											
+									</tbody>
+								</table>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+								<button type="button" class="btn btn-primary"
+									onclick="importExcel()">导入</button>
 							</div>
 						</div>
 						<!-- /.modal-content -->
@@ -437,6 +537,8 @@
 								onclick="search_staff()">查询</button>
 							<button type="button" class="btn btn-success" data-toggle="modal"
 								data-target="#myModal">添加对接人</button>
+							<button type="button" class="btn btn-info" data-toggle="modal"
+								data-target="#myModal_import">导入</button>
 						</div>
 						<div class="col-md-3 compose">
 							<div class="mail-toolbar clearfix">
@@ -464,9 +566,11 @@
 										<th>编号</th>
 										<th>姓名</th>
 										<th>公司</th>
+										<th>背书公司名</th>
 										<th>背书帐号</th>
 										<th>联系电话</th>
 										<th>地址</th>
+										<th>地区</th>
 										<th>操作</th>
 									</tr>
 								</thead>

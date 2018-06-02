@@ -3,14 +3,6 @@ package com.wx.b360.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import com.wx.b360.entity.Acceptance;
-import com.wx.b360.entity.Staff;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,11 +13,17 @@ import lombok.Data;
  *
  */
 @Data @AllArgsConstructor
-public class bill_import {
+public class Bill_import {
 
-	private Acceptance acceptance;
+	private String acceptanceCore; //承兑企业上市主体
+	
+	private String acceptanceInvoice; //承兑企业名称
 
-	private Staff staff;
+	private String staffName;  //对接人姓名
+	
+	private String staffCompany; //对接人公司
+	
+	private String staffPhone; //对接人电话
 
 	private BigDecimal rate; //利率
 
@@ -70,4 +68,21 @@ public class bill_import {
 	private BigDecimal deductions; //每十万扣费
 	
 	private BigDecimal direct; //直接扣费(%)
+	
+	public Bill_import() {
+		super();
+	}
+
+	@Override
+	public String toString() {
+		return "Bill_import [acceptanceCore=" + acceptanceCore + ", acceptanceInvoice=" + acceptanceInvoice
+				+ ", staffName=" + staffName + ", staffCompany=" + staffCompany + ", staffPhone=" + staffPhone
+				+ ", rate=" + rate + ", shortest=" + shortest + ", longest=" + longest + ", adjuest=" + adjuest
+				+ ", max=" + max + ", min=" + min + ", total=" + total + ", usable=" + usable + ", remark=" + remark
+				+ ", status=" + status + ", level=" + level + ", ctime=" + ctime + ", isBargain=" + isBargain
+				+ ", isInvoice=" + isInvoice + ", agreement=" + agreement + ", isMoneyOrBack=" + isMoneyOrBack
+				+ ", isFinancing=" + isFinancing + ", isClean=" + isClean + ", etime=" + etime + ", offer=" + offer
+				+ ", deductions=" + deductions + ", direct=" + direct + "]";
+	}
+
 }

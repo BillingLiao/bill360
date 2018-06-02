@@ -1,6 +1,7 @@
 package com.wx.b360.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Bill;
 import com.wx.b360.entity.Staff;
 import com.wx.b360.model.Msg;
+import com.wx.b360.model.Staff_import;
 import com.wx.b360.tool.AppTool;
 import com.wx.b360.tool.CheckTool;
 import com.wx.b360.tool.CodeConstant;
@@ -40,13 +42,14 @@ public class StaffController extends BaseController {
 
 	/**
 	 * 上传excel 对接人清单导入数据库
+	 * 
 	 * @param file
 	 * @return
 	 * @throws Exception
 	 */
 	@Transactional
 	@PostMapping("/importExcel")
-	public Msg importExcel(@RequestParam MultipartFile file) throws Exception {
+	public Msg importExcel(@RequestParam MultipartFile file) throws IOException {
 		byte[] fBytes = file.getBytes();
 		InputStream fis = new ByteArrayInputStream(fBytes);
 		Map<String, String> m = new HashMap<String, String>();
@@ -58,18 +61,38 @@ public class StaffController extends BaseController {
 		m.put("微信ID", "wechat");
 		m.put("地址", "addr");
 		m.put("地区", "area");
-		List<Map<String, Object>> ls = ImportExcelTool.parseExcel(fis, file.getOriginalFilename(), m);
-		String string = JSON.toJSONString(ls);
-		if (string == null || string.equals("[]")) {
-			msg.set("表格内容不能为空", CodeConstant.SET_ERR, null);
-		} else {
-			Staff staff = null;
-			JSONArray platformList = JSON.parseArray(string);
-			for (Object jsonObject : platformList) {
-				staff = JSONObject.parseObject(jsonObject.toString(), Staff.class);
-				staff = staffRepository.save(staff);
+		List<Map<String, Object>> ls;
+		try {
+			ls = ImportExcelTool.parseExcel(fis, file.getOriginalFilename(), m);
+			String string = JSON.toJSONString(ls);
+			if (string == null || string.equals("[]")) {
+				msg.set("表格内容不能为空", CodeConstant.SET_ERR, null);
+			} else {
+				Staff_import staffImport = null;
+				JSONArray platformList = JSON.parseArray(string);
+				for (Object jsonObject : platformList) {
+					staffImport = JSONObject.parseObject(jsonObject.toString(), Staff_import.class);
+					String phone = staffImport.getPhone();
+					String name = staffImport.getName();
+					String company = staffImport.getCompany();
+					String eCompany = staffImport.getECompany();
+					String eAccount = staffImport.getEAccount();
+					String wechat = staffImport.getWechat();
+					String addr = staffImport.getAddr();
+					String area  =  staffImport.getArea();
+					Staff staff = staffRepository.findByPhone(phone);
+					if (staff == null) {
+						staff = new Staff(name, company, eCompany, eAccount, phone, wechat, addr, area);
+					}
+					staff = staffRepository.save(staff);
+				}
+				msg.set("导入成功", CodeConstant.SUCCESS, null);
+
 			}
-			msg.set("导入成功", CodeConstant.SUCCESS, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			 e.printStackTrace();
+			msg.set("导入失败，请检查数据是否正确!", CodeConstant.SET_ERR, null);
 		}
 		return msg;
 	}
@@ -115,14 +138,16 @@ public class StaffController extends BaseController {
 
 	// 添加對接人
 	@PostMapping("/add")
-	public Msg add(@SessionAttribute Admin admin, @RequestParam String name, @RequestParam String company, @RequestParam(required = false) String eCompany,
-			@RequestParam(required = false) String eAccount, @RequestParam(required = false) String phone, @RequestParam(required = false) String addr, @RequestParam(required = false) String area) {
+	public Msg add(@SessionAttribute Admin admin, @RequestParam String name, @RequestParam String company,
+			@RequestParam(required = false) String eCompany, @RequestParam(required = false) String eAccount,
+			@RequestParam(required = false) String phone, @RequestParam(required = false) String wechat, @RequestParam(required = false) String addr,
+			@RequestParam(required = false) String area) {
 		if (!CheckTool.isPhone(phone)) {
 			msg.set("手机号格式有误", CodeConstant.ERR_PAR, null);
 			return msg;
 		}
 
-		Staff staff = new Staff(name, company,eCompany, eAccount, phone, addr, area);
+		Staff staff = new Staff(name, company, eCompany, eAccount, phone, wechat, addr, area);
 		staff = staffRepository.save(staff);
 		if (staff != null) {
 			msg.set("添加成功", CodeConstant.SUCCESS, staff);
@@ -146,8 +171,9 @@ public class StaffController extends BaseController {
 	// 修改對接人
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam String name,
-			@RequestParam String company,@RequestParam(required = false) String eCompany, @RequestParam(required = false) String eAccount, @RequestParam(required = false) String phone,
-			@RequestParam(required = false) String addr,@RequestParam(required = false) String area) {
+			@RequestParam String company, @RequestParam(required = false) String eCompany,
+			@RequestParam(required = false) String eAccount, @RequestParam(required = false) String phone, @RequestParam(required = false) String wechat,
+			@RequestParam(required = false) String addr, @RequestParam(required = false) String area) {
 		Staff staff = staffRepository.findOne(id);
 		if (staff != null) {
 			boolean isChange = false;
@@ -159,17 +185,23 @@ public class StaffController extends BaseController {
 				isChange = true;
 				staff.setCompany(company);
 			}
-			if (CheckTool.isString(eCompany) && (staff.getECompany() == null || !staff.getECompany().equals(eCompany))) {
+			if (CheckTool.isString(eCompany)
+					&& (staff.getECompany() == null || !staff.getECompany().equals(eCompany))) {
 				isChange = true;
 				staff.setECompany(eCompany);
 			}
-			if (CheckTool.isString(eAccount) && (staff.getEAccount() == null || !staff.getEAccount().equals(eAccount))) { // 背书账号
+			if (CheckTool.isString(eAccount)
+					&& (staff.getEAccount() == null || !staff.getEAccount().equals(eAccount))) { // 背书账号
 				isChange = true;
 				staff.setEAccount(eAccount);
 			}
 			if (CheckTool.isString(phone) && (staff.getPhone() == null || !staff.getPhone().equals(phone))) {
 				isChange = true;
 				staff.setPhone(phone);
+			}
+			if (CheckTool.isString(wechat) && (staff.getWechat() == null || !staff.getWechat().equals(wechat))) {
+				isChange = true;
+				staff.setWechat(wechat);
 			}
 			if (CheckTool.isString(addr) && (staff.getAddr() == null || !staff.getAddr().equals(addr))) {
 				isChange = true;

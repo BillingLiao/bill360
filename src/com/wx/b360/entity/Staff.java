@@ -62,13 +62,14 @@ public class Staff {
 	@Column(name="_id_card_back", nullable=true, columnDefinition="varchar(255) comment '法人身份证(反面)'")
 	private String idCard_back;
 
-	public Staff(String name, String company, String eCompany, String eAccount, String phone, String addr, String area) {
+	public Staff(String name, String company, String eCompany, String eAccount, String phone,String wechat, String addr, String area) {
 		super();
 		this.name = name;
 		this.company = company;
 		this.eCompany = eCompany;
 		this.eAccount = eAccount;
 		this.phone = phone;
+		this.wechat = wechat;
 		this.addr = addr;
 		this.area = area;
 	}

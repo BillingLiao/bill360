@@ -70,7 +70,7 @@
 			});
 
 	var index = 0;
-	var size = 10;
+	var size = 8;
 	var count = 0;
 	var core;
 
@@ -160,13 +160,9 @@
 										+ '</td><td>'
 										+ total
 										+ '</td><td>'
-										+ usable
-										+ '</td><td>'
 										+ shortest
 										+ '</td><td>'
 										+ longest
-										+ '</td><td>'
-										+ remark
 										+ '</td><td><a href="bill_detail.html?id='
 										+ bill.id
 										+ '" target="_blank"><button type="button"class="btn btn-sm btn-default">编辑</button></a><a href="bill_source_detail.html?id='
@@ -258,6 +254,51 @@
 			status = "";
 		}
 		show_bill(index, size, staffName, core, invoice, status);
+	}
+	
+	function importExcel(){
+		var formData = new FormData();
+		formData.append('atoken', atoken);
+		var uploadfile = $('#uploadFile_excel')[0].files[0];
+		var fileName = $("#uploadFile_excel").val();
+		var index = fileName.lastIndexOf(".");  
+		var suffix = fileName.substring(index).toLowerCase();
+		if (uploadfile == null) {
+			alert("请选择文件上传");
+			return;
+		}
+		 // 验证文件格式  
+        if(fileName == "" || !(".xlsx" == suffix || ".xls" == suffix)) {  
+        	alert('请选择.xls .xlsx文件!');
+            return;  
+        }
+        formData.append('file', $('#uploadFile_excel')[0].files[0]);
+        $.ajax({
+			type : "post",
+			url : api + "bill/importExcel",
+			async : true,
+			//dataType: 'json',
+			data : formData,
+			processData : false,
+			contentType : false,
+			cache : false,
+			success : function(data) {
+				if (data.code == 0) {
+					console.log(data);
+					alert("添加成功");
+					location.reload();
+
+				} else {
+					alert(data.message);
+					//alert("导入失败，请检查数据是否正确!");
+				}
+			},
+			error : function(data) {
+				console.log("系统错误");
+				console.log(data);
+			}
+		});
+		
 	}
 
 	function logout() {
@@ -355,8 +396,45 @@
 				</div>
 				<!--//banner-->
 				<!--content-->
+				
+				<div class="modal fade" id="myModal_import" tabindex="-1" role="dialog"
+					aria-labelledby="myModalLabel" aria-hidden="true"
+					style="display: none;">
+					<div class="modal-dialog" style="width: 1000px">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"
+									aria-hidden="true">×</button>
+								<h4 class="modal-title">
+									导入收票信息
+								</h4>
+							</div>
+							<div class="modal-body">
+								<!--这里是弹窗内容-->
+								<table class="table table-bordered">
+									<tbody>
+											<tr>
+												<td colspan="4" >
+													<input class="form-control" id="uploadFile_excel" type="file">
+												</td>
+											</tr>											
+									</tbody>
+								</table>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+								<button type="button" class="btn btn-primary"
+									onclick="importExcel()">导入</button>
+							</div>
+						</div>
+						<!-- /.modal-content -->
+					</div>
+					<!-- /.modal-dialog -->
+				</div>
+				
 				<div class=" profile">
-					<div class="profile-bottom" style="width: 100%; min-height: 800px">
+					<div class="profile-bottom" style="width: 100%; min-height: 1000px">
 						<div class="col-md-6 compose">
 							<form class="form-inline">
 								<div class="form-group">
@@ -390,8 +468,8 @@
 								<button type="button" class="btn btn-primary" onclick="search()">查询</button>
 								<a href="bill_add.html" target="_blank"><button
 										type="button" class="btn btn-success warning_2">添加收票订单</button></a>
-								<button type="button" class="btn btn-info"
-									onclick="alert('开发中，敬请期待')">导入</button>
+								<button type="button" class="btn btn-info" data-toggle="modal"
+								data-target="#myModal_import">导入</button>
 								<button type="button" class="btn btn-warning warning_22"
 									onclick="alert('开发中，敬请期待')">导出</button>
 							</div>
@@ -428,10 +506,8 @@
 										<th>起步金额(万)</th>
 										<th>上限金额(万)</th>
 										<th>总额度(万)</th>
-										<th>可用额度(万)</th>
 										<th>最短期限(天)</th>
 										<th>最长期限(天)</th>
-										<th>备注</th>
 										<th>操作</th>
 									</tr>
 								</thead>

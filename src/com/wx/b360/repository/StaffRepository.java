@@ -12,5 +12,7 @@ public interface StaffRepository extends PagingAndSortingRepository<Staff, Integ
 	
 	@Query(value="select * from b_staff ORDER BY _id", nativeQuery=true)
 	public List<Staff> findStaffName();
+	
+	public Staff findByPhone(String phone);
 
 }

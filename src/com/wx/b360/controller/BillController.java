@@ -1,10 +1,15 @@
 package com.wx.b360.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.ValueOperations;
@@ -13,7 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wx.b360.entity.Acceptance;
 import com.wx.b360.entity.Admin;
 import com.wx.b360.entity.Bill;
@@ -22,13 +31,118 @@ import com.wx.b360.entity.Staff;
 import com.wx.b360.entity.User;
 import com.wx.b360.model.Company;
 import com.wx.b360.model.Msg;
+import com.wx.b360.model.Bill_import;
 import com.wx.b360.tool.AppTool;
 import com.wx.b360.tool.CheckTool;
 import com.wx.b360.tool.CodeConstant;
+import com.wx.b360.tool.ImportExcelTool;
 
 @RestController
 @RequestMapping("/bill")
 public class BillController extends BaseController {
+
+	/**
+	 * 上传excel 收票清单导入数据库
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	@Transactional
+	@PostMapping("/importExcel")
+	public Msg importExcel(@RequestParam MultipartFile file) throws IOException {
+		byte[] fBytes = file.getBytes();
+		InputStream fis = new ByteArrayInputStream(fBytes);
+		Map<String, String> m = new HashMap<String, String>();
+		m.put("公司", "staffCompany");
+		m.put("姓名", "staffName");
+		m.put("电话", "staffPhone");
+		m.put("收票主体", "acceptanceCore");
+		m.put("承兑企业", "acceptanceInvoice");
+		m.put("总额度（万）", "total");
+		m.put("可用额度（万）", "usable");
+		m.put("收票单张起步金额（万）", "min");
+		m.put("收票单张上限金额（万）", "max");
+		m.put("收票起步天数（DAY）", "shortest");
+		m.put("收票最高天数（DAY）", "longest");
+		m.put("背书次数限制", "etime");
+		m.put("合同", "isBargain");
+		m.put("发票", "isInvoice");
+		m.put("质押协议", "agreement");
+		m.put("融资票", "isFinancing");
+		m.put("光票", "isClean");
+		m.put("背款", "isMoneyOrBack");
+		m.put("报价方式", "offer");
+		m.put("利率", "rate");
+		m.put("调整天数", "adjuest");
+		m.put("每10万扣", "deductions");
+		m.put("直接扣", "direct");
+		m.put("优先级", "level");
+		m.put("状态", "status");
+		m.put("备注", "remark");
+		List<Map<String, Object>> ls;
+		try {
+			ls = ImportExcelTool.parseExcel(fis, file.getOriginalFilename(), m);
+			String string = JSON.toJSONString(ls);
+			if (string == null || string.equals("[]")) {
+				msg.set("表格内容不能为空", CodeConstant.SET_ERR, null);
+			} else {
+				Bill_import billImport = null;
+				JSONArray platformList = JSON.parseArray(string);
+				for (Object jsonObject : platformList) {
+					billImport = JSONObject.parseObject(jsonObject.toString(), Bill_import.class);
+					String core = billImport.getAcceptanceCore();
+					String invoice = billImport.getAcceptanceInvoice();
+					Acceptance acceptance = acceptanceRepository.findByCoreAndInvoice(core, invoice);
+					if (acceptance == null) {
+						acceptance = new Acceptance(invoice, core, null, null, 0, null, null, 0);
+						acceptance = acceptanceRepository.save(acceptance);
+					}
+					String name = billImport.getStaffName();
+					String company = billImport.getStaffCompany();
+					String phone = billImport.getStaffPhone();
+					Staff staff = staffRepository.findByPhone(phone);
+					if (staff == null) {
+						staff = new Staff(name, company, null, null, phone, null, null, null);
+						staff = staffRepository.save(staff);
+					}
+					BigDecimal rate = billImport.getRate();
+					Integer adjuest = billImport.getAdjuest();
+					Integer shortest = billImport.getShortest();
+					Integer longest = billImport.getLongest();
+					String max = billImport.getMax();
+					BigDecimal min = billImport.getMin();
+					BigDecimal total = billImport.getTotal();
+					BigDecimal usable = billImport.getUsable();
+					Integer status = billImport.getStatus();
+					Integer level = billImport.getLevel();
+					Integer isBargain = billImport.getIsBargain();
+					Integer isInvoice = billImport.getIsInvoice();
+					Integer agreement = billImport.getAgreement();
+					Integer isMoneyOrBack = billImport.getIsMoneyOrBack();
+					Integer isFinancing = billImport.getIsFinancing();
+					Integer isClean = billImport.getIsClean();
+					Integer etime = billImport.getEtime();
+					Integer offer = billImport.getOffer();
+					BigDecimal deductions = billImport.getDeductions();
+					BigDecimal direct = billImport.getDirect();
+					String remark = billImport.getRemark();
+					Bill bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, direct, max,
+							min, total, usable, remark, status, level, isBargain, isInvoice, agreement, isMoneyOrBack,
+							isFinancing, isClean, etime, offer);
+
+					bill = billRepository.save(bill);
+				}
+				msg.set("导入成功", CodeConstant.SUCCESS, null);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			msg.set("导入失败，请检查数据是否正确!", CodeConstant.SET_ERR, null);
+			
+		}
+		return msg;
+	}
 
 	// 获取收票清单和与之关联的对接人信息、承兑企业信息
 	@PostMapping("/id/source")
@@ -166,13 +280,13 @@ public class BillController extends BaseController {
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int staffId,
 			@RequestParam String core, @RequestParam(required = false) String invoice,
 			@RequestParam(required = false) BigDecimal rate, @RequestParam(required = false) BigDecimal total,
-			@RequestParam(required = false) BigDecimal deductions, @RequestParam(required = false) BigDecimal direct,@RequestParam String max,
-			@RequestParam BigDecimal min, @RequestParam Integer shortest, @RequestParam Integer longest,
-			@RequestParam(required = false) Integer adjuest, @RequestParam(required = false) Integer etime,
-			@RequestParam(required = false) BigDecimal usable, @RequestParam int status,
-			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,
-			@RequestParam int agreement, @RequestParam int is_financing, @RequestParam int is_clean,
-			@RequestParam int is_moneyorback, @RequestParam Integer offer,
+			@RequestParam(required = false) BigDecimal deductions, @RequestParam(required = false) BigDecimal direct,
+			@RequestParam String max, @RequestParam BigDecimal min, @RequestParam Integer shortest,
+			@RequestParam Integer longest, @RequestParam(required = false) Integer adjuest,
+			@RequestParam(required = false) Integer etime, @RequestParam(required = false) BigDecimal usable,
+			@RequestParam int status, @RequestParam(required = false) int level, @RequestParam int is_bargain,
+			@RequestParam int is_invoice, @RequestParam int agreement, @RequestParam int is_financing,
+			@RequestParam int is_clean, @RequestParam int is_moneyorback, @RequestParam Integer offer,
 			@RequestParam(required = false) String remark) {
 
 		Acceptance acceptance = acceptanceRepository.findByCoreAndInvoice(core, invoice);
@@ -325,9 +439,10 @@ public class BillController extends BaseController {
 	@PostMapping("/add")
 	public Msg add(@SessionAttribute Admin admin, @RequestParam int staffId, @RequestParam String core,
 			@RequestParam(required = false) String invoice, @RequestParam(required = false) BigDecimal rate,
-			@RequestParam(required = false) BigDecimal total, @RequestParam(required = false) BigDecimal deductions,@RequestParam(required = false) BigDecimal direct,
-			@RequestParam String max, @RequestParam BigDecimal min, @RequestParam Integer shortest,
-			@RequestParam Integer longest, @RequestParam(required = false) Integer adjuest, @RequestParam(required = false) int etime,
+			@RequestParam(required = false) BigDecimal total, @RequestParam(required = false) BigDecimal deductions,
+			@RequestParam(required = false) BigDecimal direct, @RequestParam String max, @RequestParam BigDecimal min,
+			@RequestParam Integer shortest, @RequestParam Integer longest,
+			@RequestParam(required = false) Integer adjuest, @RequestParam(required = false) int etime,
 			@RequestParam(required = false) BigDecimal usable, @RequestParam(required = false) int status,
 			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,
 			@RequestParam int agreement, @RequestParam int is_financing, @RequestParam int is_clean,
@@ -352,9 +467,9 @@ public class BillController extends BaseController {
 
 			Staff staff = staffRepository.findOne(staffId);
 
-			bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, direct, max, min, total, usable,
-					remark, status, level, is_bargain, is_invoice, agreement, is_moneyorback, is_financing, is_clean,
-					etime, offer);
+			bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, direct, max, min, total,
+					usable, remark, status, level, is_bargain, is_invoice, agreement, is_moneyorback, is_financing,
+					is_clean, etime, offer);
 			bill = billRepository.save(bill);
 			if (bill != null) {
 				msg.set("添加成功", CodeConstant.SUCCESS, bill);

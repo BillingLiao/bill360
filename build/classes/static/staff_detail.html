@@ -87,6 +87,8 @@
 										: ""; //地址
 								var area = isString(staff.area) == true ? staff.area
 										: ""; //地区
+								var staff_wechat = isString(staff.wechat) == true ? staff.wechat
+										: ""; //微信号
 								
 								$("#staff_id").html("<font style='color: black;'>"+staffId + "</font>");
 								$("#staff_name").val(name);
@@ -96,6 +98,7 @@
 								$("#staff_phone").val(phone);
 								$("#staff_addr").val(addr);
 								$("#staff_area").val(area);
+								$("#staff_wechat").val(staff_wechat);
 
 							} else {
 								alert(data.message);
@@ -122,6 +125,7 @@
 					var staff_phone = $("#staff_phone").val();
 					var staff_addr = $("#staff_addr").val();
 					var staff_area = $("#staff_area").val();
+					var staff_wechat = $("#staff_wechat").val();
 
 					if (!isString(staff_name)) {
 						alert("姓名不能为空");
@@ -152,6 +156,7 @@
 							eCompany : staff_eCompany,
 							eAccount : staff_eAccount,
 							phone : staff_phone,
+							wechat : staff_wechat,
 							addr : staff_addr,
 							area : staff_area,
 						},
@@ -320,6 +325,16 @@
 										<td>地址</td>
 										<td >
 											<input class="form-control" id="staff_area" placeholder="请输入地区" type="text">
+										</td>
+									</tr>
+									<tr>
+										<td>微信号</td>
+										<td >
+											<input class="form-control" id="staff_wechat" placeholder="请输入微信号" type="text">
+										</td>
+										<td></td>
+										<td >
+
 										</td>
 									</tr>
 									<tr class="traa">

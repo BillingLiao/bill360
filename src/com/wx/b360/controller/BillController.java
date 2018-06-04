@@ -50,7 +50,7 @@ public class BillController extends BaseController {
 	 */
 	@Transactional
 	@PostMapping("/importExcel")
-	public Msg importExcel(@RequestParam MultipartFile file) throws IOException {
+	public Msg importExcel(@SessionAttribute Admin admin, @RequestParam MultipartFile file) throws IOException {
 		byte[] fBytes = file.getBytes();
 		InputStream fis = new ByteArrayInputStream(fBytes);
 		Map<String, String> m = new HashMap<String, String>();
@@ -221,7 +221,7 @@ public class BillController extends BaseController {
 	 * }
 	 */
 
-	// 企业核心名模糊搜索
+	/*// 企业核心名模糊搜索
 	@PostMapping("/core")
 	public Msg core(@RequestParam int index, @RequestParam int size, @RequestParam String core) {
 		Page<Bill> bills = billService.find(index, size, null, null, null, core, null);
@@ -239,8 +239,28 @@ public class BillController extends BaseController {
 		msg.set("查询成功", CodeConstant.SUCCESS, result);
 
 		return msg;
-	}
+	}*/
 
+	/**
+	 * 通过核心企业名 查找 优先级最高的一条  bill 收票清单
+	 * 
+	 * @param user
+	 * @param core
+	 * @return
+	 */
+	@PostMapping("/fastByCore")
+	public Msg fastByCore(@SessionAttribute User user, @RequestParam String core) {
+
+		Bill bill = billRepository.fastByCore(core);
+
+		if (bill != null && bill.getStatus() == 0) {
+			msg.set("查询成功", CodeConstant.SUCCESS, bill);
+		} else {
+			msg.set("查询失败", CodeConstant.FIND_ERR, null);
+		}
+		return msg;
+	}
+	
 	/**
 	 * 通过核心企业名 查找 利率最小的 bill 收票清单
 	 * 

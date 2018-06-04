@@ -135,15 +135,43 @@ public class OrderController extends BaseController {
 					// 周六情况
 					day += 2;
 				}
-				day += bill.getAdjuest();
-
-				BigDecimal rate = bill.getRate();
-				BigDecimal interest = money.multiply(rate).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
-						.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
-				String interestInfo = money + "×" + rate + "÷100÷360×" + day + "=" + interest;
-				BigDecimal interestUnit = interest.multiply(new BigDecimal(100000)).divide(money, 4,
-						BigDecimal.ROUND_HALF_UP);
-				String interestUnitUnitInfo = interest + "×" + "100000" + "÷" + money + "=" + interestUnit;
+				
+				int offer = bill.getOffer();
+				BigDecimal interest = null;
+				String interestInfo = "";
+				BigDecimal interestUnit = null;
+				String interestUnitUnitInfo = "";
+				//年化: 利率+调整天数
+				if(offer == 0) {
+					
+					day += bill.getAdjuest();
+					
+					BigDecimal rate = bill.getRate();
+					interest = money.multiply(rate).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
+							.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+					interestInfo = money + "×" + rate + "÷100÷360×" + day + "=" + interest;
+					interestUnit = interest.multiply(new BigDecimal(100000)).divide(money, 4,
+							BigDecimal.ROUND_HALF_UP);
+					interestUnitUnitInfo = interest + "×" + "100000" + "÷" + money + "=" + interestUnit;	
+				}
+				//每十万扣费：deductions 
+				else if(offer == 1){
+					BigDecimal deductions = bill.getDeductions();
+					interestUnit = deductions.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+					interestUnitUnitInfo = interestUnit + "÷360×" + day + "=" + interestUnit;
+					interest = interestUnit.divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP)
+							.multiply(money);
+					interestInfo = interestUnit + "÷100000×" + money + "=" + interest;
+				}
+				//直接扣百分比：direct
+				else if(offer == 2) {
+					BigDecimal direct = bill.getDirect();
+					interest = money.multiply(direct).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP);
+					interestInfo = money + "×" + direct + "÷100 = " + interest ;
+					interestUnit = interest.multiply(new BigDecimal(100000)).divide(money, 4,
+							BigDecimal.ROUND_HALF_UP);
+					interestUnitUnitInfo = interest + "×" + "100000" + "÷" + money + "=" + interestUnit;
+				}
 				Map<String, Object> result = new HashMap<String, Object>();
 				result.put("day", day);
 				result.put("interest", interest);
@@ -195,15 +223,37 @@ public class OrderController extends BaseController {
 						// 周六情况
 						day += 2;
 					}
-					day += bill.getAdjuest();
-
-					BigDecimal rate = bill.getRate();
-					BigDecimal interest = money.multiply(rate).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
-							.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
-					BigDecimal interestUnit = new BigDecimal(100000).multiply(rate)
-							.divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
-							.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
-
+					
+					int offer = bill.getOffer();
+					BigDecimal interest = null;
+					BigDecimal interestUnit = null;
+					//年化: 利率+调整天数
+					if(offer == 0) {
+						
+						day += bill.getAdjuest();
+						
+						BigDecimal rate = bill.getRate();
+						interest = money.multiply(rate).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
+								.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+						interestUnit = new BigDecimal(100000).multiply(rate)
+								.divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
+								.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+					}
+					//每十万扣费：deductions 
+					else if(offer == 1){
+						BigDecimal deductions = bill.getDeductions();
+						interestUnit = deductions.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+						interest = interestUnit.divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP)
+								.multiply(money);
+					}
+					//直接扣百分比：direct
+					else if(offer == 2) {
+						BigDecimal direct = bill.getDirect();
+						interest = money.multiply(direct).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP);
+						interestUnit = interest.multiply(new BigDecimal(100000)).divide(money, 4,
+								BigDecimal.ROUND_HALF_UP);
+					}
+					
 					Order order = new Order(bill, money, img, date, subsidy, interest, day, user);
 					order = orderRepository.save(order);
 					msg.set("添加成功", CodeConstant.SUCCESS, order);

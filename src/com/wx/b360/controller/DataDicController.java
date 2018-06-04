@@ -28,7 +28,7 @@ public class DataDicController extends BaseController {
 	
 			//删除数据字典
 			@PostMapping("/del")
-			public Msg del( @RequestParam int id) {
+			public Msg del(@SessionAttribute Admin admin, @RequestParam int id) {
 				DataDic dataDic = dataDicRepository.findOne(id);
 				if(dataDic != null) {
 					dataDicRepository.delete(dataDic);
@@ -81,7 +81,7 @@ public class DataDicController extends BaseController {
 						
 			//获取数据字典列表
 			@PostMapping("/find")
-			public Msg find(@RequestParam int index, @RequestParam int size, 
+			public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, 
 					@RequestParam(required=false) String dataDicName,@RequestParam(required=false) String dataDicValue) {
 				Page<DataDic> page = dataDicService.find(index, size, dataDicName, dataDicValue);
 				msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
@@ -93,7 +93,7 @@ public class DataDicController extends BaseController {
 			 * @return
 			 */
 			@PostMapping("/findDataDicName")
-			public Msg findDataDicName(){
+			public Msg findDataDicName(@SessionAttribute Admin admin){
 				List<String> DataDicNamelist = dataDicRepository.findDataDicName();
 				msg.set("查询成功", CodeConstant.SUCCESS, DataDicNamelist);
 				return msg;
@@ -104,14 +104,14 @@ public class DataDicController extends BaseController {
 			 * @return
 			 */
 			@PostMapping("/findDataDicValue")
-			public List<DataDic> findDataDicValueByName(@RequestParam String data_Dic_Name){
+			public List<DataDic> findDataDicValueByName(@SessionAttribute Admin admin, @RequestParam String data_Dic_Name){
 				List<DataDic> dataDicNamelist = dataDicRepository.findDataDicValueByName(data_Dic_Name);
 				return dataDicNamelist;
 			}
 						
 			//添加持票信息
 			@PostMapping("/add")
-			public Msg add(@RequestParam String dataDicName, @RequestParam String dataDicValue) {
+			public Msg add(@SessionAttribute Admin admin, @RequestParam String dataDicName, @RequestParam String dataDicValue) {
 
 				DataDic dataDic = dataDicRepository.findByDataDicValue(dataDicValue);
 

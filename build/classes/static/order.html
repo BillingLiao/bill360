@@ -110,7 +110,7 @@
 								var interest = isDouble(order.interest) ? order.interest
 										: "-";//利息
 								var day = isNum(order.day) ? order.day : "-";
-								var img = isString(order.img) ? '<a href="'+api + "upload/"+order.img+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>'
+								var img = isString(order.img) ? '<a href="'+order.img+'" target="_blank"><button type="button" class="btn btn-link">查看图片</button></a>'
 										: "无图片";
 								var user = '<a href="user_detail.html?id='
 										+ order.user.id

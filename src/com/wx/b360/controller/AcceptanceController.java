@@ -64,25 +64,24 @@ public class AcceptanceController extends BaseController {
 			if (CheckTool.isString(invoice)
 					&& (acceptance.getInvoice() == null || !acceptance.getInvoice().equals(invoice))) {
 				Acceptance acceptance2 = acceptanceRepository.findByInvoice(invoice);
-				if (acceptance2 == null) {
-					isChange = true;
-					acceptance.setInvoice(invoice);
-				} else {
-					msg.set("承兑企业名被占用", CodeConstant.ERROR, null);
+				if (acceptance2 != null && id != acceptance2.getId()) {
+					msg.set("承兑企业名被占用", CodeConstant.SET_ERR, null);
 					return msg;
+				}else {
+					isChange = true;
+					acceptance2.setInvoice(invoice);
 				}
-
+				
 			}
 			if (CheckTool.isString(core) && (acceptance.getCore() == null || !acceptance.getCore().equals(core))) {
 				Acceptance acceptance3 = acceptanceRepository.findByCoreAndInvoice(core, invoice);
-				if (acceptance3 == null) {
+				if (acceptance3 != null && id != acceptance3.getId()) {
+					msg.set("已有该条数据！", CodeConstant.SET_ERR, null);
+					return msg;
+				}else {
 					isChange = true;
 					acceptance.setCore(core);
-				}else {
-					msg.set("已有该条数据！", CodeConstant.ERROR, null);
-					return msg;
 				}
-				
 			}
 			if (CheckTool.isString(category)
 					&& (acceptance.getCategory() == null || !acceptance.getCategory().equals(category))) {
@@ -153,7 +152,7 @@ public class AcceptanceController extends BaseController {
 	 * @return
 	 */
 	@PostMapping("/findCore")
-	public List<String> findCore() {
+	public List<String> findCore(@SessionAttribute Admin admin) {
 		List<String> coreList = acceptanceRepository.findCore();
 		return coreList;
 	}

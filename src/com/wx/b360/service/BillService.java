@@ -1,5 +1,6 @@
 package com.wx.b360.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,5 +62,21 @@ public class BillService {
 	
 		};
 		return billRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.DESC, "level","id"));
+	}
+	
+	public BigDecimal calculationInterest(Bill bill) {
+		BigDecimal aYInterest = null;
+		int offer = bill.getOffer();
+		if(offer == 0) {
+			BigDecimal rate = bill.getRate();
+			aYInterest = rate.multiply(new BigDecimal(100000)).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP);
+		}else if(offer == 1) {
+			aYInterest = bill.getDeductions();
+		}else if(offer == 2) {
+			BigDecimal direct = bill.getDirect();
+			aYInterest = direct.multiply(new BigDecimal(100000)).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP);
+		}
+		
+		return aYInterest;
 	}
 }

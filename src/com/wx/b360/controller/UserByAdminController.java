@@ -29,7 +29,7 @@ public class UserByAdminController extends BaseController {
 
 	// 删除用户信息
 	@PostMapping("/del")
-	public Msg del(@RequestParam int id) {
+	public Msg del(@SessionAttribute Admin admin, @RequestParam int id) {
 		UserByAdmin userByAdmin = userByAdminRepository.findOne(id);
 		List<Inventory> inventoryList = inventoryRepository.findByUserByAdmin(userByAdmin);
 		for (Inventory inventory : inventoryList) {
@@ -116,7 +116,7 @@ public class UserByAdminController extends BaseController {
 
 	// 获取持票信息列表
 	@PostMapping("/find")
-	public Msg find(@RequestParam int index, @RequestParam int size, @RequestParam(required = false) String name,
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, @RequestParam(required = false) String name,
 			@RequestParam(required = false) String company) {
 		Page<UserByAdmin> page = userByAdminService.find(index, size, name, company);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
@@ -129,14 +129,14 @@ public class UserByAdminController extends BaseController {
 	 * @return
 	 */
 	@PostMapping("/findUserName")
-	public List<UserByAdmin> findUserName() {
+	public List<UserByAdmin> findUserName(@SessionAttribute Admin admin) {
 		List<UserByAdmin> userNamelist = userByAdminRepository.findUserName();
 		return userNamelist;
 	}
 
 	// 添加用户信息
 	@PostMapping("/add")
-	public Msg add(@RequestParam String name, @RequestParam String company, @RequestParam String phone,
+	public Msg add(@SessionAttribute Admin admin,@RequestParam String name, @RequestParam String company, @RequestParam String phone,
 			@RequestParam(required = false) String wechat, @RequestParam(required = false) String addr) {
 
 		UserByAdmin userByAdmin = new UserByAdmin(addr, company, name, phone, wechat);

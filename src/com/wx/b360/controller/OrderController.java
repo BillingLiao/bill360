@@ -157,8 +157,10 @@ public class OrderController extends BaseController {
 				//每十万扣费：deductions 
 				else if(offer == 1){
 					BigDecimal deductions = bill.getDeductions();
-					interestUnit = deductions.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
-					interestUnitUnitInfo = interestUnit + "÷360×" + day + "=" + interestUnit;
+					interestUnit = deductions;
+					interestUnitUnitInfo = deductions + "";
+					//interestUnit = deductions.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+					//interestUnitUnitInfo = interestUnit + "÷360×" + day + "=" + interestUnit;
 					interest = interestUnit.divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP)
 							.multiply(money);
 					interestInfo = interestUnit + "÷100000×" + money + "=" + interest;

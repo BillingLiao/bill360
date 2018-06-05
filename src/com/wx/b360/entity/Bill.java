@@ -104,6 +104,9 @@ public class Bill {
 	
 	@Column(name = "_direct", nullable = true, columnDefinition = "DECIMAL(14,2) default '0.00' comment '直接扣？%'")
 	private BigDecimal direct;
+	
+	@Column(name = "_a_year_interest", nullable = true, columnDefinition = "DECIMAL(16,4) default '0.00' comment '一年每十万利息'")
+	private BigDecimal aYInterest;
 
 	public Bill(Acceptance acceptance, Staff staff, BigDecimal rate, Integer shortest, Integer longest,Integer adjuest, BigDecimal deductions,
 			BigDecimal direct, String max, BigDecimal min, BigDecimal total, BigDecimal usable, String remark, int status, int level,

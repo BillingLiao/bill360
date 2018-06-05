@@ -26,10 +26,13 @@ public interface BillRepository extends PagingAndSortingRepository<Bill, Integer
 	@Query(value="SELECT * FROM b_bill WHERE _rate IN ( SELECT MIN(b.`_rate`) FROM b_bill b LEFT JOIN b_acceptance a ON b.`_acceptance_id` = a.`_id` WHERE a.`_core` = ?1)", nativeQuery=true)
 	Bill findMinRateBycore(String core);
 	
+	//通过核心企业名  查找 一年每十万 利息最低的一条  bill
+	@Query(value = "SELECT * FROM  b_bill b LEFT JOIN b_acceptance a ON b.`_acceptance_id` = a.`_id` WHERE a.`_core` = ?1  ORDER BY _a_year_interest LIMIT 0,1", nativeQuery = true)
+	Bill fastByCore(String core);
 	
 	//通过核心企业名 查找 优先级最高的一条  bill
 	@Query(value = "SELECT * FROM  b_bill b LEFT JOIN b_acceptance a ON b.`_acceptance_id` = a.`_id` WHERE a.`_core` = ?1  ORDER BY _level DESC  LIMIT 0,1", nativeQuery = true)
-	Bill fastByCore(String core);
+	Bill findlevelByCore(String core);
 	
 	//通过核心企业，开票企业，类别 查找 bill
 	//@Query(value="SELECT b.* FROM b_bill b LEFT JOIN b_acceptance a ON b._acceptance_id = a._id  WHERE a._core = ?1 and a._invoice = ?2 and a._type = ?3", nativeQuery=true)

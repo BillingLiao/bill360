@@ -67,8 +67,7 @@
 	show_detail(id);
 	function show_detail(id) {
 		if (isNum(id)) {
-			$
-					.ajax({
+			$.ajax({
 						type : "post",
 						url : api + "inventory/id/user",
 						async : true,
@@ -151,6 +150,25 @@
 	}
 	function save() {
 		if (isNum(id)) {
+			
+			if (!isString($('#inventory_company').val())) {
+				alert("请输入开票企业名称");
+				return;
+			}
+
+			if (!isString($('#inventory_ctime').val())) {
+				alert("请选择出票日期");
+				return;
+			}
+			if (!isString($('#inventory_dtime').val())) {
+				alert("请选择到期日期");
+				return;
+			}
+			if (!isDouble($('#inventory_money').val())) {
+				alert("请输入金额");
+				return;
+			}
+
 			$.ajax({
 				type : "post",
 				url : api + "/inventory/set",

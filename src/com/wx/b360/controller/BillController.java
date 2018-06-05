@@ -130,7 +130,9 @@ public class BillController extends BaseController {
 					Bill bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, direct, max,
 							min, total, usable, remark, status, level, isBargain, isInvoice, agreement, isMoneyOrBack,
 							isFinancing, isClean, etime, offer);
-
+					BigDecimal aYInterest = billService.calculationInterest(bill);
+					bill.setAYInterest(aYInterest);
+					acceptance = acceptanceRepository.save(acceptance);
 					bill = billRepository.save(bill);
 				}
 				msg.set("导入成功", CodeConstant.SUCCESS, null);
@@ -242,7 +244,7 @@ public class BillController extends BaseController {
 	}*/
 
 	/**
-	 * 通过核心企业名 查找 优先级最高的一条  bill 收票清单
+	 * 通过核心企业名 查找 一年每十万 利息最低的一条  bill 收票清单
 	 * 
 	 * @param user
 	 * @param core
@@ -429,6 +431,8 @@ public class BillController extends BaseController {
 			}
 
 			if (isChange) {
+				BigDecimal aYInterest = billService.calculationInterest(bill);
+				bill.setAYInterest(aYInterest);
 				acceptance = acceptanceRepository.save(acceptance);
 				bill = billRepository.save(bill);
 				if (bill != null) {
@@ -490,6 +494,8 @@ public class BillController extends BaseController {
 			bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, direct, max, min, total,
 					usable, remark, status, level, is_bargain, is_invoice, agreement, is_moneyorback, is_financing,
 					is_clean, etime, offer);
+			BigDecimal aYInterest = billService.calculationInterest(bill);
+			bill.setAYInterest(aYInterest);
 			bill = billRepository.save(bill);
 			if (bill != null) {
 				msg.set("添加成功", CodeConstant.SUCCESS, bill);

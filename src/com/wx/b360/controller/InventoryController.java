@@ -134,7 +134,6 @@ public class InventoryController extends BaseController {
 				inventory.setMoney(money);
 			}
 			if (!inventory.getCtime().equals(ctime)) {
-				System.out.println(ctime);
 				isChange = true;
 				inventory.setCtime(ctime);
 			}
@@ -142,11 +141,11 @@ public class InventoryController extends BaseController {
 				isChange = true;
 				inventory.setDtime(dtime);
 			}
-			if (!inventory.getTtime().equals(ttime)) {
+			if (CheckTool.isString(ttime) && (inventory.getTtime() == null || !inventory.getTtime().equals(ttime))) {
 				isChange = true;
 				inventory.setCtime(ttime);
 			}
-			if (!inventory.getOffer().equals(offer)) {
+			if (CheckTool.isString(offer) && (inventory.getOffer() == null || !inventory.getOffer().equals(offer))) {
 				isChange = true;
 				inventory.setOffer(offer);
 			}
@@ -198,7 +197,7 @@ public class InventoryController extends BaseController {
 
 	// 获取持票信息列表
 	@PostMapping("/find")
-	public Msg find(@RequestParam int index, @RequestParam int size, @RequestParam(required = false) String company) {
+	public Msg find(@SessionAttribute Admin admin, @RequestParam int index, @RequestParam int size, @RequestParam(required = false) String company) {
 		Page<Inventory> page = inventoryService.find(index, size, null, null, company);
 		msg.set("查询成功", CodeConstant.SUCCESS, AppTool.pageToMap(page));
 		return msg;
@@ -238,7 +237,7 @@ public class InventoryController extends BaseController {
 			// String contentType = file_img_front.getContentType();
 			fileName_front = UUID.randomUUID().toString() + System.currentTimeMillis()
 					+ file_img_front.getOriginalFilename();
-			System.out.println("fileName_back-->" + file_img_back);
+			System.out.println("file_img_front-->" + file_img_front);
 			// System.out.println("getContentType-->" + contentType);
 			String filePath = request.getSession().getServletContext().getRealPath("/");
 			try {

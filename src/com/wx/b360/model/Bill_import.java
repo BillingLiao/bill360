@@ -27,19 +27,19 @@ public class Bill_import {
 
 	private BigDecimal rate; //利率
 
-	private int shortest; //收票起步天数
+	private String shortest; //收票起步天数
 
-	private int longest; //收票最高天数
+	private String longest; //收票最高天数
 
 	private int adjuest; //调整天数
 
 	private String max; //收票单张上限金额(万)
 
-	private BigDecimal min; //收票单张起步金额(万)
+	private String min; //收票单张起步金额(万)
 
-	private BigDecimal total; //总额度(万)
+	private String total; //总额度(万)
 
-	private BigDecimal usable; //可用额度(万)
+	private String usable; //可用额度(万)
 
 	private String remark;	//备注
 
@@ -49,19 +49,19 @@ public class Bill_import {
 
 	private Date ctime; //创建时间
 
-	private int isBargain; //合同
+	private String isBargain; //合同
 
-	private int isInvoice; //发票
+	private String isInvoice; //发票
 
-	private int agreement; //质押协议
+	private String agreement; //质押协议
 
-	private int isMoneyOrBack; //先款先背
+	private String isMoneyOrBack; //先款先背
 
-	private int isFinancing; //融资票
+	private String isFinancing; //融资票
 
-	private int isClean; //光票
+	private String isClean; //光票
 
-	private int etime; //背书次数限制
+	private String etime; //背书次数限制
 
 	private Integer offer; //报价方式
 

@@ -1,17 +1,18 @@
 <!DOCTYPE HTML>
 <html>
 
-	<head>
-		<title>查票360后台管理系统</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<style type="text/css">
-			.color_td {
-				background-color: #FFF5EE;
-				color: black;
-			}
-		</style>
-		<script type="application/x-javascript">
+<head>
+<title>查票360后台管理系统</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+.color_td {
+	background-color: #FFF5EE;
+	color: black;
+}
+</style>
+<script type="application/x-javascript">
+	
 			addEventListener("load", function() {
 				setTimeout(hideURLbar, 0);
 			}, false);
@@ -19,63 +20,69 @@
 			function hideURLbar() {
 				window.scrollTo(0, 1);
 			}
-		</script>
-		<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
-		<!-- Custom Theme files -->
-		<link href="css/style.css" rel='stylesheet' type='text/css' />
-		<link href="css/font-awesome.css" rel="stylesheet">
-		<script src="js/jquery.min.js">
-		</script>
-		<!-- Mainly scripts -->
-		<script src="js/jquery.metisMenu.js"></script>
-		<script src="js/jquery.slimscroll.min.js"></script>
-		<!-- Custom and plugin javascript -->
-		<link href="css/custom.css" rel="stylesheet">
-		<script src="js/custom.js"></script>
-		<script src="js/screenfull.js"></script>
-		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
-		<script>
-			$(function() {
-				$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+		
+</script>
+<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+<!-- Custom Theme files -->
+<link href="css/style.css" rel='stylesheet' type='text/css' />
+<link href="css/font-awesome.css" rel="stylesheet">
+<script src="js/jquery.min.js">
+	
+</script>
+<!-- Mainly scripts -->
+<script src="js/jquery.metisMenu.js"></script>
+<script src="js/jquery.slimscroll.min.js"></script>
+<!-- Custom and plugin javascript -->
+<link href="css/custom.css" rel="stylesheet">
+<script src="js/custom.js"></script>
+<script src="js/screenfull.js"></script>
+<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	$(function() {
+		$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
 
-				if(!screenfull.enabled) {
-					return false;
-				}
+		if (!screenfull.enabled) {
+			return false;
+		}
 
-				$('#toggle').click(function() {
-					screenfull.toggle($('#container')[0]);
-				});
+		$('#toggle').click(function() {
+			screenfull.toggle($('#container')[0]);
+		});
 
-			});
+	});
 
-			var atoken = sessionStorage.getItem("atoken");
-			var id = getQueryString("id");
-			//判断atoken是否存在
-			$(document).ready(function() {
+	var atoken = sessionStorage.getItem("atoken");
+	var id = getQueryString("id");
+	//判断atoken是否存在
+	$(document).ready(
+			function() {
 
-				if(atoken == null || atoken.length == 0) {
+				if (atoken == null || atoken.length == 0) {
 					alert("请先登录");
-					window.location.href = "signin.html?source=" + location.href.substr(location.href.lastIndexOf('/')+1);
+					window.location.href = "signin.html?source="
+							+ location.href.substr(location.href
+									.lastIndexOf('/') + 1);
 				}
 				$("#username").text(sessionStorage.getItem("name"));
 
 			});
-			
-			show_detail(id);
-			
-			function show_detail(id) {
-				if(isNum(id)) {
-					$.ajax({
-						type:"post",
-						url:api + "bill/id/source",
-						async:true,
-						dataType: "json",
+
+	show_detail(id);
+
+	function show_detail(id) {
+		if (isNum(id)) {
+			$
+					.ajax({
+						type : "post",
+						url : api + "bill/id/source",
+						async : true,
+						dataType : "json",
 						data : {
-							atoken: atoken,
-							id: id,
+							atoken : atoken,
+							id : id,
 						},
-						success: function(data) {
-							if(data.code == 0) {
+						success : function(data) {
+							if (data.code == 0) {
 								debugger;
 								var bill = data.data;
 								var staff = bill.staff;
@@ -83,367 +90,403 @@
 
 								console.log(bill);
 								var staff_id = staff.id;
-								var staff_name = isString(staff.name) ? staff.name : "-"; 
-								var staff_eAccount = isString(staff.eaccount) ? staff.eaccount : "-";
-								var staff_company =  isString(staff.company) ? staff.company : "-";
-								var staff_phone = isString(staff.phone) ? staff.phone : "-";
-								var staff_addr = isString(staff.addr) ? staff.addr : "-";
+								var staff_name = isString(staff.name) ? staff.name
+										: "-";
+								var staff_eAccount = isString(staff.eaccount) ? staff.eaccount
+										: "-";
+								var staff_company = isString(staff.company) ? staff.company
+										: "-";
+								var staff_phone = isString(staff.phone) ? staff.phone
+										: "-";
 								var acceptance_id = acceptance.id;
-								var acceptance_core = isString(acceptance.core) ? acceptance.core : "-";
-								var acceptance_invoice = isString(acceptance.invoice) ? acceptance.invoice : "-";
-								var acceptance_addr = isString(acceptance.addr) ? acceptance.addr : "-";
-								var acceptance_category = isString(acceptance.category) ? acceptance.category : "-";
-								var acceptance_nature = isString(acceptance.nature) ? acceptance.nature : "-";
-								var acceptance_type = isNum(acceptance.type) ? acceptance.type : "-";
+								var acceptance_core = isString(acceptance.core) ? acceptance.core
+										: "-";
+								var acceptance_invoice = isString(acceptance.invoice) ? acceptance.invoice
+										: "-";
 
 								var bill_id = bill.id;
-								var rate = isDouble(bill.rate) ? bill.rate : "-";
-								var max = isDouble(bill.max) ? bill.max : "-";
-								var min = isDouble(bill.min) ? bill.min : "-";
-								var usable = isDouble(bill.usable) ? bill.usable : "-";
-								var total  = isDouble(bill.total) ? bill.total : "-";
-								var initiate = isDouble(bill.initiate) ? bill.initiate : "-";
-								var ctime = isString(bill.ctime) ? bill.ctime : "-";
-								var etime = isNum(bill.etime) ? bill.etime : "-";
-								var shortest = isNum(bill.shortest) ? bill.shortest : "-";
-								var adjuest = isNum(bill.adjuest) ? bill.adjuest : "-";
-								var remark = isString(bill.remark) ? bill.remark : "-";
-								var offer = isString(bill.offer) ? bill.offer : "-";
-								var is_bargain = isNum(bill.isBargain) ? bill.isBargain : "-";
-								var is_invoice = isNum(bill.isInvoice) ? bill.isInvoice : "-";
-								var is_financing = isNum(bill.isFinancing) ? bill.isFinancing : "-";
-								var is_clean = isNum(bill.isClean) ? bill.isClean : "-";
-								var is_moneyorback = isNum(bill.isMoneyOrBack) ? bill.isMoneyOrBack : "-";
-								var status = isNum(bill.status) ? bill.status : "-";
-								var level = isNum(bill.level) ? bill.level : "-";
-								}
 								
-								$("#acceptance_id").text(acceptance_id);
-								$("#acceptance_invoice").text(acceptance_invoice);
-								$("#acceptance_core").text(acceptance_core);
-								$("#acceptance_addr").text(acceptance_addr);
-								$("#acceptance_category").text(acceptance_category);
-								$("#acceptance_nature").text(acceptance_nature);
-								$("#staff_id").text(staff_id);
-								$("#staff_name").text(staff_name);
-								$("#staff_eAccount").text(staff_eAccount);
-								$("#staff_company").text(staff_company);
-								$("#staff_phone").text(staff_phone);
-								$("#staff_addr").text(staff_addr);
+								var max = isString(bill.max) ? bill.max : "-";
+								var min = isString(bill.min) ? bill.min : "-";
+								var usable = isString(bill.usable) ? bill.usable
+										: "-";
+								var total = isString(bill.total) ? bill.total
+										: "-";
+								var initiate = isDouble(bill.initiate) ? bill.initiate
+										: "-";
+								var ctime = isString(bill.ctime) ? bill.ctime
+										: "-";
+								var etime = isString(bill.etime) ? bill.etime
+										: "-";
+								var shortest = isString(bill.shortest) ? bill.shortest
+										: "-";
+								var longest = isString(bill.longest) ? bill.longest
+										: "-";
+								var offer = isNum(bill.offer) ? bill.offer
+										: "-";
 								
-								$("#bill_id").text(bill_id);
-								$("#rate").text(rate);
-								$("#ctime").text(ctime);
-								$("#initiate").text(initiate);
-								$("#max").text(max);
-								$("#min").text(min);
-								$("#total").text(total);
-								$("#etime").text(etime);								
-								$("#usable").text(usable);
-								$("#shortest").text(shortest);
-								$("#adjuest").text(adjuest);
-								$("#offer").text(offer);
-								$("#remark").text(remark);
-								$("#level").text(level);
-								if(is_bargain == 0) {
-									$("#is_bargain").text("╳");
-								} else if(is_bargain == 1) {
-									$("#is_bargain").text("√");
-								}
-								if(is_invoice == 0) {
-									$("#is_invoice").text("╳");
-								} else if(is_invoice == 1) {
-									$("#is_invoice").text("√");
-								} 
-								if(is_financing == 0) {
-									$("#is_financing").text("╳");
-								} else if(is_financing == 1) {
-									$("#is_financing").text("√");
-								} 
-								if(is_clean == 0) {
-									$("#is_clean").text("╳");
-								} else if(is_clean == 1) {
-									$("#is_clean").text("√");
-								} 
-								if(is_moneyorback == 0) {
-									$("#is_moneyorback").text("╳");
-								} else if(is_moneyorback == 1) {
-									$("#is_moneyorback").text("√");
-								}
-								if(acceptance_type == 0){
-									$("#acceptance_type").text("母公司");
-								}else if(acceptance_type == 1){
-									$("#acceptance_type").text("子公司");
-								}else if(acceptance_type == 2){
-									$("#acceptance_type").text("孙公司");
-								}
-								if(status == 0){
-									$("#status").text("正常");
-								}else if(status == 1){
-									$("#status").text("已关闭");
-								}
+								var rate = isDouble(bill.rate) ? bill.rate
+										: "-";
 								
+								var adjuest = isNum(bill.adjuest) ? bill.adjuest
+										: "-";
+								var deductions = isDouble(bill.deductions) ? bill.deductions
+										: "-";
+								var direct = isDouble(bill.direct) ? bill.direct
+										: "-";
+								var remark = isString(bill.remark) ? bill.remark
+										: "-";
+								
+								var is_bargain = isNum(bill.isBargain) ? bill.isBargain
+										: "-";
+								var is_invoice = isNum(bill.isInvoice) ? bill.isInvoice
+										: "-";
+								var is_financing = isNum(bill.isFinancing) ? bill.isFinancing
+										: "-";
+								var is_clean = isNum(bill.isClean) ? bill.isClean
+										: "-";
+								var is_moneyorback = isNum(bill.isMoneyOrBack) ? bill.isMoneyOrBack
+										: "-";
+								var status = isNum(bill.status) ? bill.status
+										: "-";
+								var level = isNum(bill.level) ? bill.level
+										: "-";
+							}
+
+							$("#acceptance_id").text(acceptance_id);
+							$("#acceptance_invoice").text(acceptance_invoice);
+							$("#acceptance_core").text(acceptance_core);
+
+							$("#staff_id").text(staff_id);
+							$("#staff_name").text(staff_name);
+							$("#staff_eAccount").text(staff_eAccount);
+							$("#staff_company").text(staff_company);
+							$("#staff_phone").text(staff_phone);
+
+							$("#bill_id").text(bill_id);
+							$("#rate").text(rate);
+							$("#adjuest").text(adjuest);
+							$('#deductions').text(deductions);
+							$('#direct').text(direct);
+							$("#ctime").text(ctime);
+							$("#initiate").text(initiate);
+							$("#max").text(max);
+							$("#min").text(min);
+							$("#total").text(total);
+							$("#etime").text(etime);
+							$("#usable").text(usable);
+							$("#shortest").text(shortest);
+							$("#longest").text(longest);
+							$("#offer").text(offer);
+							$("#remark").text(remark);
+							$("#level").text(level);
+							
+							if(offer == 0){
+								$('#select_offer_0').show(); //显示id为select_offer_0的元素。
+								$('#select_offer_1').hide(); //隐藏id为select_offer_1的元素。
+								$('#select_offer_2').hide();
+							}else if(offer == 1){
+								$('#select_offer_0').hide();
+								$('#select_offer_1').show();
+								$('#select_offer_2').hide();
+							}else if(offer == 2){
+								$('#select_offer_0').hide();
+								$('#select_offer_1').hide();
+								$('#select_offer_2').show();
+							}
+							
+							if (is_bargain == 0) {
+								$("#is_bargain").text("需要");
+							} else if (is_bargain == 1) {
+								$("#is_bargain").text("不需要");
+							} else if (is_bargain == 2) {
+								$("#is_bargain").text("未知");
+							}
+							
+							if (is_invoice == 0) {
+								$("#is_invoice").text("需要");
+							} else if (is_invoice == 1) {
+								$("#is_invoice").text("不需要");
+							} else if (is_invoice == 2) {
+								$("#is_invoice").text("未知");
+							}
+							
+							if (is_financing == 0) {
+								$("#is_financing").text("需要");
+							} else if (is_financing == 1) {
+								$("#is_financing").text("不需要");
+							} else if (is_financing == 2) {
+								$("#is_financing").text("未知");
+							}
+							
+							if (is_clean == 0) {
+								$("#is_clean").text("需要");
+							} else if (is_clean == 1) {
+								$("#is_clean").text("不需要");
+							} else if (is_clean == 2) {
+								$("#is_clean").text("未知");
+							}
+							
+							if (is_moneyorback == 0) {
+								$("#is_moneyorback").text("需要");
+							} else if (is_moneyorback == 1) {
+								$("#is_moneyorback").text("不需要");
+							} else if (is_moneyorback == 2) {
+								$("#is_moneyorback").text("未知");
+							}
+							if (status == 0) {
+								$("#status").text("正常");
+							} else if (status == 1) {
+								$("#status").text("已关闭");
+							}
+
 						},
-						error: function(data) {
+						error : function(data) {
 							console.log("系统错误");
 							console.log(data);
 						}
 					});
-				} else {
-					alert("参数错误");
-					window.location.href = "bill.html";
-				}
-			}
-			
-			function logout() {
-				if (confirm("您确定要退出系统吗？")) {
-					atoken = null;
-					sessionStorage.clear();
-					window.location.href = "signin.html";
-				}
-			}
-		</script>
+		} else {
+			alert("参数错误");
+			window.location.href = "bill.html";
+		}
+	}
 
-	</head>
+	function logout() {
+		if (confirm("您确定要退出系统吗？")) {
+			atoken = null;
+			sessionStorage.clear();
+			window.location.href = "signin.html";
+		}
+	}
+</script>
 
-	<body>
-		<div id="wrapper">
+</head>
 
-			<!----->
-			<nav class="navbar-default navbar-static-top" role="navigation">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-					<h1> <a class="navbar-brand" href="index.html">查票360</a></h1>
+<body>
+	<div id="wrapper">
+
+		<!----->
+		<nav class="navbar-default navbar-static-top" role="navigation">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<h1>
+					<a class="navbar-brand" href="index.html">查票360</a>
+				</h1>
+			</div>
+			<!-- <div class=" border-bottom"> -->
+
+			<!-- Brand and toggle get grouped for better mobile display -->
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="drop-men">
+				<ul class=" nav_1">
+					<li class="dropdown"><a href="#"
+						class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span
+							class=" name-caret"><span id="username"></span></span><img
+							src="images/wo.png"></a></li>
+					<li class="dropdown"><a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
+					</li>
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+			<div class="clearfix"></div>
+
+			<div class="navbar-default sidebar" role="navigation">
+				<div class="sidebar-nav navbar-collapse">
+					<ul class="nav" id="side-menu">
+						<li><a href="index.html" class=" hvr-bounce-to-right"><i
+								class="fa fa-dashboard nav_icon "></i><span class="nav-label">数据字典</span>
+						</a></li>
+
+						<li><a href="#" class=" hvr-bounce-to-right"><i
+								class="fa fa-sitemap nav_icon"></i>收票清单管理<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								<li><a href="staff.html" class=" hvr-bounce-to-right"><i
+										class="fa fa-user nav_icon"></i>对接人信息</a></li>
+								<li><a href="bill.html" class=" hvr-bounce-to-right"><i
+										class="fa fa-table nav_icon"></i>对接人收票清单</a></li>
+								<li><a href="acceptance.html" class=" hvr-bounce-to-right"><i
+										class="fa fa-qrcode nav_icon"></i>承兑企业信息</a></li>
+							</ul></li>
+
+						<li><a href="#" class=" hvr-bounce-to-right"><i
+								class="fa fa-sitemap nav_icon"></i>持票库存管理<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								<li><a href="userByAdmin.html" class=" hvr-bounce-to-right"><i
+										class="fa fa-user nav_icon"></i>用户信息</a></li>
+								<li><a href="inventory.html" class=" hvr-bounce-to-right"><i
+										class="fa fa-dashboard nav_icon"></i>持票清单</a></li>
+							</ul></li>
+						<li><a href="order.html" class=" hvr-bounce-to-right"><i
+								class="fa fa-television nav_icon"></i> <span class="nav-label">业务订单管理</span>
+						</a></li>
+
+						<li><a href="os.html" class=" hvr-bounce-to-right"><i
+								class="fa fa-table nav_icon"></i> <span class="nav-label">系统管理</span>
+						</a></li>
+					</ul>
 				</div>
-				<!-- <div class=" border-bottom"> -->
+			</div>
+		</nav>
+		<div id="page-wrapper" class="gray-bg dashbard-1">
+			<div class="content-main">
 
-					<!-- Brand and toggle get grouped for better mobile display -->
+				<!--banner-->
+				<div class="banner">
 
-					<!-- Collect the nav links, forms, and other content for toggling -->
-					<div class="drop-men">
-						<ul class=" nav_1">
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown"><span class=" name-caret"><span id="username"></span></span><img src="images/wo.png"></a>
-							</li>
-							<li class="dropdown">
-								<a href="javascript:logout()">安全退出</a>&nbsp;&nbsp;&nbsp;&nbsp;
-							</li>
-						</ul>
-					</div>
-					<!-- /.navbar-collapse -->
-					<div class="clearfix">
+					<h2>
+						<a href="index.html">Home</a> <i class="fa fa-angle-right"></i> <span>查看更多</span>
+					</h2>
+				</div>
 
-					</div>
+				<div class=" profile">
+					<div class="profile-bottom"
+						style="min-height: 800px; padding: 10px; width: 100%;">
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<td width="15%" class="color_td">对接人编号</td>
+									<td width="35%"><font id="staff_id"></font></td>
+									<td class="color_td" width="15%"></td>
+									<td width="35%"><span></span></td>
+								</tr>
+								<tr>
+									<td width="15%" class="color_td">对接人姓名</td>
+									<td width="35%"><font id="staff_name"></font></td>
+									<td class="color_td">公司名</td>
+									<td><font id="staff_company"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">背书账号</td>
+									<td><font id="staff_eAccount"></font></td>
+									<td class="color_td">联系电话</td>
+									<td><font id="staff_phone"></font></td>
+								</tr>
+								<tr>
+									<td colspan="4"></td>
+								</tr>
+								<tr>
+									<td width="15%" class="color_td">承兑企业编号</td>
+									<td width="35%"><font id="acceptance_id"></font></td>
+									<td class="color_td" width="15%"></td>
+									<td width="35%"><span></span></td>
+								</tr>
+								<tr>
+									<td class="color_td">上市主体</td>
+									<td><font id="acceptance_core"></font></td>
+									<td class="color_td">开票企业(承兑企业)</td>
+									<td><font id="acceptance_invoice"></font></td>
+								</tr>
+								<tr>
+									<td colspan="4"></td>
+								</tr>
+								<tr>
+									<td width="15%" class="color_td">收票清单编号</td>
+									<td width="35%"><font id="bill_id"></font></td>
+									<td class="color_td" width="15%">报价方式</td>
+									<td width="35%"><font id="offer"></font></td>
+								</tr>
+								<tr id="select_offer_0">
+									<td class="color_td">利率(%)</td>
+									<td><font id="rate"></font></td>
+									<td class="color_td">调整天数</td>
+									<td><font id="adjuest"></font></td>
+								</tr>
+								<tr id="select_offer_1">
+									<td class="color_td">每10万扣利息(元)</td>
+									<td><font id="deductions"></font></td>
+									<td class="color_td"></td>
+									<td><span></span></td>
+								</tr>
+								<tr id="select_offer_2">
+									<td class="color_td">扣费百分比(%)</td>
+									<td><font id="direct"></font></td>
+									<td class="color_td"></td>
+									<td><span></span></td>
+								</tr>
+								<tr>
+									<td class="color_td">上限金额（万）</td>
+									<td><font id="max"></font></td>
+									<td class="color_td">起步金额 （万）</td>
+									<td><font id="min"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">总额度（万）</td>
+									<td><font id="total"></font></td>
+									<td class="color_td">可用额度（万）</td>
+									<td><font id="usable"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">最短期限（天）</td>
+									<td><font id="shortest"></font></td>
+									<td class="color_td">最短期限（天）</td>
+									<td><font id="longest"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">背书次数限制</td>
+									<td><font id="etime"></font></td>
+									<td class="color_td">添加时间</td>
+									<td><font id="ctime"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">状态</td>
+									<td id="status"></td>
+									<td class="color_td">优先级(默认0)</td>
+									<td><font id="level"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">合同</td>
+									<td><font id="is_bargain"></font></td>
+									<td class="color_td">发票</td>
+									<td><font id="is_invoice"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">融资票</td>
+									<td><font id="is_financing"></font></td>
+									<td class="color_td">光票</td>
+									<td><font id="is_clean"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">质押协议</td>
+									<td><font id="agreement"></font></td>
+									<td class="color_td">先款先背</td>
+									<td><font id="is_moneyorback"></font></td>
+								</tr>
+								<tr>
+									<td class="color_td">备注</td>
+									<td colspan="3" id="remark">
+									<td>
+								</tr>
 
-					<div class="navbar-default sidebar" role="navigation">
-						<div class="sidebar-nav navbar-collapse">
-							<ul class="nav" id="side-menu">
-								<li>
-									<a href="index.html" class=" hvr-bounce-to-right"><i class="fa fa-dashboard nav_icon "></i><span class="nav-label">数据字典</span> </a>
-								</li>
-
-								 <li>
-			                        <a href="#" class=" hvr-bounce-to-right"><i class="fa fa-sitemap nav_icon"></i>收票清单管理<span class="fa arrow"></span></a>
-			                        <ul class="nav nav-second-level">
-			                            <li>
-			                                <a href="staff.html" class=" hvr-bounce-to-right"><i class="fa fa-user nav_icon"></i>对接人信息</a>
-			                            </li>
-			                            <li>
-			                                <a href="bill.html" class=" hvr-bounce-to-right"><i class="fa fa-table nav_icon"></i>对接人收票清单</a>
-			                            </li>
-			                            <li>
-			                                <a href="acceptance.html" class=" hvr-bounce-to-right"><i class="fa fa-qrcode nav_icon"></i>承兑企业信息</a>
-			                                	
-			                            </li>
-			                        </ul>
-			                    </li>
-			                    
-								<li>
-									<a href="#" class=" hvr-bounce-to-right"><i class="fa fa-sitemap nav_icon"></i>持票库存管理<span class="fa arrow"></span></a>
-										<ul class="nav nav-second-level">
-			                            <li>
-			                                <a href="userByAdmin.html" class=" hvr-bounce-to-right"><i class="fa fa-user nav_icon"></i>用户信息</a>
-			                            </li>
-			                            <li>
-			                                <a href="inventory.html" class=" hvr-bounce-to-right"><i class="fa fa-dashboard nav_icon"></i>持票清单</a>
-			                            </li>
-			                        </ul>
-								</li>
-								<li>
-									<a href="order.html" class=" hvr-bounce-to-right"><i class="fa fa-television nav_icon"></i> <span class="nav-label">业务订单管理</span> </a>
-								</li>
-
-								<li>
-									<a href="os.html" class=" hvr-bounce-to-right"><i class="fa fa-table nav_icon"></i> <span class="nav-label">系统管理</span> </a>
-								</li>
-							</ul>
-						</div>
-					</div>
-			</nav>
-			<div id="page-wrapper" class="gray-bg dashbard-1">
-				<div class="content-main">
-
-					<!--banner-->
-					<div class="banner">
-
-						<h2>
-				<a href="index.html">Home</a>
-				<i class="fa fa-angle-right"></i>
-				<span>查看更多</span>
-				</h2>
-					</div>
-
-					<div class=" profile">
-						<div class="profile-bottom" style="min-height: 800px; padding: 10px;width: 100%;">
-							<table class="table table-bordered">
-								<tbody>
-									<tr>
-										<td width="15%" class="color_td">对接人编号</td>
-										<td width="35%"><font id="staff_id"></font></td>
-										<td width="15%" class="color_td">对接人姓名</td>
-										<td width="35%"><font id="staff_name"></font></td>
-										
-									</tr>
-									<tr>
-										<td class="color_td">背书公司名</td>
-										<td ><font id="staff_company"></font></td>
-										<td class="color_td">背书账号</td>
-										<td><font id="staff_eAccount"></font></td>
-									
-									</tr>
-									<tr>
-										<td class="color_td">联系电话</td>
-										<td><font id="staff_phone"></font></td>
-										<td class="color_td">对接人地址</td>
-										<td><font id="staff_addr"></font></td>
-									</tr>
-									<tr>
-										<td colspan="4"></td>
-									</tr>
-									<tr>
-										<td width="15%" class="color_td">承兑企业编号</td>
-										<td width="35%"><font id="acceptance_id"></font></td>
-										<td class="color_td" width="15%"></td>
-										<td width="35%"> <span ></span></td>
-									</tr>
-									<tr>
-										<td class="color_td">上市主体</td>
-										<td><font id="acceptance_core"></font></td>
-										<td class="color_td">开票企业(承兑企业)</td>
-										<td><font id="acceptance_invoice"></font></td>
-									</tr>
-									<tr>
-										<td class="color_td">企业类别</td>
-										<td><font id="acceptance_category"></font></td>
-										<td class="color_td">企业性质</td>
-										<td><font id="acceptance_nature"></font></td>
-
-									</tr>
-									<tr>
-										<td class="color_td">企业类型</td>
-										<td id="acceptance_type"></td>
-										<td class="color_td">承兑企业地区</td>
-										<td><font id="acceptance_addr"></font></td>
-									</tr>
-									<tr>
-										<td colspan="4"></td>
-									</tr>
-									<tr>
-										<td width="15%" class="color_td">收票清单编号</td>
-										<td width="35%"><font id="bill_id"></font></td>
-										<td class="color_td" width="15%"></td>
-										<td width="35%"> <span ></span></td>
-									</tr>
-									<tr>
-										<td class="color_td">利率(%)</td>
-										<td><font id="rate"></font></td>
-										<td class="color_td">调整天数</td>
-										<td><font id="adjuest"></font></td>
-									</tr>
-									<tr>
-										
-										<td class="color_td">最大金额</td>
-										<td><font id="max"></font></td>
-										<td class="color_td">最小金额</td>
-										<td><font id="min"></font></td>
-									</tr>
-									<tr>
-										<td class="color_td">总额度</td>
-										<td><font id="total"></font></td>
-										<td class="color_td">可用额度</td>
-										<td><font id="usable"></font></td>
-									</tr>
-									<tr>
-										<td class="color_td">最短期限</td>
-										<td><font id="shortest"></font></td>
-										<td class="color_td">起步金额</td>
-										<td><font id="initiate"></font></td>
-									</tr>
-									<tr>
-										<td class="color_td">背书次数限制</td>
-										<td><font id="etime"></font></td>
-										<td class="color_td">添加时间</td>
-										<td><font id="ctime"></font></td>
-									</tr>
-									<tr>
-										
-									</tr>
-									<tr>
-										<td class="color_td">状态</td>
-										<td id="status"></td>
-										<td class="color_td">优先级(默认0)</td>
-										<td><font id="level"></font></td>
-									</tr>
-									<tr>
-										<td class="color_td">合同</td>
-										<td><font id="is_bargain"></font></td>
-										<td class="color_td">发票</td>
-										<td id="is_invoice"></td>
-									</tr>
-									<tr>
-										<td class="color_td">融资票</td>
-										<td id="is_financing">
-										<td class="color_td">光票</td>
-										<td id="is_clean">
-									</tr>
-									<tr>
-										<td class="color_td">先款先背</td>
-										<td id="is_moneyorback">
-										<td class="color_td">报价方式</td>
-										<td><font id="offer"></font></td>
-									</tr>
-									<tr>
-										<td class="color_td">备注</td>
-										<td colspan="3" id="remark"><td>
-									</tr>
-									
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-					<div class="copy">
-						<p> &copy; 2018 查票360. All Rights Reserved | Power by
-							<a href="http://wenxikeji.com/" target="_blank">wenxikeji.com</a>
-						</p>
+							</tbody>
+						</table>
 					</div>
 				</div>
-				<div class="clearfix"> </div>
+
+				<div class="copy">
+					<p>
+						&copy; 2018 查票360. All Rights Reserved | Power by <a
+							href="http://wenxikeji.com/" target="_blank">wenxikeji.com</a>
+					</p>
+				</div>
 			</div>
-			</div>
-			<!---->
-			<!--scrolling js-->
-			<script src="js/jquery.nicescroll.js"></script>
-			<script src="js/scripts.js"></script>
-			<!--//scrolling js-->
-			<script src="js/bootstrap.min.js">
-				
-			</script>
-	</body>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<!---->
+	<!--scrolling js-->
+	<script src="js/jquery.nicescroll.js"></script>
+	<script src="js/scripts.js"></script>
+	<!--//scrolling js-->
+	<script src="js/bootstrap.min.js">
+		
+	</script>
+</body>
 
 </html>

@@ -76,8 +76,8 @@ public class BillController extends BaseController {
 		m.put("利率", "rate");
 		m.put("调整天数", "adjuest");
 		m.put("每10万扣", "deductions");
-		m.put("直接扣", "direct");
 		m.put("优先级", "level");
+		m.put("直接扣", "direct");
 		m.put("状态", "status");
 		m.put("备注", "remark");
 		List<Map<String, Object>> ls;
@@ -108,28 +108,36 @@ public class BillController extends BaseController {
 					}
 					BigDecimal rate = billImport.getRate();
 					Integer adjuest = billImport.getAdjuest();
-					Integer shortest = billImport.getShortest();
-					Integer longest = billImport.getLongest();
+					String shortest = billImport.getShortest();
+					String longest = billImport.getLongest();
 					String max = billImport.getMax();
-					BigDecimal min = billImport.getMin();
-					BigDecimal total = billImport.getTotal();
-					BigDecimal usable = billImport.getUsable();
+					String min = billImport.getMin();
+					String total = billImport.getTotal();
+					String usable = billImport.getUsable();
 					Integer status = billImport.getStatus();
 					Integer level = billImport.getLevel();
-					Integer isBargain = billImport.getIsBargain();
-					Integer isInvoice = billImport.getIsInvoice();
-					Integer agreement = billImport.getAgreement();
-					Integer isMoneyOrBack = billImport.getIsMoneyOrBack();
-					Integer isFinancing = billImport.getIsFinancing();
-					Integer isClean = billImport.getIsClean();
-					Integer etime = billImport.getEtime();
+					String is_bargain = billImport.getIsBargain();
+					String is_invoice = billImport.getIsInvoice();
+					String s_agreement = billImport.getAgreement();
+					String is_moneyOrBack = billImport.getIsMoneyOrBack();
+					String is_financing = billImport.getIsFinancing();
+					String is_clean = billImport.getIsClean();
+					
+					Integer isBargain = CheckTool.stringToInt(is_bargain);
+					Integer isInvoice = CheckTool.stringToInt(is_invoice);
+					Integer agreement = CheckTool.stringToInt(s_agreement);
+					Integer isMoneyOrBack = CheckTool.stringToInt(is_moneyOrBack);
+					Integer isFinancing = CheckTool.stringToInt(is_financing);
+					Integer isClean = CheckTool.stringToInt(is_clean);
+					
+					String etime = billImport.getEtime();
 					Integer offer = billImport.getOffer();
 					BigDecimal deductions = billImport.getDeductions();
 					BigDecimal direct = billImport.getDirect();
 					String remark = billImport.getRemark();
-					Bill bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, direct, max,
-							min, total, usable, remark, status, level, isBargain, isInvoice, agreement, isMoneyOrBack,
-							isFinancing, isClean, etime, offer);
+					Bill bill = new Bill(acceptance, staff, rate, shortest, longest, adjuest, deductions, direct, max, min, total,
+							usable, remark, status, level, isBargain, isInvoice, agreement, isMoneyOrBack, isFinancing,
+							isClean, etime, offer);
 					BigDecimal aYInterest = billService.calculationInterest(bill);
 					bill.setAYInterest(aYInterest);
 					acceptance = acceptanceRepository.save(acceptance);
@@ -187,8 +195,8 @@ public class BillController extends BaseController {
 	public Msg precise(@RequestParam String core, @RequestParam Integer type, @RequestParam String invoice,
 			@SessionAttribute User user) {
 		if (user.getCard() == 1) {
-			Acceptance acceptance = acceptanceRepository.findByCoreAndInvoiceAndType(core, invoice, type);
-			List<Bill> billList = billRepository.findByAcceptance(acceptance);
+			//同时查询 承兑企业为空的bill
+			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
 			msg.set("查询成功", CodeConstant.SUCCESS, billList);
 		} else if (user.getPrecise() < 5) {
 			user.setPrecise(user.getPrecise() + 1);
@@ -196,8 +204,7 @@ public class BillController extends BaseController {
 			// 更新缓存
 			ValueOperations<String, User> operations = redisTemplate.opsForValue();
 			operations.set("user:" + user.getId(), user);
-			Acceptance acceptance = acceptanceRepository.findByCoreAndInvoiceAndType(core, invoice, type);
-			List<Bill> billList = billRepository.findByAcceptance(acceptance);
+			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
 			msg.set("查询成功", CodeConstant.SUCCESS, billList);
 		} else {
 			msg.set("请先上传名片", CodeConstant.ERROR, null);
@@ -301,11 +308,11 @@ public class BillController extends BaseController {
 	@PostMapping("/set")
 	public Msg set(@SessionAttribute Admin admin, @RequestParam int id, @RequestParam int staffId,
 			@RequestParam String core, @RequestParam(required = false) String invoice,
-			@RequestParam(required = false) BigDecimal rate, @RequestParam(required = false) BigDecimal total,
+			@RequestParam(required = false) BigDecimal rate, @RequestParam(required = false) String total,
 			@RequestParam(required = false) BigDecimal deductions, @RequestParam(required = false) BigDecimal direct,
-			@RequestParam String max, @RequestParam BigDecimal min, @RequestParam Integer shortest,
-			@RequestParam Integer longest, @RequestParam(required = false) Integer adjuest,
-			@RequestParam(required = false) Integer etime, @RequestParam(required = false) BigDecimal usable,
+			@RequestParam(required = false) String max, @RequestParam(required = false) String min, @RequestParam(required = false) String shortest,
+			@RequestParam(required = false) String longest, @RequestParam(required = false) Integer adjuest,
+			@RequestParam(required = false) String etime, @RequestParam(required = false) String usable,
 			@RequestParam int status, @RequestParam(required = false) int level, @RequestParam int is_bargain,
 			@RequestParam int is_invoice, @RequestParam int agreement, @RequestParam int is_financing,
 			@RequestParam int is_clean, @RequestParam int is_moneyorback, @RequestParam Integer offer,
@@ -344,7 +351,7 @@ public class BillController extends BaseController {
 				isChange = true;
 				bill.setRate(rate);
 			}
-			if (total != null && total.compareTo(bill.getTotal()) != 0) {
+			if (CheckTool.isString(total) && (bill.getTotal() == null || !bill.getTotal().equals(total))) {
 				isChange = true;
 				bill.setTotal(total);
 			}
@@ -358,17 +365,17 @@ public class BillController extends BaseController {
 			}
 			if (CheckTool.isString(max) && (bill.getMax() == null || !bill.getMax().equals(max))) {
 				isChange = true;
-				acceptance.setInvoice(invoice);
+				bill.setMax(max);
 			}
-			if (bill.getMin().compareTo(min) != 0) {
+			if (CheckTool.isString(min) && (bill.getMin() == null || !bill.getMin().equals(min))) {
 				isChange = true;
 				bill.setMin(min);
 			}
-			if (shortest != null && shortest.compareTo(bill.getShortest()) != 0) {
+			if (CheckTool.isString(shortest) && (bill.getShortest() == null || !bill.getShortest().equals(shortest))) {
 				isChange = true;
 				bill.setShortest(shortest);
 			}
-			if (longest != null && longest.compareTo(bill.getLongest()) != 0) {
+			if (CheckTool.isString(longest) && (bill.getLongest() == null || !bill.getLongest().equals(longest))) {
 				isChange = true;
 				bill.setLongest(longest);
 			}
@@ -376,11 +383,11 @@ public class BillController extends BaseController {
 				isChange = true;
 				bill.setAdjuest(adjuest);
 			}
-			if (etime != null && etime.compareTo(bill.getEtime()) != 0) {
+			if (CheckTool.isString(etime) && (bill.getEtime() == null || !bill.getEtime().equals(etime))) {
 				isChange = true;
 				bill.setEtime(etime);
 			}
-			if (usable != null && usable.compareTo(bill.getUsable()) != 0) {
+			if (CheckTool.isString(usable) && (bill.getUsable() == null || !bill.getUsable().equals(usable))) {
 				isChange = true;
 				bill.setUsable(usable);
 			}
@@ -463,14 +470,14 @@ public class BillController extends BaseController {
 	@PostMapping("/add")
 	public Msg add(@SessionAttribute Admin admin, @RequestParam int staffId, @RequestParam String core,
 			@RequestParam(required = false) String invoice, @RequestParam(required = false) BigDecimal rate,
-			@RequestParam(required = false) BigDecimal total, @RequestParam(required = false) BigDecimal deductions,
-			@RequestParam(required = false) BigDecimal direct, @RequestParam String max, @RequestParam BigDecimal min,
-			@RequestParam Integer shortest, @RequestParam Integer longest,
-			@RequestParam(required = false) Integer adjuest, @RequestParam(required = false) int etime,
-			@RequestParam(required = false) BigDecimal usable, @RequestParam(required = false) int status,
-			@RequestParam(required = false) int level, @RequestParam int is_bargain, @RequestParam int is_invoice,
-			@RequestParam int agreement, @RequestParam int is_financing, @RequestParam int is_clean,
-			@RequestParam int is_moneyorback, @RequestParam Integer offer,
+			@RequestParam(required = false) String total, @RequestParam(required = false) BigDecimal deductions,
+			@RequestParam(required = false) BigDecimal direct, @RequestParam(required = false) String max, @RequestParam(required = false) String min,
+			@RequestParam(required = false)String shortest, @RequestParam(required = false) String longest,
+			@RequestParam(required = false) Integer adjuest, @RequestParam(required = false) String etime,
+			@RequestParam(required = false) String usable, @RequestParam(required = false) int status,
+			@RequestParam(required = false) int level, @RequestParam Integer is_bargain, @RequestParam Integer is_invoice,
+			@RequestParam Integer agreement, @RequestParam Integer is_financing, @RequestParam Integer is_clean,
+			@RequestParam Integer is_moneyorback, @RequestParam Integer offer,
 			@RequestParam(required = false) String remark) {
 
 		/*

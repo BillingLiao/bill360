@@ -41,11 +41,11 @@ public class Bill {
 	@Column(name = "_rate", nullable = true, columnDefinition = "DECIMAL(6,2) default '0.00' comment '利率'")
 	private BigDecimal rate;
 
-	@Column(name = "_shortest", nullable = true, columnDefinition = "int comment '最短期限(收票起步天数)'")
-	private int shortest;
+	@Column(name = "_shortest", nullable = true, columnDefinition = "varchar(255) comment '最短期限(收票起步天数)'")
+	private String shortest;
 
-	@Column(name = "_longest", nullable = true, columnDefinition = "int comment '最长期限(收票最高天数)'")
-	private int longest;
+	@Column(name = "_longest", nullable = true, columnDefinition = "varchar(255) comment '最长期限(收票最高天数)'")
+	private String longest;
 
 	@Column(name = "_adjuest", nullable = true, columnDefinition = "int comment '调整天数'")
 	private int adjuest;
@@ -53,14 +53,14 @@ public class Bill {
 	@Column(name = "_max", nullable = true, columnDefinition = "varchar(255) comment '票面最大金额(收票单张上限金额(万))'")
 	private String max;
 
-	@Column(name = "_min", nullable = true, columnDefinition = "DECIMAL(18,6) default '0.000000' comment '最小金额(收票单张起步金额(万))'")
-	private BigDecimal min;
+	@Column(name = "_min", nullable = true, columnDefinition = "varchar(255) comment '最小金额(收票单张起步金额(万))'")
+	private String min;
 
-	@Column(name = "_total", nullable = true, columnDefinition = "DECIMAL(18,6) default '0.000000' comment '总额度(万)'")
-	private BigDecimal total;
+	@Column(name = "_total", nullable = true, columnDefinition = "varchar(255) comment '总额度(万)'")
+	private String total;
 
-	@Column(name = "_usable", nullable = true, columnDefinition = "DECIMAL(18,6) default '0.000000' comment '可用额度(万)'")
-	private BigDecimal usable;
+	@Column(name = "_usable", nullable = true, columnDefinition = "varchar(255) comment '可用额度(万)'")
+	private String usable;
 
 	@Column(name = "_remark", nullable = true, columnDefinition = "varchar(255) comment '保理备注'")
 	private String remark;
@@ -76,25 +76,25 @@ public class Bill {
 	private Date ctime;
 
 	@Column(name = "_is_bargain", nullable = true, columnDefinition = "int comment '合同0-不是、1-是'")
-	private int isBargain;
+	private Integer isBargain;
 
 	@Column(name = "_is_invoice", nullable = true, columnDefinition = "int comment '发票0-不是（默认）、1-是'")
-	private int isInvoice;
+	private Integer isInvoice;
 
 	@Column(name = "_agreement", nullable = true, columnDefinition = "int comment '质押协议0-不是（默认）、1-是'")
-	private int agreement;
+	private Integer agreement;
 
 	@Column(name = "_is_moneyorback", nullable = true, columnDefinition = "int comment '先款先背0-先款（默认）、1-先背'")
-	private int isMoneyOrBack;
+	private Integer isMoneyOrBack;
 
 	@Column(name = "_is_financing", nullable = true, columnDefinition = "int comment '融资票0-不是（默认）、1-是'")
-	private int isFinancing;
+	private Integer isFinancing;
 
 	@Column(name = "_is_clean", nullable = true, columnDefinition = "int comment '融资票0-不是（默认）、1-是'")
-	private int isClean;
+	private Integer isClean;
 
-	@Column(name = "_endorse_time", nullable = true, columnDefinition = "int comment '背书次数限制'")
-	private int etime;
+	@Column(name = "_endorse_time", nullable = true, columnDefinition = "varchar(255) comment '背书次数限制'")
+	private String etime;
 
 	@Column(name = "_offer", nullable = true, columnDefinition = "int comment '报价方式'")
 	private Integer offer;
@@ -108,9 +108,9 @@ public class Bill {
 	@Column(name = "_a_year_interest", nullable = true, columnDefinition = "DECIMAL(16,4) default '0.00' comment '一年每十万利息'")
 	private BigDecimal aYInterest;
 
-	public Bill(Acceptance acceptance, Staff staff, BigDecimal rate, Integer shortest, Integer longest,Integer adjuest, BigDecimal deductions,
-			BigDecimal direct, String max, BigDecimal min, BigDecimal total, BigDecimal usable, String remark, int status, int level,
-			int isBargain, int isInvoice, int agreement, int isMoneyOrBack, int isFinancing, int isClean, int etime, Integer offer) {
+	public Bill(Acceptance acceptance, Staff staff, BigDecimal rate, String shortest, String longest,Integer adjuest, BigDecimal deductions,
+			BigDecimal direct, String max, String min, String total, String usable, String remark, int status, int level,
+			int isBargain, int isInvoice, int agreement, int isMoneyOrBack, int isFinancing, int isClean, String etime, Integer offer) {
 		super();
 		this.acceptance = acceptance;
 		this.staff = staff;

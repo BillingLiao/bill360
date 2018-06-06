@@ -322,5 +322,24 @@ public class CheckTool {
 			return true;
 		}
 	}
+	
+	/**
+	 * 上传excel，空值时转换为int型。
+	 * @param str
+	 * @return
+	 */
+	public static Integer stringToInt(String str) {
+		Integer integer;
+		if(str == null || str == "") {
+			integer = 2;
+		}else if(str.equals("0")) {
+			integer = 0;
+		}else if(str.equals("1")) {
+			integer = 1;
+		}else {
+			integer = 2;
+		}
+		return integer;
+	}
 
 }

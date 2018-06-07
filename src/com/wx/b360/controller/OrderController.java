@@ -121,7 +121,7 @@ public class OrderController extends BaseController {
 			if (bill != null) {
 				Date dateEnt = AppTool.changeDate(time);
 				if (dateEnt.getTime() < System.currentTimeMillis()) {
-					msg.set("到期日期小于当前时间", CodeConstant.ERR_PAR, null);
+					msg.set("到期日期不能小于当前时间", CodeConstant.ERR_PAR, null);
 					return msg;
 				}
 
@@ -161,9 +161,12 @@ public class OrderController extends BaseController {
 					interestUnitUnitInfo = deductions + "";
 					//interestUnit = deductions.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
 					//interestUnitUnitInfo = interestUnit + "÷360×" + day + "=" + interestUnit;
-					interest = interestUnit.divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP)
-							.multiply(money);
+					interest = interestUnit.multiply(money).divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP);
 					interestInfo = interestUnit + "÷100000×" + money + "=" + interest;
+					
+					//先除再乘，小数会丢
+					/*interest = interestUnit.divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP)
+							.multiply(money);*/
 				}
 				//直接扣百分比：direct
 				else if(offer == 2) {
@@ -244,9 +247,10 @@ public class OrderController extends BaseController {
 					//每十万扣费：deductions 
 					else if(offer == 1){
 						BigDecimal deductions = bill.getDeductions();
-						interestUnit = deductions.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
-						interest = interestUnit.divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP)
-								.multiply(money);
+						interestUnit = deductions;
+						interest = interestUnit.multiply(money).divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP);
+						/*interest = interestUnit.divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP)
+								.multiply(money);*/
 					}
 					//直接扣百分比：direct
 					else if(offer == 2) {

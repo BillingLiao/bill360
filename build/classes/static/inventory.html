@@ -325,7 +325,7 @@ img{margin:5px;}
 		}
 
 		if (!isString($('#inventory_company').val())) {
-			alert("请输入开票企业名称");
+			alert("请输入承兑企业名称");
 			return;
 		}
 
@@ -483,9 +483,9 @@ img{margin:5px;}
 											</select></td>
 										</tr>
 										<tr>
-											<td width="15%">开票企业名称</td>
+											<td width="15%">承兑企业名称</td>
 											<td colspan="3"><input class="form-control"
-												id="inventory_company" placeholder="请输入开票企业名称" type="text"
+												id="inventory_company" placeholder="请输入承兑企业名称" type="text"
 												required="required"></td>
 										</tr>
 										<tr>
@@ -541,7 +541,7 @@ img{margin:5px;}
 						<div class="col-md-6 compose">
 							<div class="input-group input-group-in">
 								<input  name="search" id="search_name"
-									class="form-control2 input-search" placeholder="请输入开票企业名称"
+									class="form-control2 input-search" placeholder="请输入承兑企业名称"
 									type="text"> <span class="input-group-btn">
 									<button class="btn btn-success" onclick="search_inventory()"
 										type="button">
@@ -579,7 +579,7 @@ img{margin:5px;}
 									<tr>
 										<th>编号</th>
 										<th>持票人</th>
-										<th>开票企业名称</th>
+										<th>承兑企业名称</th>
 										<th>商票正面</th>
 										<th>背书面</th>
 										<th>金额（万）</th>

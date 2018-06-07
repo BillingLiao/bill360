@@ -84,9 +84,9 @@
 									typeStr = "已绑定";
 								}
 								if(card == 0) {
-									cardStr = "已绑定";
-								} else if(type == 1) {
 									cardStr = "未绑定";
+								} else if(card == 1) {
+									cardStr = "已绑定";
 								}
 								
 								$("#user_name").text(name);
@@ -123,7 +123,6 @@
 						success: function (data) {
 							if(data.code == 0) {
 								console.log(data);
-								debugger;
 								var cards = data.data;
 								if(cards != null && cards.length) {
 									var card = cards[0];

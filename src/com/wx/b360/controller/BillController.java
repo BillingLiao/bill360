@@ -140,6 +140,10 @@ public class BillController extends BaseController {
 							isClean, etime, offer);
 					BigDecimal aYInterest = billService.calculationInterest(bill);
 					bill.setAYInterest(aYInterest);
+					Bill bill2 = billRepository.findByStaffAndAcceptance(staff.getId(), acceptance.getId());
+					if(bill2 != null) {
+						bill.setId(bill2.getId());
+					}
 					acceptance = acceptanceRepository.save(acceptance);
 					bill = billRepository.save(bill);
 				}

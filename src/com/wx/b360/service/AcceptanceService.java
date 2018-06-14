@@ -51,7 +51,7 @@ public class AcceptanceService {
 			}
 	
 		};
-		return acceptanceRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.ASC,"id"));
+		return acceptanceRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.DESC,"id"));
 	}
 		
 }

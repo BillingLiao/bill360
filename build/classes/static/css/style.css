@@ -3163,3 +3163,8 @@ tr.table-row {
 		font-size: 1.6em;
 	}
 }
+
+.img {
+	width:400px;
+	height:300px;
+}

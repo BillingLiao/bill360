@@ -156,6 +156,17 @@ public class AcceptanceController extends BaseController {
 		List<String> coreList = acceptanceRepository.findCore();
 		return coreList;
 	}
+	
+	/**
+	 * 查詢所有承兑企业
+	 * 
+	 * @return
+	 */
+	@PostMapping("/findInvoice")
+	public List<String> findInvoice(@SessionAttribute Admin admin) {
+		List<String> invoiceList = acceptanceRepository.findInvoice();
+		return invoiceList;
+	}
 
 	// 企业核心名模糊搜索 （快速查询）
 	@PostMapping("/fast")

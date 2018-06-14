@@ -55,8 +55,12 @@ public class UserController extends BaseController {
 	
 	//微信小程序appid
 	private final String WX_APP_ID = "wxef57e6a7c3c58536";
+	
 	//微信小程序appsecret
 	private final String WX_APP_SECRET = "7d01d6ede415010f90c15c652d583102";
+	
+	//private final String WX_APP_ID = "wxc14f10b94e87d428";
+	//private final String WX_APP_SECRET = "0c4c51775857e72cc299845d5de4e09b";
 	
 	//获取微信openid
 	//获取openid

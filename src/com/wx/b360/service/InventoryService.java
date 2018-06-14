@@ -56,6 +56,6 @@ public class InventoryService {
 				return cb.and(predicates.toArray(new Predicate[] {}));
 			}
 		};
-		return inventoryRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.ASC,"id"));
+		return inventoryRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.DESC,"id"));
 	}
 }

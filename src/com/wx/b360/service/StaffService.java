@@ -46,7 +46,7 @@ public class StaffService {
 			}
 	
 		};
-		return staffRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.ASC,"id"));
+		return staffRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.DESC,"id"));
 	}
 		
 }

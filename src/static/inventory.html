@@ -90,7 +90,7 @@ img{margin:5px;}
 				$("#user").html(html);
 			}
 		});
-
+ 
 	});
 
 	//页面加载成功时访问
@@ -287,6 +287,35 @@ img{margin:5px;}
 		show_source(index, size, company);
 	}
 
+	
+	function fileSelected(a, b) {
+	    var oFile = document.getElementById(b).files[0];
+	    
+	    if(!/image\/\w+/.test(oFile.type)){ 
+	        alert("文件必须为图片！"); 
+	        return false; 
+	 	}
+	    
+	    // filter for image files
+	    var rFilter = /^(image\/bmp|image\/gif|image\/jpeg|image\/png|image\/tiff)$/i;
+	    if (!rFilter.test(oFile.type)) {
+	        document.getElementById('error').style.display = 'block';
+	        return;
+	    }
+	    // get preview element
+	    var oImage = document.getElementById(a);
+	    console.log(a);
+	    // prepare HTML5 FileReader
+	    var oReader = new FileReader();
+	    oReader.onload = function(e) {
+
+	        oImage.src = e.target.result;
+	    };
+
+	    // read selected file as DataURL
+	    oReader.readAsDataURL(oFile);
+	}
+	
 	//添加持票清单
 	function add_inventory() {
 		var formData = new FormData();
@@ -306,10 +335,11 @@ img{margin:5px;}
 			alert("请选择商票上传");
 			return;
 		}
-		 if(!/image\/\w+/.test(uploadfile.type)){ 
-		        alert("文件必须为图片！"); 
-		        return false; 
-		    }
+		
+		if(!/image\/\w+/.test(uploadfile.type)){ 
+	        alert("文件必须为图片！"); 
+	        return false; 
+	 	}
 		 
 		formData.append('file_img_front',
 				$('#uploadFile_img_front')[0].files[0]);
@@ -490,11 +520,13 @@ img{margin:5px;}
 										</tr>
 										<tr>
 											<td width="15%">商票正面</td>
-											<td width="35%"><input class="form-control"
-												id="uploadFile_img_front" type="file"></td>
+											<td width="35%"><img id="preview" width='320px' height='240px' title="商票正面" src="images/choose.jpg">
+											<input class="form-control"
+												id="uploadFile_img_front" type="file" onchange="fileSelected('preview','uploadFile_img_front');"></td>
 											<td width="15%">背书面</td>
-											<td width="35%"><input class="form-control"
-												id="uploadFile_img_back" type="file"></td>
+											<td width="35%"><img id="preview2" width='320px' height='240px' title="商票正面" src="images/choose.jpg">
+											<input class="form-control" 
+												id="uploadFile_img_back" type="file" onchange="fileSelected('preview2','uploadFile_img_back');"></td>
 										</tr>
 										<tr>
 											<td width="15%">出票日期</td>

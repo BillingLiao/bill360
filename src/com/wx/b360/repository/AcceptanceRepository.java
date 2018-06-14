@@ -23,6 +23,10 @@ public interface AcceptanceRepository
 	// 查询 所有core
 	@Query(value = "select distinct _core from b_acceptance", nativeQuery = true)
 	public List<String> findCore();
+	
+	// 查询 所有承兑企业
+	@Query(value = "select distinct _invoice from b_acceptance", nativeQuery = true)
+	public List<String> findInvoice();
 
 	// 通过core跟invoice查询一条信息
 	@Query(value = "select * from b_acceptance where _core = ?1 and _invoice = ?2", nativeQuery = true)

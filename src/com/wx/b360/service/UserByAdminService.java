@@ -47,7 +47,7 @@ public class UserByAdminService {
 			}
 	
 		};
-		return userByAdminRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.ASC,"id"));
+		return userByAdminRepository.findAll(specification, new PageRequest(index, size, Sort.Direction.DESC,"id"));
 	}
 		
 }

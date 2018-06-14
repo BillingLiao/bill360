@@ -8,8 +8,6 @@
 
 
 <script type="application/x-javascript">
-	
-	
 			addEventListener("load", function() {
 				setTimeout(hideURLbar, 0);
 			}, false);
@@ -17,8 +15,6 @@
 			function hideURLbar() {
 				window.scrollTo(0, 1);
 			}
-		
-
 </script>
 <link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
 <!-- Custom Theme files -->
@@ -62,6 +58,7 @@
 									.lastIndexOf('/') + 1);
 				}
 				$("#username").text(sessionStorage.getItem("name"));
+				show_invoice();
 			});
 
 	show_detail(id);
@@ -115,7 +112,7 @@
 										+ inventory.img_front;
 								$("#img_front").html("<img src = "+imgurl+"  alt='商票正面' 	width='400px' height='300px'; />");
 								if (!isString(inventory.img_back)) {
-									$("#img_back").html("<font style='color: black;'>-</font>");
+									$("#img_back").html("<font style='color: black;'></font>");
 								} else {
 									var imgurl2 = api + "upload/"
 											+ inventory.img_back;
@@ -148,6 +145,32 @@
 		}
 
 	}
+	
+	/*  
+	*初始化承兑企业下拉框
+	*/
+	function show_invoice() {
+		$.ajax({
+			type : "post",
+			url : api + "acceptance/findInvoice",
+			async : true,
+			dataType : 'json',
+			data : {
+				atoken : atoken,
+			},
+			success : function(result) {
+				var html;
+				for (var i = 0; i < result.length; i++) {
+					if(result[i] != null && result[i] != ""){
+					html += "<option value="+result[i]+">"
+							+ result[i]+ "</option>";
+					}
+				}
+				$("#data_acceptance_invoice").html(html);
+			}
+		});
+	}
+	
 	function save() {
 		if (isNum(id)) {
 			
@@ -313,8 +336,11 @@
 							</tr>
 							<tr>
 								<td width="15%">持票企业名称</td>
-								<td colspan="3"><input class="form-control"
-									id="inventory_company" placeholder="请输入持票企业名称" type="text">
+								<td colspan="3">
+								<input class="form-control"
+									id="inventory_company"  list="data_acceptance_invoice" type="text">
+								<datalist id="data_acceptance_invoice" >
+								</datalist>
 								</td>
 							</tr>
 							<tr>

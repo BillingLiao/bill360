@@ -139,6 +139,11 @@
 			$('#bill_rate').val("0");
 			$("#bill_adjuest").val("0");
 			$("#bill_deductions").val("0");
+		}else if(b==3){
+			$('#select_offer_0').show();
+			$('#select_offer_1').show(); 
+			$('#select_offer_2').hide();
+			$("#bill_direct").val("0");
 		}
 	}
 	
@@ -178,7 +183,7 @@
 			alert("请输入上市主体");
 			return;
 		}
-		if(offer == 0){
+		if(offer == 0 || offer == 3){
 			if (!isDouble(rate)) {
 				alert("请输入利率");
 				return;
@@ -187,7 +192,7 @@
 				alert("调整天数应为正整数且非空");
 				return;
 			}
-		}else if(offer == 1){
+		}else if(offer == 1 || offer == 3){
 			if (!isDouble(deductions)) {
 				alert("请输入每十万扣费金额");
 				return;
@@ -375,6 +380,7 @@
 												<option value="0">年化</option>
 												<option value="1">每十万扣</option>
 												<option value="2">直接扣</option>
+												<option value="3">年化+每十万扣</option>
 										</select></td>
 									</tr>
 									<tr id="select_offer_0">

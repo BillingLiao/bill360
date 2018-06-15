@@ -177,9 +177,18 @@
 							$("#usable").text(usable);
 							$("#shortest").text(shortest);
 							$("#longest").text(longest);
-							$("#offer").text(offer);
 							$("#remark").text(remark);
 							$("#level").text(level);
+							if(offer == 0){
+								$("#offer").text('年化');
+							}else if(offer == 1){
+								$("#offer").text('每十万扣');
+							}else if(offer == 2){
+								$("#offer").text('直接扣');
+							}else if(offer == 3){
+								$("#offer").text('年化+每十万扣');
+							}
+							
 							
 							if(offer == 0){
 								$('#select_offer_0').show(); //显示id为select_offer_0的元素。
@@ -193,6 +202,10 @@
 								$('#select_offer_0').hide();
 								$('#select_offer_1').hide();
 								$('#select_offer_2').show();
+							}else if(offer == 3){
+								$('#select_offer_0').show();
+								$('#select_offer_1').show();
+								$('#select_offer_2').hide();
 							}
 							
 							if (is_bargain == 0) {

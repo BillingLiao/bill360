@@ -75,6 +75,10 @@ public class BillService {
 		}else if(offer == 2) {
 			BigDecimal direct = bill.getDirect();
 			aYInterest = direct.multiply(new BigDecimal(100000)).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP);
+		}else if(offer == 3) {
+			BigDecimal rate = bill.getRate();
+			BigDecimal deductions = bill.getDeductions();
+			aYInterest = deductions.add(rate.multiply(new BigDecimal(100000)).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP));
 		}
 		
 		return aYInterest;

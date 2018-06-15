@@ -177,6 +177,26 @@ public class OrderController extends BaseController {
 							BigDecimal.ROUND_HALF_UP);
 					interestUnitUnitInfo = interest + "×" + "100000" + "÷" + money + "=" + interestUnit;
 				}
+				//年化+每十万扣费
+				else if(offer == 3) {
+					day += bill.getAdjuest();
+					BigDecimal rate = bill.getRate();
+					BigDecimal deductions = bill.getDeductions();
+					
+					BigDecimal interest1 = money.multiply(rate).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
+							.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+					BigDecimal interestUnit1 = interest1.multiply(new BigDecimal(100000)).divide(money, 4,
+							BigDecimal.ROUND_HALF_UP);
+					BigDecimal interestUnit2 = deductions;
+					BigDecimal interest2 = interestUnit2.multiply(money).divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP);
+					
+					interest = interest1.add(interest2);
+					interestUnit = interestUnit1.add(interestUnit2);
+					interestInfo = "("+interestUnit + "÷100000×" + money+")" + "(" + money + "×" + rate + "÷100÷360×" + day + ")" + "=" + interest;
+					interestUnitUnitInfo = deductions + "+" + interest + "×" + "100000" + "÷" + money + "=" + interestUnit;
+					
+				}
+				
 				Map<String, Object> result = new HashMap<String, Object>();
 				result.put("day", day);
 				result.put("interest", interest);
@@ -258,6 +278,22 @@ public class OrderController extends BaseController {
 						interest = money.multiply(direct).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP);
 						interestUnit = interest.multiply(new BigDecimal(100000)).divide(money, 4,
 								BigDecimal.ROUND_HALF_UP);
+					}
+					//年化+每十万扣费
+					else if(offer == 3) {
+						day += bill.getAdjuest();
+						BigDecimal rate = bill.getRate();
+						BigDecimal deductions = bill.getDeductions();
+						
+						BigDecimal interest1 = money.multiply(rate).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP)
+								.divide(new BigDecimal(360), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(day));
+						BigDecimal interestUnit1 = interest1.multiply(new BigDecimal(100000)).divide(money, 4,
+								BigDecimal.ROUND_HALF_UP);
+						BigDecimal interestUnit2 = deductions;
+						BigDecimal interest2 = interestUnit2.multiply(money).divide(new BigDecimal(100000), 4, BigDecimal.ROUND_HALF_UP);
+						
+						interest = interest1.add(interest2);
+						interestUnit = interestUnit1.add(interestUnit2);
 					}
 					
 					Order order = new Order(bill, money, img, date, subsidy, interest, day, user);

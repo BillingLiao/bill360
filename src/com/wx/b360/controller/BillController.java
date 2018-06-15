@@ -351,7 +351,7 @@ public class BillController extends BaseController {
 				isChange = true;
 				acceptance.setInvoice(invoice);
 			}
-			if (rate != null && rate.compareTo(bill.getRate()) != 0) {
+			if (rate != null && (bill.getRate() == null || rate.compareTo(bill.getRate()) != 0)) {
 				isChange = true;
 				bill.setRate(rate);
 			}
@@ -359,11 +359,11 @@ public class BillController extends BaseController {
 				isChange = true;
 				bill.setTotal(total);
 			}
-			if (deductions != null && deductions.compareTo(bill.getDeductions()) != 0) {
+			if (deductions != null && (bill.getDeductions() == null || deductions.compareTo(bill.getDeductions()) != 0)) {
 				isChange = true;
 				bill.setDeductions(deductions);
 			}
-			if (direct != null && direct.compareTo(bill.getDirect()) != 0) {
+			if (direct != null && (bill.getDirect() == null || direct.compareTo(bill.getDirect()) != 0)) {
 				isChange = true;
 				bill.setDirect(direct);
 			}

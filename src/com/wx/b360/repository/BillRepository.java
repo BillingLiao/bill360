@@ -35,8 +35,8 @@ public interface BillRepository extends PagingAndSortingRepository<Bill, Integer
 	Bill findlevelByCore(String core);
 	
 	
-	//通过核心企业，开票企业，类别 查找 bill
-	@Query(value="SELECT b.* FROM b_bill b LEFT JOIN b_acceptance a ON b._acceptance_id = a._id WHERE a._core= ?1 AND (a._invoice = ?2 OR a._invoice = '') AND a._type = ?3", nativeQuery=true)
+	//通过核心企业，开票企业，类别 查找 bill 按优先级倒序排列
+	@Query(value="SELECT b.* FROM b_bill b LEFT JOIN b_acceptance a ON b._acceptance_id = a._id WHERE a._core= ?1 AND (a._invoice = ?2 OR a._invoice = '') AND a._type = ?3 ORDER BY _level DESC", nativeQuery=true)
 	List<Bill> findByCoreInvoiceType(String core,String invoice, Integer type);
 	
 }

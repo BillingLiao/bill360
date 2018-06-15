@@ -118,13 +118,16 @@
 								
 								if(offer == 0){
 									var offer_text = '年化';
-									var offer_value = '利率:'+bill.rate+'+调整天数:'+bill.adjuest;
+									var offer_value = bill.rate+'% +'+bill.adjuest + '天';
 								}else if(offer == 1){
 									var offer_text = '每十万扣';
-									var offer_value = '利息:'+bill.deductions;
+									var offer_value = bill.deductions + '元';
 								}else if(offer == 2){
 									var offer_text = '直接扣';
-									var offer_value = '百分比(%):'+bill.direct;
+									var offer_value = bill.direct + '%';
+								}else if(offer == 3){
+									var offer_text = '年化+每十万扣';
+									var offer_value = '年化：'+bill.rate+'% +'+bill.adjuest+'天 , 每十万扣：'+bill.deductions;
 								}
 								
 								var min = isDouble(bill.min) ? bill.min : "-"; //起步金额

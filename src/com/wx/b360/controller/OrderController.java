@@ -192,7 +192,7 @@ public class OrderController extends BaseController {
 					
 					interest = interest1.add(interest2);
 					interestUnit = interestUnit1.add(interestUnit2);
-					interestInfo = "("+interestUnit + "÷100000×" + money+")" + "(" + money + "×" + rate + "÷100÷360×" + day + ")" + "=" + interest;
+					interestInfo = "("+interestUnit + "÷100000×" + money+") + (" + money + "×" + rate + "÷100÷360×" + day + ")" + "=" + interest;
 					interestUnitUnitInfo = deductions + "+" + interest + "×" + "100000" + "÷" + money + "=" + interestUnit;
 					
 				}

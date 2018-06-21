@@ -17,6 +17,10 @@ public interface DataDicRepository extends PagingAndSortingRepository<DataDic, I
 	@Query(value="select * from b_datadic where data_Dic_Name = ?1 order by id", nativeQuery=true)
 	public List<DataDic> findDataDicValueByName(String data_Dic_Name);
 	
+	
+	@Query(value="select data_Dic_Value from b_datadic where data_Dic_Name = ?1 order by id desc limit 0,5", nativeQuery=true)
+	public List<String> findDataDicValueLimitByName(String data_Dic_Name);
+	
 	DataDic findByDataDicName(String dataDicName);
 	
 	DataDic findByDataDicValue(String dataDicValue);

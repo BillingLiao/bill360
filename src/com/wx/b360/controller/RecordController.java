@@ -1,15 +1,16 @@
 package com.wx.b360.controller;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.wx.b360.entity.DataDic;
 import com.wx.b360.entity.Record;
 import com.wx.b360.entity.User;
 import com.wx.b360.model.Msg;
@@ -23,7 +24,10 @@ public class RecordController extends BaseController {
 	//获取热门搜索
 	@PostMapping("/hot")
 	public Msg hot() {
-		msg.set("查询成功", CodeConstant.SUCCESS, recordService.rank());
+		String dataDicName = "热门搜索";
+		List<String>  dataDicValueList  = dataDicRepository.findDataDicValueLimitByName(dataDicName);
+		msg.set("查询成功", CodeConstant.SUCCESS, dataDicValueList);
+		//msg.set("查询成功", CodeConstant.SUCCESS, recordService.rank());
 		return msg;
 	}
 	

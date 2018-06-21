@@ -196,11 +196,11 @@ public class BillController extends BaseController {
 
 	// 精确搜索
 	@PostMapping("/precise")
-	public Msg precise(@RequestParam String core, @RequestParam Integer type, @RequestParam String invoice,
+	public Msg precise(@RequestParam String core, @RequestParam String invoice,
 			@SessionAttribute User user) {
 		if (user.getCard() == 1) {
 			//同时查询 承兑企业为空的bill
-			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
+			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice);
 			msg.set("查询成功", CodeConstant.SUCCESS, billList);
 		} else if (user.getPrecise() < 5) {
 			user.setPrecise(user.getPrecise() + 1);
@@ -208,7 +208,7 @@ public class BillController extends BaseController {
 			// 更新缓存
 			ValueOperations<String, User> operations = redisTemplate.opsForValue();
 			operations.set("user:" + user.getId(), user);
-			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice, type);
+			List<Bill> billList = billRepository.findByCoreInvoiceType(core, invoice);
 			msg.set("查询成功", CodeConstant.SUCCESS, billList);
 		} else {
 			msg.set("请先上传名片", CodeConstant.ERROR, null);

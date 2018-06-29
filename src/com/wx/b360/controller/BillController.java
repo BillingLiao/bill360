@@ -151,7 +151,7 @@ public class BillController extends BaseController {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			e.printStackTrace();
 			msg.set("导入失败，请检查数据是否正确!", CodeConstant.SET_ERR, null);
 			
 		}
